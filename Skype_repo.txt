@@ -1,0 +1,44 @@
+__TOC__
+
+== Introduzione ==
+
+[http://www.skype.com/intl/it Skype] è un software proprietario di messaggistica istantanea e VoIP. Una soluzione alternativa a skype può essere, ad esempio, l'applicazione non proprietaria ed open-source [[Ekiga|Ekiga]].
+
+== Risoluzione dipendenze ==
+
+Skype, essendo, come già detto, software proprietario, mette a disposizione un RPM già compilato per Fedora, ma questo pacchetto necessita di librerie a 32bit per funzionare; gli utenti che usano versioni di fedora con architetture differenti sono costretti ad installare tutte le dipendenze a 32bit.
+Per installare le dipendenze:
+ # yum install libXScrnSaver.i?86 libX11.i?86 libXv.i?86 libv4l.i?86 alsa-plugins-pulseaudio.i?86 qt-x11.i?86
+
+{{Warning|Skype ha messo a disposizione un repository come installazione alternativa. Tale procedura è sconsigliata perché installa una versione obsoleta e non funzionante di skype.}} 
+
+== Installazione tramite pacchetto RPM ==
+
+Innanzitutto bisogna provvedere a scaricare l'ultima versione di skype disponibile per fedora. È sufficiente andare sul sito ufficiale sotto la voce [http://www.skype.com/it/download-skype/skype-for-computer/ download] o più semplicemente reperirlo direttamente da [http://www.skype.com/go/getskype-linux-beta-fc10 qui].
+
+Da terminale raggiungere la cartella dove è stato scaricato il pacchetto (probabilmente <tt>$HOME/Scaricati</tt>) e installarlo:
+
+ $ cd /percorso/fino/a/skype
+ $ su
+ # yum install ./skype-*
+== Installazione alternativa tramite lpf ==
+Skype può essere installato anche tramite [https://github.com/leamas/lpf lpf], che sta per ''Local Package Factory'', disponibile nei repository [[RPMFusion]]. Questo programma, semplice e user-friendly per l'interfaccia grafica di cui è fornito, consente di creare un pacchetto aggiornato all'ultima versione disponibile di skype.
+
+Per installarlo da terminale è sufficiente eseguire:
+ # yum install lpf-skype
+Per iniziare la costruzione e la creazione del pacchetto skype si può lanciare il programma dal menù dell'utente, oppure da terminale con:
+ # lpf update skype
+L'esecuzione di lpf creerà un pacchetto rpm locale e provvederà alla sua installazione.
+
+
+<!-- script non sempre funzionante. è qui solo per cronologia storica.
+questo testo non è visibile.
+
+== Aggiornamento ==
+
+Con ''wget'' (se non è presente nel sistema installarlo con ''yum install wget'') si può aggiornare skype eseguendo da root il seguente comando tutto su una riga:
+ # TMP=`mktemp`; if [ ! `which wget 2>/dev/null` ]; then echo -e "Wget non trovato. Installarlo tramite yum: \n\t# yum install wget"; fi; URL="`wget -nv --spider http://www.skype.com/go/getskype-linux-beta-fc10 -o $TMP; cat $TMP |tr ' ' '\n' |grep '\-fedora.*.rpm' |tee $TMP |rev |cut -d '/' -f 1 |rev |cut -d '-' -f 2`"; if [ `rpm -q skype` ] && [ $URL != "`rpm -q skype |cut -d '-' -f 2`" ]; then yum update -y `cat $TMP`; fi; rm -rf $TMP
+Lo script aggiorna skype solo se, confrontandolo la versione online, risulta più nuova della versione installata.-->
+
+[[Categoria:Repository]]
+[[Categoria:Yum]]

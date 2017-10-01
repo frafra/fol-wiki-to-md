@@ -1,0 +1,105 @@
+== Introduzione ==
+
+Premetto che invio questa mia pseudo-guida ma ci sono parecchi "ma" e "se"...<br>
+Allora, l'idea e' creare un dvd di installazione per Fedora con i pacchetti il piu' possibile aggiornati (repo "updates") e partendo da un'installazione gia' esistente di Fedora.
+
+Chi ha gia' usato "livecd-creator" sa che e' necessario un file di "kickstart". L'idea e' fare in modo che il file di kickstart venga generato in maniera automatica, partendo dai pacchetti rpm gia' installati sulla propria macchina...
+
+== Lo script ==
+
+Lo script in realta' e' in fase pre-alpha (e probabilmente MAI funzionera'), ma lo posto comunque perche' me lo sono inventato oggi (e' stato divertente...) e non so ne' QUANTO ne' QUANDO mai potro' rimetterci mano per fare in modo che sia quantomeno accettabile! Quindi se qualcuno vorra' divertirsi prendendo spunto da quello che ho scritto, sara' liberissimo di farlo .
+{{Warning|Questa guida NON è testata e potrebbe contenere molti errori! Se non si è sicuri di quello che si fa il consiglio è quello di NON seguirla!}}
+<pre>!/bin/bash
+
+TMP=`mktemp`
+OUTPUT=mykickstart.ks
+
+# modificare a proprio piacimento (se lascio kde* abilitati ho problemi con livecd-creator!)
+# posso permettermi di disattivare (disablerepo) tali repositories poichè i pacchetti eventualmente installati
+# da tali repos sono comunque disponibili sugli altri repos (anche se in versioni differenti)
+# quindi la riga EXCLUDE non provoca problemi dovuti a pacchetti non trovati 
+# dal comando "rpm -qa --queryformat '%{NAME}\n' | sort | uniq >> $OUTPUT"
+
+EXCLUDE="--disablerepo=kde --disablerepo=kde-all --disablerepo=kde-redhat"
+
+# intestazione
+cat >$OUTPUT << _EOF_
+# kickstart file generato da script $0 by Rokko (aka "zod" su fedoraonline.it)
+# - versione 0.001-alpha del 9/12/2010 - (C)CopyLeft 2010
+# lo script è MOLTO MOLTO MOLTO sperimentale ed è fornito "AS IS"
+# morale: se non funziona e/o fa danni sono solo CAVOLI vostri! non è responsabilità mia!!!! :-)
+
+# si accettano comunque consigli e/o critiche costruttive!
+# email del sottoscritto: rokko1974@email.it
+
+part / --size=4998
+
+_EOF_
+
+# generazione informazioni sui repositories
+
+yum $EXCLUDE repolist -v|grep "Id-Repo\|Repo-baseurl\|Repo-mirrors\|Repo-metalink:"|sed 's/Repo-metalink:/Repo-metalink\ :/' > $TMP
+REPOLINE=""
+exec < $TMP
+while read LINE
+do
+   TAG=`echo $LINE | awk ' { print $1 } '`
+   CONTENT=`echo $LINE | awk ' { print $3 } '`
+   if [ "$TAG" = "Id-Repo" ]
+   then
+      if [ ! "$REPOLINE" = "" ]
+      then
+	 echo $REPOLINE >> $OUTPUT
+      fi
+      REPOLINE="repo --name=$CONTENT"
+   elif [ "$TAG" = "Repo-baseurl" ]
+   then
+      REPOLINE="$REPOLINE --baseurl=$CONTENT"
+   elif [ "$TAG" = "Repo-mirrors" -o "$TAG" = "Repo-metalink" ]
+   then
+      REPOLINE="$REPOLINE --mirrorlist=$CONTENT"
+   fi
+done
+if [ ! "$REPOLINE" = "" ]
+then
+   echo $REPOLINE >> $OUTPUT
+fi
+
+echo "%packages --default" >> $OUTPUT
+
+# creazione elenco di tutti i pacchetti installati
+rpm -qa --queryformat '%{NAME}\n' | sort | uniq >> $OUTPUT
+
+# eliminazione pacchetti orfani (vengono commentati nel file kickstart)
+# nota: "\< ... \>" dovrebbe fare in modo che "sed" capisca "only-whole-word".Non sono sicuro che effettivamente abbia capito...
+# l'alternativa è usare "\b ... \b"...
+
+for z in $(for i in `package-cleanup --orphans -q|grep -v kernel` ; do rpm -q $i --queryformat '%{NAME} ' ; done | sort | uniq ) 
+do 
+  sed -i "s/\<$z\>/#$z/" $OUTPUT
+done
+
+# correzione per sed: se c'e' nomepacchetto-#pattern_pacchetto_orfano tolgo #
+# nota: se funziona opzione di sed per "whole-word", il trattino è comunque un problema...
+# "pippo-pluto" indica due parole... per cui il "sed" interpreta pippo e pluto come parole distinte (whole-word!)
+
+sed -i "s/-#/-/" $OUTPUT
+
+# eliminazione pacchetti vari che altrimenti generano errore
+# se ci sono altri problemi su pacchetti dopo aver lanciato livecd-creator
+# aggiungere qui di seguito righe "sed" per commentare pacchetti che generano errore ...
+
+sed -i "s/gpg-pubkey/#gpg-pubkey/" $OUTPUT
+sed -i "s/yum-kernel-module/#yum-kernel-module/" $OUTPUT
+sed -i "s/akmod-nvidia/#akmod-nvidia/" $OUTPUT
+sed -i "s/kmod-nvidia/#kmod-nvidia/" $OUTPUT
+
+# termine elenco pacchetti
+echo "%end" >>$OUTPUT
+
+echo -e "\nFine! Si puo' ora dare il comando:\n"
+echo -e "livecd-creator --config=$OUTPUT --fslabel=Fedora-Live --cache=/var/cache/live \n"
+echo -e "...e sperare che funzioni!\n"
+rm -f $TMP </pre>
+
+[[Categoria:Programmazione_e_Sviluppo]]

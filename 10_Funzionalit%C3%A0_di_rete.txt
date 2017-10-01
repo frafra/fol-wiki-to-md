@@ -1,0 +1,241 @@
+==  Come configurare Google Talk ==
+# Leggi [http://www.google.com/support/talk/bin/answer.py?answer=24073 la risposta] al Google Talk Help Center
+
+==  Come attivare/disabilitare le connessioni di rete ==
+# Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]
+# Desktop -> Impostazioni di Sistema -> Rete
+# Seleziona la Tab "Dispositivi"
+# Attiva/Disattiva
+
+==  Come configurare le connessioni di rete ==
+# Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]
+# Desktop -> Impostazioni di Sistema -> Rete
+# Configurazione di Rete
+# Edita la configurazione
+# Leggi [[#Come attivare/disabilitare le connessioni di rete|Come attivare/disabilitare le connessioni di rete]]
+
+==  Come cambiare il nome al computer ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+
+ hostname Il_nome_che_preferisci
+</ol>
+
+==  Come cambiare la descrizione del computer ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+<li>Leggi #16.1 Come installare Samba Server per condividere file/directory</li>
+
+ cp /etc/samba/smb.conf /etc/samba/smb.conf_backup
+ gedit /etc/samba/smb.conf
+
+<li>Trova questa riga:</li>
+
+ ...
+   server string = Samba Server
+ ...
+
+<li>Sostituiscila con la seguente:</li>
+
+   server string = nuova_ descrizione_computer
+
+<li>Salva il file editato</li>
+
+ testparm
+ /etc/init.d/smb restart
+</ol>
+
+==  Come cambiare il Dominio/Workgroup al computer ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+<li>Leggi #16.1 Come installare Samba Server per condividere file/directory</li>
+
+ cp /etc/samba/smb.conf /etc/samba/smb.conf_backup
+ gedit /etc/samba/smb.conf
+
+<li>Trova questa riga:</li>
+
+ ...
+   workgroup = MSHOME
+ ...
+
+<li>Sostituiscila con la seguente:</li>
+
+   workgroup = nuovo_dominio_o_workgroup
+
+<li>Salva il file modificato</li>
+
+ testparm
+ /etc/init.d/smb restart
+</ol>
+
+==  Come assegnare un Hostname ad una macchina locale con IP dinamico usando il servizio gratuito di DynDNS ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+<li>Leggi [[02_Repositories#Come aggiungere dei repositories extra|Come aggiungere dei repositories extra]]</li>
+''Assumiamo che la connessione internet sia già stata configurata correttamente''<br />
+''Registra gratis il DNS dinamico a [https://www.dyndns.org https://www.dyndns.org]''<br />
+''Automaticamente fai il refresh dell'IP nel Database/DNS di DynDNS ogni ora * * * * * significa minuti ora giorno mese anno''
+
+ yum -y install ipcheck
+ gedit /root/dyndns_update.sh
+
+<li>Inserisci le seguenti linee nel nuovo file</li>
+
+ USERNAME=myusername
+ PASSWORD=mypassword
+ HOSTNAME=myhostname.dyndns.org
+
+<li> e poi:</li>
+
+ cd /root/
+ if [ -f /root/ipcheck.dat ]; then
+  ipcheck -r checkip.dyndns.org:8245 $USERNAME $PASSWORD $HOSTNAME
+ else
+  ipcheck --makedat -r checkip.dyndns.org:8245 $USERNAME $PASSWORD $HOSTNAME
+ fi
+
+<li>Salva il file modificato</li>
+
+ chmod 700 /root/dyndns_update.sh
+ sh /root/dyndns_update.sh
+ export EDITOR=gedit &amp;&amp; crontab -e
+
+<li>Aggiungi la seguente linea alla fine del file</li>
+
+ 00 * * * * sh /root/dyndns_update.sh
+
+<li>Salva il file modificato</li>
+</ol>
+
+==  Come sfogliare la rete LAN ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+''Assumiamo che la connessione di rete sia stata configurata correttamente.''<br />
+''Se i computers o le directory non vengono visualizzati, prova ad accedervi direttamente.''<br />
+''Leggi  [[#Come accedere alle directory in rete senza montarle|Come accedere alle directory in rete senza montarle.]]''
+<li>Risorse -> Connessione al server</li>
+</ol>
+
+==  Come accedere alle directory in rete senza montarle ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+''Assumiamo che la connessione di rete sia stata configurata correttamente.''<br />
+''Assumiamo che il computer abbia IP: 192.168.0.1''<br />
+''Assumiamo che la directory condivisa abbia nome: linux''
+<li>Applicazioni -> Esegui comando...</li>
+<li>Esegui comando</li>
+
+ smb://192.168.0.1/linux
+</ol>
+
+==  Come montare/smontare le directory in rete manualmente, e dare agli utenti il permesso in lettura ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+<li>Leggi [[16 Samba Server#Come installare Samba Server per condividere file/directory|Come installare Samba Server per condividere file/directory]]</li>
+''Assumiamo che la connessione di rete sia stata configurata correttamente''<br />
+''Assumiamo che il computer abbia IP: 192.168.0.1''<br />
+''Assumiamo che il nome utente sul computer in rete sia: myusername''<br />
+''Assumiamo che la password del computer in rete sia: mypassword''<br />
+''Assumiamo che il nome della directory condivisa sia: linux''<br />
+''Assumiamo che la directory su cui montare localmente la directory di rete sia: /media/sharename''
+<li>Montare la directory in rete</li>
+</ol>
+
+ mkdir /media/sharename
+ mount //192.168.0.1/linux /media/sharename/ -o username=myusername,password=mypassword
+
+<li>Smontare la directory in rete</li>
+
+ umount /media/sharename/
+</ol>
+
+==  Come montare/smontare le directory in rete manualmente, e dare agli utenti il permesso in lettura/scrittura ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+<li>Leggi [[16 Samba Server#Come installare Samba Server per condividere file/directory|Come installare Samba Server per condividere file/directory]]</li>
+''Assumiamo che la connessione di rete sia stata configurata correttamente''<br />
+''Assumiamo che il computer abbia IP: 192.168.0.1''<br />
+''Assumiamo che il nome utente sul computer in rete sia: myusername''<br />
+''Assumiamo che la password del computer in rete sia: mypassword''<br />
+''Assumiamo che il nome della directory condivisa sia: linux''<br />
+''Assumiamo che la directory su cui montare localmente la directory di rete sia: /media/sharename''
+<li>Montare la directory in rete</li>
+
+ mkdir /media/sharename
+ mount //192.168.0.1/linux /media/sharename/ -o username=myusername,password=mypassword,dmask=777,fmask=777
+
+<li>Smontare la directory in rete</li>
+
+ umount /media/sharename/
+</ol>
+
+==  Come montare le directory in rete al boot, e dare agli utenti il permesso in lettura ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+<li>Leggi [[16 Samba Server#Come installare Samba Server per condividere file/directory|Come installare Samba Server per condividere file/directory]]</li>
+''Assumiamo che la connessione di rete sia stata configurata correttamente''<br />
+''Assumiamo che il computer abbia IP: 192.168.0.1''<br />
+''Assumiamo che il nome utente sul computer in rete sia: myusername''<br />
+''Assumiamo che la password del computer in rete sia: mypassword''<br />
+''Assumiamo che il nome della directory condivisa sia: linux''<br />
+''Assumiamo che la directory su cui montare localmente la directory di rete sia: /media/sharename''
+
+ mkdir /media/sharename
+ gedit /root/.smbcredentials
+
+<li>Inserisci le seguenti righe nel nuovo file</li>
+
+ username=myusername
+ password=mypassword 
+
+<li>Salva il file modificato</li>
+
+ chmod 700 /root/.smbcredentials
+ cp /etc/fstab /etc/fstab_backup
+ gedit /etc/fstab
+
+<li>Aggiungi la seguente riga alla fine del file</li>
+
+ //192.168.0.1/linux    /media/sharename smbfs  credentials=/root/.smbcredentials    0    0
+
+<li>Salva il file modificato</li>
+<li>Leggi [[08 Hardware#Come rimontare /etc/fstab senza effettuare il reboot della macchina|Come rimontare /etc/fstab senza effettuare il reboot della macchina]]</li>
+</ol>
+
+==  Come montare le directory in rete al boot, e dare agli utenti il permesso in lettura/scrittura ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+<li>Leggi [[16 Samba Server#Come installare Samba Server per condividere file/directory|Come installare Samba Server per condividere file/directory]]</li>
+''Assumiamo che la connessione di rete sia stata configurata correttamente''<br />
+''Assumiamo che il computer abbia IP: 192.168.0.1''<br />
+''Assumiamo che il nome utente sul computer in rete sia: myusername''<br />
+''Assumiamo che la password del computer in rete sia: mypassword''<br />
+''Assumiamo che il nome della directory condivisa sia: linux''<br />
+''Assumiamo che la directory su cui montare localmente la directory di rete sia: /media/sharename''
+
+ mkdir /media/sharename
+ gedit /root/.smbcredentials
+
+<li>Inserisci le seguenti righe nel nuovo file</li>
+
+ username=myusername
+ password=mypassword
+
+<li>Salva il file modificato</li>
+
+ chmod 700 /root/.smbcredentials
+ cp /etc/fstab /etc/fstab_backup
+ gedit /etc/fstab
+
+<li>Aggiungi la seguente riga alla fine del file</li>
+
+ //192.168.0.1/linux    /media/sharename smbfs  credentials=/root/.smbcredentials,dmask=777,fmask=777  0    0
+
+<li>Salva il file modificato</li>
+<li>Leggi [[08 Hardware#Come rimontare /etc/fstab senza effettuare il reboot della macchina|Come rimontare /etc/fstab senza effettuare il reboot della macchina]]</li>
+</ol>
+
+{{Link/prec|09 Masterizzare CD/DVD|09 Masterizzare CD/DVD}}{{Link/succ|11 Desktop Remoto|11 Desktop Remoto}}
+
+[[Categoria:Fedoraserver]]

@@ -1,0 +1,25 @@
+\_\_TOC\_\_
+
+Introduzione
+------------
+
+DropxBox è un applicativo che permette di caricare su uno spazio disco sul web i file che vogliamo, in modo da porterli condividere con altri utenti (registrati!!), potendo impostare delle grant di accesso sulle varie directory create.
+Per potersi registrare al sito e poter gestire online le proprie share si può andare sul sito <https://www.dropbox.com/home> . Viene messo a disposizione gratuitamente uno spazio disco da 2 GB ma si può attivare anche più spazio, previo pagamento di una quota mensile.
+
+Installazione
+-------------
+
+Per l'installazione di dropbox è consigliata l'utilizzazione del relativo [repository](Dropbox_repo "wikilink"), per installare la versione più aggiornata possibile.
+
+### Installazione manuale da pacchetto
+
+Per installare comunque dropbox utilizzando il pacchetto servirsi delle istruzioni seguenti.
+
+Per ottenere il pacchetto navigare nella pagina di [download](https://www.dropbox.com/install?os=lnx) di dropbox, dopodichè installare l'RPM manualmente:
+
+`[root@computer ~]# rpm -ivh nautilus-dropbox-1.6.0-1.fedora.x86_64.rpm`
+
+Ad installazione terminata si può lanciare l'applicazione dal menù delle applicazioni, ovvero *Internet &gt; DropxBox* e seguire il wizard tramite il quale si crea un nuovo utente e si può modificare il percorso della directory che verrà sincronizzata.
+DropBox normalmente crea la directory *$HOME/Dropbox*, che verrà sincronizzata automaticamente se l'applicazione è in esecuzione, e sposta dei file o crea nuove directory sotto quel path in fase di aggiornamento.
+
+<Categoria:Internet>

@@ -1,0 +1,116 @@
+Un harddisk usb da poco acquistato, come la maggioranza di quelli presenti sul mercato, è formattato e partizionato con un filesystem NTFS.
+Dato che si preferisce il software libero e si vuole usare un filesystem tipo ext4.
+Tramite un qualsiasi strumento grafico ([Gparted](http://gparted.sourceforge.net/), [Kde Partition Manager](http://sourceforge.net/projects/partitionman/), ecc.) o meno ([fdisk](http://www.gnu.org/software/fdisk/) o cfdisk, [GNU Parted](http://www.gnu.org/software/parted/), ecc.) è possibile modificare la tabella delle partizioni del proprio harddisk e creare di conseguenza la tabella che si desidera.
+Nell'esempio il mio disco esterno è diviso in due. Una partizione di tipo ext4 e una di tipo NTFS (purtroppo troppe persone usano solamente Windows e tale partizione può risultare utile per l'interscambio di alcuni file).
+Ecco il risultato finale:
+
+`# fdisk -l /dev/sdb`
+`Disco /dev/sdb: 500.1 GB, 500074283008 byte`
+`255 testine, 63 settori/tracce, 60797 cilindri, totale 976707584 settori`
+`Unità = settori di 1 * 512 = 512 byte`
+`Sector size (logical/physical): 512 bytes / 512 bytes`
+`I/O size (minimum/optimal): 512 bytes / 512 bytes`
+`Identificativo disco: 0x00079e9e`
+`Dispositivo Boot      Start         End      Blocks   Id  System`
+`/dev/sdb1              63   595786589   297893263+  83  Linux`
+`/dev/sdb2       595786590   976703804   190458607+   7  HPFS/NTFS`
+
+A questo punto, essendo un disco esterno è buona cosa trovare un sistema per proteggere i dati che si andranno a depositare.
+Esistono vari sistemi che agiscono a vari livelli, utilizzando ad esempio un software di backup che permetta la criptazione dei file (ad esempio [duplicity](http://duplicity.nongnu.org/)), oppure **criptare** direttamente **la partizione ext4** con l'uso di [LUKS](http://code.google.com/p/cryptsetup/).
+In una installazione normale di fedora i software necessari dovrebbero essere già presenti. Sul mio sistema infatti ho questi pacchetti:
+
+`# rpm -qa|grep cryptsetup|sort`
+`cryptsetup-luks-1.1.3-1.fc14.x86_64`
+`cryptsetup-luks-libs-1.1.3-1.fc14.x86_64`
+`python-cryptsetup-0.0.10-3.fc14.x86_64`
+
+Se non sono presenti si possono installare tranquillamente tramite yum:
+
+`# yum install cryptsetup-luks cryptsetup-luks-libs`
+
+Per criptare la partizione la cosa è molto semplice, basta lanciare tale comando da utente root:
+
+`# cryptsetup luksFormat /dev/sdb1`
+
+`/dev/sdb1` è il "device", cioè la partizione che si vuole criptare.
+Il software chiederà di confermare la volontà a procedere con l'operazione (se ci sono dati verranno cancellati, infatti eliminerà la formattazione presente), chiederà una passphrase e la sua conferma.
+Ora la partizione è criptata però non è formattata con un filesystem...
+Per prima cosa, dopo aver criptato la partizione, bisogna stabilire un punto di mappatura per potervi accedere "in chiaro". Si può procedere così:
+
+`# cryptsetup luksOpen /dev/sdb1 disco_criptato`
+
+Verrà chiesta la passphrase, precedentemente inserita, e si creerà la mappatura in `/dev/mapper`:
+
+`# ll /dev/mapper/`
+`totale 0`
+`crw------- 1 root root 10, 62 23 apr 11.39 control`
+`lrwxrwxrwx 1 root root      7 23 apr 11.49 disco_criptato -> ../dm-0`
+
+Ora si può formattare la partizione in ext4:
+
+`# mkfs.ext4 /dev/mapper/disco_criptato`
+
+Adesso, con il comando mount si può montare il dispositivo senza problemi. Ad esempio, per montare la partizione appena "ricreata" nella directory `/mnt/prova` si può fare:
+
+`# mkdir /mnt/prova`
+`# mount /dev/mapper/disco_criptato /mnt/prova`
+
+Per smontare il tutto basta procedere in questo modo:
+
+`# umount /mnt/prova`
+`# cryptsetup luksClose disco_criptato`
+
+I desktop enviroment come Gnome o Kde dovrebbero essere in grado di mondare in modo semplice il disco, senza dover compiere i passi in un terminale. Per Kde è stato però aperto un bug sulla difficoltà di smontare il dispositivo: [Bug 268020](https://bugs.kde.org/show_bug.cgi?id=268020). A breve dovrebbe arrivare il bugfix su Fedora.
+Il disco montato tramite il proprio ambiente desktop avrà però un nome "suo" all'interno della directory `/media`, definito in automatico da udisks. Inserendo un label al disco si può avere un nome ben definito:
+
+`# cryptsetup luksOpen /dev/sdb1 disco_criptato`
+`# e2label /dev/mapper/disco_criptato backup_criptato`
+
+Ecco che tramite `e2label` è stata impostata un'etichetta alla partizione ext4. Ora se si monta il dispositivo con il proprio DE preferito (Kde) sotto `/media` lo si può vedere:
+
+`# ls -l /media/`
+`totale 4`
+`drwxrwxrwx 3 root root 4096 23 apr 12.04 backup_criptato`
+
+In questo modo sarà molto più facile poter far riferimento al proprio dispositivo esterno nel caso si vogliano creare script per il backup dei dati. Infatti montando il dispositivo con il proprio DE si può mantenere il riferimento a `/media/backup_criptato`.
+Nel caso si voglia amministrare il proprio disco da terminale si può utilizzare senza problemi cryptsetup come precedentemente spiegato. Per cui normalmente basta collegare il disco esterno alla porta usb, identificare il nome del dispositivo, ad esempio:
+
+`$ dmesg |tail`
+`[ 2155.908979] scsi 5:0:0:1: Attached scsi generic sg3 type 13`
+`[ 2158.341646] sd 5:0:0:0: [sdb] 976707584 512-byte logical blocks: (500 GB/465 GiB)`
+`[ 2158.342230] sd 5:0:0:0: [sdb] Write Protect is off`
+`[ 2158.342240] sd 5:0:0:0: [sdb] Mode Sense: 47 00 10 08`
+`[ 2158.342246] sd 5:0:0:0: [sdb] Assuming drive cache: write through`
+`[ 2158.345063] sd 5:0:0:0: [sdb] Assuming drive cache: write through`
+`[ 2158.345077]  sdb: sdb1 sdb2`
+`[ 2158.365164] sd 5:0:0:0: [sdb] Assuming drive cache: write through`
+`[ 2158.365169] sd 5:0:0:0: [sdb] Attached SCSI disk`
+`[ 2158.421100] ses 5:0:0:1: Attached Enclosure device`
+
+Sapendo che è il dispositivo sdb, la partizione criptata è la prima per cui sarà `/dev/sdb1`, la stessa usata precedentemente.
+Aprire la partizione criptata con cryptsetup da utente root:
+
+`# cryptsetup luksOpen /dev/sdb1 disco`
+
+Fornire la passphrase, e montare il dispositivo criptato con mount, fare le operazioni che si desidera, smontare e chiudere la partizione criptata:
+
+`# mkdir /mnt/prova`
+`# mount /dev/mapper/disco /mnt/prova`
+`# touch /mnt/prova/file.txt`
+`# umount /mnt/prova`
+`# cryptsetup luksClose disco`
+
+Volendo si può configurare udev per eseguire il montaggio automatico del dispositivo alla connessione alla porta usb o cercare di utilizzare udisks con le opportune regole in udev per montare e smontare il dispositivo da utente normale. Io per ora mi limito ad utilizzare la semplicità di Kde per montare e smontare dispositivi esterni.
+Altra cosa interessante di cryptsetup e poter aggiungere altre chiavi o file di chiave per aprire il dispositivo. Nel secondo caso non occorre inserire la passphrase per aprire la partizione criptata, basta avere a disposizione il file di chiave. Per questo rimando ai documenti sotto riportati.
+
+Riferimenti utili
+-----------------
+
+-   Questo articolo è stato precedentemente pubblicato su: [marionline.it](http://blog.marionline.it/linux/partizione-criptata-disco-esterno-ext4/)
+-   [Appunti di informatica libera](http://appuntilinux.mirror.garr.it/mirrors/appuntilinux/a2/a230.htm)
+-   [<http://kriener.org/articles/2009/06/29/encrypt-your-hard-disk>](http://kriener.org/articles/2009/06/29/encrypt-your-hard-disk)
+-   [<http://fedoraproject.org/wiki/Disk_Encryption_User_Guide>](http://fedoraproject.org/wiki/Disk_Encryption_User_Guide)
+-   [Cifratura disco con LUKS (Fedora Security Guide)](http://docs.fedoraproject.org/it-IT/Fedora/14/html/Security_Guide/sect-Security_Guide-LUKS_Disk_Encryption.html)
+-   [<https://wiki.archlinux.org/index.php/System_Encryption_with_LUKS>](https://wiki.archlinux.org/index.php/System_Encryption_with_LUKS)
+
+<Categoria:Sistema>

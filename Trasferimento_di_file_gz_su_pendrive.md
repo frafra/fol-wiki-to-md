@@ -1,0 +1,180 @@
+Questo piccolo script è in grado di :
+
+1.  montare un dispositivo di memorizzazione usb;
+2.  cancellare il contenuto del device;
+3.  scompattare l'archivio e trasferire i files, verificando preventivamente la disponibilità di spazio libero;
+4.  rimuovere i files di origine;
+5.  gestire gli eventuali errori.
+
+Esso è il risultato di mie riflessioni e dell'aiuto di altri utenti di Fedoraonline come si può evincere dalla [discussione](http://www.fedoraonline.it/modules/newbb/viewtopic.php?post_id=73962#forumpost73962).
+
+    #!/bin/bash
+
+    # NOTA: Vengono cercati tutti i files "AD_20*.gz" nella HOME, decompressi, e trasferiti su usbkey.
+
+    clear
+    echo -e "\n\n\n\n\n---------------\nTRASFERIMENTO FILES SU USBKEY\n--------------------\n\n"
+
+    # Definizione Capacità della USBKEY
+    V="1"
+    SIZ=""
+    while [ $V != "0" ]; do
+        echo -en "\n\nInserisci la Capacità in GigaBytes della USBKEY (1-16): "
+        read SIZ
+        if [ -z "$SIZ" ]; then
+            echo -e "\n\n\n\t\tInserisci la Capacità."
+            V="1"
+        else
+            if [ "$SIZ" -le "0" ] || [ "$SIZ" -gt "16" ] ; then
+                echo -e "\n\n\t\tErrore:\til valore deve essere compreso tra 1 e 16.\n"
+                V="1"
+            else
+                echo -en "\n\nStai usando una USBKEY da $SIZ GB ? (y/n): "
+                read RISP
+                if [ "$RISP" = "y" ] ; then
+                    V="0"
+                else
+                    V="1"
+                fi
+            fi
+        fi
+    done
+
+    # Trasformazione Capacità in Bytes
+    let CAPAC="$SIZ * 1000000000"
+
+    # Mount USBKEY
+    MOUPOINT="/mnt/usbkey"
+    CHK_MOUPOINT=$(grep $MOUPOINT /etc/fstab)
+    if [ x"$CHK_MOUPOINT" = "x" ] ; then
+        echo -e "\n\n\n-------------\nErrore: file fstab non corretto.\n-----------------\n\n"
+        echo -e "\n**** Operazione annullata !!!! ****\n\n"
+        exit 1
+    else
+        PRE_MTAB=$(grep "$MOUPOINT" /etc/mtab 2> /dev/null | gawk '{print $2}')
+        if [ -n "$PRE_MTAB" ] ; then
+            echo -e "\nAttenzione: la USBKEY risulta attualmente montata."
+            echo -e " Verificare e smontarla.\n"
+            exit 1
+        fi
+        mount $MOUPOINT 2> /dev/null
+        MTAB=$(grep "$MOUPOINT" /etc/mtab | gawk '{print $2}')
+        if [ x"$MTAB" = "x" ] ; then
+            echo -e "\n\n\n-----------------------\nErrore: problemi nel montaggio della USBKEY.\n-----------------\n\n"
+            echo -e "\n**** Operazione annullata !!!! ****\n\n"
+            exit 1
+        fi
+    fi
+
+    # Funzione Annulla Operazione
+    function annulla {
+    echo -e "\n\n\n\n**** Operazione annullata !!!! ****\n"
+    umount $MTAB 2> /dev/null
+    CHK=$(grep "$MOUPOINT" /etc/mtab | gawk '{print $2}')
+    if [ x"$CHK" = "x" ] ; then
+        echo -e "USBKEY smontata.\n\n\n"
+    else
+        echo -e "Errore: umount della USBKEY fallito.\n\n\n"
+    fi
+    exit 1
+    }
+
+    # Spostamento su directory di lavoro
+    cd ~
+
+    # Cattura info su files
+    FILES_NUM=$(ls -1 AD_20*.gz 2> /dev/null | wc -l)
+    FILES=$(ls -1 AD_20*.gz 2> /dev/null)
+
+    # Verifica presenza files trasferibili
+    if [ x"$FILES" = "x" ] ; then
+        clear
+        echo -e "\n\n\n\n\nAttenzione: non ci sono files da trasferire\n"
+        annulla
+    fi
+
+    # Verifica dimensione Files
+    # Operazione fatta valutando la dimensione di ogni singolo file all'interno
+    # dell'archivio gzip.
+    clear
+    echo -e "\n\n\n\n\nValutazione dimensioni files. Attendere.....\n\n\n"
+
+    function check_capac {
+    touch /tmp/lista
+    for AD in $FILES ; do
+        less $AD >> /tmp/lista
+    done
+    LISTA="/tmp/lista"
+    for i in $(gawk '{print $3}' < "$LISTA") ; do
+        let SIZE="$SIZE + $i"
+    done
+    rm -f /tmp/lista 2> /dev/null
+    }
+
+    check_capac
+    if [ $SIZE -ge $CAPAC ] ; then
+        clear
+        echo -e "\n\n\nAttenzione: la dimensione dei files supera la Capacità della USBKEY."
+        echo -e "\n\t\tSi cercherà di trasferire la metà dei files. Verifica in corso.....\n\n\n"
+        let FILES_NUM="$FILES_NUM / 2"
+        FILES=$(ls -1 AD_20*.gz | head -$FILES_NUM)
+        SIZE=""
+        check_capac
+        if [ $SIZE -ge $CAPAC ] ; then
+            echo -e "\n\n\nAttenzione: dimensione ancora eccessiva."
+            echo -e "\n\t\t\tContattare l'Amministratore di Sistema."
+            annulla
+        else
+            echo -e "\n\t\tOK. Verrà trasferita la metà dei Files.\n"
+        fi
+    else
+        echo -e "\n\t.....dimensione OK.\n"
+    fi
+
+    # Svuotamento USBKEY
+    echo -e "\nPrima di iniziare è necessario cancellare tutto il contenuto della USBKEY."
+    echo -n "Vuoi continuare ? (y/n): "
+    read RISP
+    if [ $RISP = "Y" ] || [ $RISP = "y" ] ; then
+        echo -e "\n\n\nSvuotamento USBKEY in corso. Attendere...\n"
+        rm -rf $MTAB/ASTERISCO 2> /dev/null
+        if [ $? -eq 0 ] ; then
+            echo -e "\n\n\n\tFATTO. USBKEY vuota.\n\n\n"
+        else
+            echo -e "\nErrore: Svuotamento USBKEY FALLITO.\n"
+            annulla
+        fi
+    else
+        annulla
+    fi
+
+    # Trasferimento su USBKEY
+    echo -e "\n\n\n\n\t*** INIZIO TRASFERIMENTO ***\n\n\n\n"
+    echo "$FILES_NUM files verranno trasferiti su USBKEY."
+    echo -n "Vuoi continuare ? (y/n): "
+    read RISP
+    if [ $RISP = "Y" ] || [ $RISP = "y" ] ; then
+        clear
+        echo -e "\n\n\n\n\nOPERAZIONE DI TRASFERIMENTO IN CORSO ---\n"
+        echo -e "\n Attendere...\n"
+    else
+        annulla
+    fi
+
+    for i in $FILES ; do
+        tar xzf ~/$i -C $MTAB
+        if [ $? -ne 0 ] ; then
+            echo -e "\nErrore: problemi nella scrittura di $i\n"
+            annulla
+        fi
+    done
+
+    # Rimozione files nella HOME
+    rm -f ~/$FILES 2> /dev/null
+
+    # UMOUNT
+    umount $MTAB 2> /dev/null
+
+    echo -e "\nOperazione Terminata.\tUSBKEY smontata.\n\n\n"
+
+<Categoria:Sistema> [Categoria:Programmazione e Sviluppo](Categoria:Programmazione_e_Sviluppo "wikilink")

@@ -1,0 +1,127 @@
+{{Autore|AlbertoChiusole}}
+
+
+== Introduzione ==
+
+'''FedUp''' ('''FED'''ora '''UP'''grader) è il tool di aggiornamento per le versioni di Fedora dalla 17 in poi. Esso sostituisce in tutto e per tutto [[Aggiornamento_Fedora_con_preupgrade|PreUpgrade]] e l'aggiornamento da DVD, che con il passaggio a Fedora 18 sono divenuti obsoleti.<br>
+Per aggiornare Fedora 16 alla versione 18 è necessario prima passare a Fedora 17 con PreUpgrade, e successivamente fare l'aggiornamento con FedUp, in quanto questo tool è in grado di aggiornare soltanto le versioni di Fedora dalla 17 in poi.
+
+== Funzionamento ==
+
+Il processo che compie FedUp si divide in due parti.<br>
+La prima, attraverso il client installato sul sistema da aggiornare, individua e scarica tutti i pacchetti necessari per l'aggiornamento, compreso l'initramfs e il kernel.<br>
+Una volta scaricati tutti i pacchetti FedUp riavvia il sistema e passa alla seconda fase: solamente '''dopo''' il riavvio, infatti, vengono effettivamente installati tutti i pacchetti scaricati precedentemente e verrà visualizzata una barra per segnalare l'avanzamento del processo di aggiornamento.<br><br>
+Nello stato attuale FedUp è disponibile soltanto da riga di comando, una GUI [https://fedoraproject.org/wiki/FedUp#The_FedUp_Client verrà implementata] (forse) in futuro.
+
+== Preparazione del sistema ==
+{{Suggerimento|Benché il passaggio da una release all'altra dovrebbe funzionare senza particolari problemi, è consigliato sempre il backup dei propri dati.}}
+Le operazioni che seguono vanno tutte eseguite con privilegi di root:
+
+ $ su -
+ password_di_root
+ #
+
+Per poter passare da una versione di Fedora all'altra è necessario portare la vecchia release allo stato più aggiornato possibile. Di conseguenza la prima cosa da fare è un aggiornamento totale del sistema:
+
+ # yum update
+
+Una volta completato l'update è buona norma cancellare la cache di yum, per essere certi che non influisca nell'operazione di upgrade.
+
+ # yum clean all
+{{Warning|Se durante l'aggiornamento è stato aggiornato anche il kernel è necessario riavviare il sistema, perché [https://fedoraproject.org/wiki/FedUp#Preparing_for_the_Upgrade l'esecuzione di FedUp deve essere effettuata utilizzando l'ultimo kernel disponibile].}}
+
+Se c'è quindi stato bisogno di riavviare il computer a causa di aggiornamenti del kernel, bisognerà nuovamente loggarsi nel terminale come utente root per proseguire.<br><br>
+
+===Installazione pacchetto Fedup===
+È buona norma utilizzare l'ultima release di fedup disponibile nei repository ''stabili'' di fedora, installabile tramite:
+ # yum install fedup
+
+
+Si invitano tutti gli utenti che riscontrano dei bug o problemi simili nell'upgrade con la versione ''stabile'' di fedup, a fare una ricerca sul [http://forum.fedoraonline.it forum] per trovare discussioni simili, ed eventualmente segnalarlo aprendo una nuova discussione.<br>
+Se vengono rilevati ''problemi'' di upgrade del sistema utilizzando la versione di fedup proveniente dai ''repository stabili'', installata al punto precedente, si può '''''tentare''''' di proseguire l'upgrade con la versione di fedup proveniente dai ''repository di testing'' di fedora (solo se all'interno è già presente un nuovo pacchetto), in modo da avere la versione più aggiornata possibile che possa risolvere il problema riscontrato (non si ha la sicurezza però che questa versione sia esente da ''altri'' bug):
+ # yum --enablerepo=updates-testing install fedup
+
+
+
+== Opzioni utili da attivare durante il recupero dei file ==
+
+=== Salvataggio file di log ===
+Può essere utile aggiungere al comando fedup, nelle sue varie tipologie sotto illustrate, l'opzione '''''--debuglog'''''. <br>
+Questa opzione permette di salvare l'output che fedup rilascia durante l'esecuzione in un file, consultabile in seguito in caso di problemi.
+Ad es:
+ fedup --debuglog=/home/utente/fedupdebug.log [altre opzioni]
+
+Finite le operazioni preparative si può controllare il file di log ''fedupdebug.log'' per eventuali errori.
+
+
+== Recupero effettivo dei nuovi pacchetti ==
+{{Warning|È sempre '''''sconsigliato''''' effettuare "salti" (upgrade) per più di una versione alla volta.<br>È quindi consigliato effettuare l'aggiornamento '''20'''->'''21''' ed in seguito '''21'''->'''22'''.}}
+
+A questo [https://fedoraproject.org/wiki/Common_F22_bugs#Upgrade_issues indirizzo] è reperibile una lista con i problemi più comuni riscontrati nell'upgrade verso Fedora 22.<br>
+A quest'altro [https://fedoraproject.org/wiki/Common_F21_bugs#Upgrade_issues indirizzo] è invece reperibile una lista con i problemi più comuni riscontrati nell'upgrade verso Fedora 21.
+
+===Aggiornamento verso Fedora 22===
+Per eseguire l'aggiornamento verso Fedora 22, basta utilizzare il seguente comando:
+ # fedup --network 22
+
+
+=== Aggiornamento verso Fedora 21 ===
+Fedora 21 è stata rilasciata in 3 categorie di prodotti ('''<PRODUCT>'''):<br>
+* '''Workstation''': pensata per l’utente Desktop, porta con sé molti programmi potenti ed è equipaggiata con il DE Gnome;<br>
+* '''Server''': per l'utente Server;<br>
+* '''Cloud''': con varie immagini, sia per Cloud privati che pubblici.<br>
+Per informazioni più dettagliate, visitare la [https://getfedora.org/ pagina dedicata] sul portale principale del FedoraProject.<br>
+
+Per l'upgrade a F21 è stata quindi aggiunta una nuova opzione a FedUp: "--product='''<PRODUCT>'''"<br><br>
+Per aggiornare alla nuova Fedora Workstation, usare: '''''"--product=workstation"'''''.
+Questo comando installerà tutti i pacchetti dell'installazione di default Fedora 21 Workstation; includendo anche GNOME 3 come Desktop Environment, in aggiunta a tutti i pacchetti già installati.
+
+Se si preferisce rimanere sul generale, semplicemente aggiornando i pacchetti già installati sulla propria macchina, aggiungere: '''"--product=nonproduct"'''.<br />
+
+La sequenza "minima" corretta quindi per aggiornare il sistema a Fedora 21 è:
+ # fedup --network 21 --product=[workstation OPPURE server OPPURE cloud OPPURE nonproduct]
+
+
+== Altri metodi d'aggiornamento ==
+È possibile effettuare un upgrade del sistema anche con altri metodi oltre al download dei pacchetti dalla rete, come visto finora: questi metodi sono utili soprattutto per macchine senza connessione ad internet.
+
+=== Aggiornamento con un file ISO ===
+{{nota|Metodo non più utilizzabile|A partire da Fedora 21, non sono stati più prodotti i file .iso denominati ''"DVD universali"'', pertanto questo metodo è utilizzabile per l'upgrade solamente fino a Fedora 20.}} 
+
+Per aggiornare Fedora utilizzando un file ISO è necessario che esso risieda sulla macchina da aggiornare. E' possibile attivare il repo ''updates'' se si possiede una connessione di rete attiva. Il file ISO d'esempio sarà in '' /home/user/fedora-19.iso'', che ovviamente va sotituito con il file e la location del proprio file ISO.
+
+ # fedup --iso /home/user/fedora-19.iso
+
+=== Aggiornamento da un altro device ===
+
+E' possibile utilizzare drive ottici o altri device in cui è stata installata la versione di Fedora verso cui si desidera fare l'upgrade per procedere con l'aggiornamento. Nell'esempio si assume che la sorgente sia posizionata in ''/mnt/fedora''.<br />
+Dopodiché basta eseguire:
+
+ # fedup --device /mnt/fedora
+
+
+== Aggiornamento ==
+
+Seguire i seguenti passaggi per completare l'aggiornamento:
+# Se ''FedUp'' ha completato le operazioni di recupero dei pacchetti senza rilevare errori, riavviare il sistema.
+# Al riavvio dovrebbe apparire in Grub una nuova voce '''System Upgrade'''.
+<!-- 
+            #* E' possibile, per scrupolo, aggiungere la dicitura ''rd.upgrade.debugshell'' alla linea di ''System Upgrade''.
+  questa non so se vale ancora.. lo dubito. ~bebo
+-->
+# Apparirà uno splashscreen Plymouth in cui appare una barra di avanzamento del processo in corso.
+#* Premendo ''ESC'' si può visualizzare più dettagliatamente quanto sta succedendo.
+# Completato l'aggiornamento il sistema si riavvia in automatico e farà il boot con la nuova voce della versione di Fedora aggiornata.
+
+{{Warning|Nello stato attuale un bug impedisce di visualizzare correttamente lo stato di avanzamento se premendo ESC lo si preme una seconda volta. Il fatto che rimanga a 0% '''NON''' vuol dire che il processo si sia fermato. Attendere in ogni caso la conclusione delle operazioni!}}
+
+{{suggerimento|Aggiornare Grub non dovrebbe essere necessario, ma è consigliato comunque farlo.}}
+<!--Per passaggi di versione da Fedora 20 a 21 è invece '''raccomandato''' farlo per sistemi che utilizzano UEFI per via del passaggio da grub-efi a grub2-efi.
+NON È PIÙ NECESSARIO.... -->
+Per aggiornare Grub si può seguire [[Reinstallare_Grub|questa guida]].
+
+
+==Riferimenti==
+* Guida ufficiale del fedoraproject su FedUp: https://fedoraproject.org/wiki/FedUp
+
+[[Categoria:Installazione]]

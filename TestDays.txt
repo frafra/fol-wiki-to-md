@@ -1,0 +1,96 @@
+{{Autore|GiulioErler}}
+
+== Introduzione ==
+
+I Test-Days sono eventi virtuali che hanno lo scopo di coinvolgere il maggior numero di utenti possibile. Le aree coperte sono spesso relative a novità che verranno introdotte nella versione successiva di Fedora.
+
+
+Verificare come esse si comportano nei confronti di un vasto parco hardware, produce un'interessante mole di dati, aiuta a scoprire bugs non conosciuti e sottolinea potenziali instabilità. Utili per sviluppatori e assicuratori di qualità, queste giornate rappresentano un modo assai semplice per partecipare all'attività del Fedora Project.
+
+Il tornaconto può certamente manifestarsi anche nei confronti di chi effettua i test richiesti: identificare problemi, anomalie e incompatibilità hardware in questo periodo del processo di rilascio, garantisce una maggior consapevolezza e contribuisce ad accrescere il livello di stabilità del sistema operativo.
+
+
+Il calendario delle giornate in programma è in continua evoluzione ed è raggiungibile [https://apps.fedoraproject.org/calendar/list/QA/?subject=Test+Day qui]. Ogni data ha poi una pagina dedicata, ospitata all'interno del wiki internazionale. Essa contiene istruzioni dettagliate, membri del Project disponibili per il supporto, canale IRC di riferimento, link per i risultati ed eventuale ulteriore documentazione.
+
+
+== Requisiti ==
+
+I requisiti comuni a tutti i Test Days sono pochi e possono essere così riassunti:
+
+* '''Aver chiaro lo scopo dell'evento.''' Per consentire la raccolta di risultati effettivamente utili, il campo di applicazione è volutamente ristretto. È obbligatorio consultare la pagina di riferimento della giornata.
+
+* '''Utilizzare la lingua inglese.''' La propria conoscenza dell'idioma non deve necessariamente essere di alto livello: essendo Fedora un progetto diffuso a livello mondiale però, risulta certamente utile una discreta padronanza per rendere comprensibili gli esiti delle proprie prove.
+
+* '''Rispettare i pre-requisiti della giornata.''' Ogni pagina relativa all'evento in essere, elenca alcuni pre-requisiti specifici che l'utente deve possedere per circoscrivere l'ambito di applicazione dei test. Per esempio, alcune giornate richiedono un'installazione di un pre-rilascio di Fedora, oppure semplicemente versioni particolarmente aggiornate di alcuni pacchetti. Occasionalmente, è possibile che sia richiesto dell'hardware specifico per poter partecipare.
+
+* '''Seguire i test specifici.''' Oltre a quella di presentazione dell'evento, ogni Test Day ha una pagina dedicata ai casi da testare e ai relativi esiti. Occorre seguire meticolosamente le istruzioni proposte, per non rischiare di elencare risultati non coerenti.
+
+* '''Avere un account di bugzilla.''' Durante il testing, capita di riscontrare malfunzionamenti o addirittura scoprire nuovi bug. È fondamentale avere pronto un account di Bugzilla, piattaforma utilizzata dall'ecosistema Fedora.
+
+
+== Come testare un caso ==
+
+All'interno della pagina dei risultati, sono presenti delle griglie che elencano i prodotti dei test. Ogni intestazione, evidenzia un collegamento ai casi da seguire. L'utente può quindi scegliere autonomamente le prove da effettuare: essenzialmente comunque, occorre attenersi alle istruzioni elencate e verificare il risultato previsto, per produrre un esito utile, mirato ed efficace.
+
+Cliccando su 'Enter the results” nell'esatta colonna, è possibile produrre l'esito. Le informazioni richieste sono poche ed essenziali:
+* '''Username''': identificativo dell'utente: se si possiede un account FAS, conviene utilizzare quello ad esso associato.
+
+* '''Hardware name''': dettagli relativi all'hardware su cui è stata eseguita la prova.
+
+* '''Result''': esito del test. Il campo è abbastanza auto-esplicativo. “PASSED” è da usare quando non vengono riscontrate anomalie. “FAILED” è il valore richiesto quando invece non tutto va a buon fine: in questa eventualità, occorre compilare anche la riga relativa ai bugs evidenziati. “INFO” è uno stato intermedio: è da utilizzare quando le problematiche sono minori e non precludono la corretta esecuzione della funzionalità.
+
+* '''Bugs''': lista di bugs trovati, separati da un punto virgola. Si veda la prossima sezione per ulteriori informazioni.
+
+* '''Comment''': descrizione facoltativa, spesso superflua, utilizzabile nel caso in cui sia necessario specificare dettagli a riguardo del test effettuato.
+
+
+== Come comportarsi in caso di risultato negativo ==
+
+{{nota|Accertare che il malfunzionamento sia effettivamente un bug|Spesso, comportamenti inaspettati sono frutto di un'errata configurazione. Durante un Test Day, nel caso di dubbi, conviene chiedere aiuto sul canale IRC di riferimento prima di aprire una segnalazione su Bugzilla}}
+
+
+Prima di introdurre un risultato negativo, è obbligatorio segnalare la questione direttamente ai manutentori del pacchetto interessato. È sufficiente attenersi ai passaggi delineati nella pagina [[Segnalare_un_bug]].
+
+{{nota|Verificare l'esistenza di duplicati|Per non segnalare una questione già nota, è consigliato effettuare una semplice ricerca su Bugzilla}}
+
+
+Nel caso in cui un bug sia già noto, potrebbe essere utile partecipare alla segnalazione già aperta per fornire utili dettagli agli sviluppatori
+
+==Esempio pratico==
+
+Il giorno 19/03/2015, si è svolta una giornata di test per verificare lo stato dell'internazionalizzazione per Fedora 22 Alpha.
+
+
+La pagina relativa è tutt'ora consultabile [https://fedoraproject.org/wiki/Test_Day:2015-03-19_i18n qui]. Da tale documento, è possibile ricavare importanti dettagli:
+* Il Test Day era programmato per il giorno 19/03/2015
+
+* Il canale IRC di riferimento era #fedora-test-day
+
+* I membri del Project disponibili per fornire assistenza erano [https://fedoraproject.org/wiki/User:Tagoh tagoh_], [https://fedoraproject.org/wiki/User:Pravins pravins], [https://fedoraproject.org/wiki/User:Aalam asa], [https://fedoraproject.org/wiki/User:Smaitra smaitra__], [https://fedoraproject.org/wiki/User:Lijli lijli], [https://fedoraproject.org/wiki/User:Bbarve bbarve].
+
+
+I pre-requisiti richiesti, erano i seguenti:
+* Una o più tastiere con layout differenti dallo standard americano
+
+* Installazione fisica o su macchina virtuale di Fedora 22 Alpha
+
+* Sistema operativo Fedora 22 Alpha - oppure Fedora Rawhide - aggiornato, con gli ultimi updates disponibili applicati.
+
+
+È possibile notare altre informazioni degne di nota, come ad esempio:
+* Link alle tabelle contenenti i risultati
+
+* Convenzioni relative alla segnalazione di eventuali bug i18n
+
+
+Gli esiti dovevano essere inseriti in [http://209.132.184.193/testdays/show_event?event_id=23 questa pagina].
+
+Cliccando, per esempio, sull'intestazione 'ibus', l'utente raggiungeva le [https://fedoraproject.org/wiki/QA:Testcase_ibus_input?rd=QA:Testcase_i18n_ibus_input istruzioni] per il primo TestCase. Ogni caso, offre sempre impostazioni precise, passaggi dettagliati e risultati auspicati per permettere al volontario di muoversi e rendersi utile senza necessariamente essere un informatico esperto.
+
+
+== Riferimenti ==
+
+* https://fedoraproject.org/wiki/QA/Test_Days;
+
+
+[[Categoria:Progetto Fedora]]

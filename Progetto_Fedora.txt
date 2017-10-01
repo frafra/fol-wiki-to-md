@@ -1,0 +1,12 @@
+Il '''Progetto Fedora''', o in anglosassone '''Fedora Project''', è un progetto che vive grazie al lavoro di migliaia di persone sparse in tutto il mondo. Insieme costituiscono la Comunità che crea, sostiene, mantiene, migliora e protegge la distribuzione '''Fedora'''.
+
+Il Fedora Project si basa su 4 principi fondamentali:
+'''Libertà''', '''Amicizia''', '''Innovazione''' ed '''essere i primi''' a sperimentare cose nuove provenienti dal mondo del free software.
+
+La comunità italiana degli utenti Fedora, raggiungibile da '''[http://it.fedoracommunity.org/ http://it.fedoracommunity.org/]''' o '''[http://www.fedoraonline.it http://www.fedoraonline.it]''' (anche chiamata "FOL"), insieme agli '''it-users''' (Italian users and contributors), rappresentano il Fedora Project in Italia.
+
+Inoltre ogni paese ha i suoi ambassadors, persone che hanno fatto proprio il pensiero del Progetto Fedora e che cercano, tramite eventi, meeting o altro di diffonderlo nel territorio. Per saperne di più:
+
+[[File:Ambassadors.jpg|link=https://fedoraproject.org/wiki/Ambassadors|Contatta i Fedora Ambassadors]]
+
+[[Categoria:Progetto Fedora]]

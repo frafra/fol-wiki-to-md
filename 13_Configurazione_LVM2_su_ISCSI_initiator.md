@@ -1,0 +1,55 @@
+\_\_TOC\_\_
+
+Introduzione
+------------
+
+Se si utilizza ISCSI per esportare alcune LUN (Logical Unit Number) verso un initiator, si potranno avere problemi di attivazione dei LV configurati; questo perché gli init script non gestiscono l'abilitazione dei VG presenti sulle LUN ISCSI ed a fronte di un reboot non avverrà un mount automatico dei filesystems.
+Il problema non si presenta se si usano le LUN in un cluster RHCS. perchè l'attivazione delle LUN viene svolta dal cluster stesso.
+
+    [root@node01 ~]# reboot
+    [root@node01 ~]# lvs
+      LV      VG      Attr     LSize   Pool Origin Data%  Move Log Copy%  Convert
+      lv_root vg_root -wi-ao--   5.54g                                           
+      lv_swap vg_root -wi-ao--   1.97g                                           
+      lv_svn  vg_svn  -wi----- 968.00m    
+
+La problematica è tracciata anche su bugzilla al link <https://bugzilla.redhat.com/show_bug.cgi?id=474833>.
+
+Soluzione temporanea
+--------------------
+
+È possibile applicare un workaround, sfruttando il servizio netfs, che eseguirà l'abilitazione dei nostri LV dopo aver fatto partire il demone ISCSI.
+La parte del codice dell'init script netfs interessata all'abilitazione tramite il comando vgchange è la seguente:
+
+    [root@node01 ~]# vim /etc/init.d/netfs 
+    ...
+            if [ -x /sbin/lvm ]; then
+            if /sbin/lvm vgscan > /dev/null 2>&1 ; then
+                   action $"Setting up Logical Volume Management:" /sbin/lvm vgchange -a y
+            fi
+            fi
+    ...
+
+Si potrà quindi associare per le entry di tutte le device ISCSI nel file /etc/fstab, la direttiva **\_netdev**, in modo da indicare a netfs di gestire i block device come network share, e quindi attivando il VG associato.
+
+    [root@node01 ~]# vim /etc/fstab
+    /dev/vg_svn/lv_svn /mnt/svn     gfs2    _netdev,defaults        0 0
+
+Abilitare il servizio netfs al boot ed eseguire il reboot del nodo, in modo da verificare che il VG venga attivato.
+
+    [root@node01 ~]# chkconfig netfs on
+    [root@node01 ~]# init 6
+
+Al termine della sequenza di boot verificare che il VG e i LV risultino attivi.
+
+    [root@node01 ~]# uptime
+     14:04:37 up 5 min,  1 user,  load average: 0.00, 0.02, 0.00
+    [root@node01 ~]# lvs
+      LV      VG      Attr     LSize   Pool Origin Data%  Move Log Copy%  Convert
+      lv_root vg_root -wi-ao--   5.54g                                           
+      lv_swap vg_root -wi-ao--   1.97g                                           
+      lv_svn  vg_svn  -wi-a--- 968.00m   
+    [root@node01 ~]# ls -l /dev/vg_svn/lv_svn 
+    lrwxrwxrwx 1 root root 7 Oct 11 13:59 /dev/vg_svn/lv_svn -> ../dm-4
+
+<Categoria:LVM>

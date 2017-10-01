@@ -1,0 +1,79 @@
+{{Obsoleto}}
+== Introduzione ==
+
+Questa guida nasce per chi, come me, non è riuscito a configurare il proprio modem ADSL usb Speedtouch 330 su Fedora Core 6.<br />
+Per prima cosa voglio dire che non sono un utente esperto (uso Linux da poco più di una settimana), quindi se ci sono riuscito io, ci possono riuscire tutti.<br />
+Voglio premettere inoltre di non prendere quello che scrivo come verità sacrosanta, primo perché ci possono essere errori o sviste, secondo perché è sempre possibile (per svariate cause) che le istruzioni che scrivo non vadano bene per il vostro sistema hardware e/o software. In sintesi qui espongo la procedura da me seguita per risolvere il problema di connettermi con questo modem; siccome è parecchio diffuso, altri nuovi utenti possono incappare nello stesso problema e possono provare a risolverlo come ho fatto io.
+
+==Requisiti==
+
+Dopo aver preso il modem usb Speedtouch 330 colore viola (rev.2) o argento (rev.4) [non parlerò della versione più vecchia di colore verde (rev.0)], aver installato Fedora, ora quello che serve è il firmware (scaricabile da [http://www.speedtouch.com/download/drivers/USB/SpeedTouch330_firmware_3012.zip qui]) e un programmino da compilare detto firmware-extractor (scaricabile da [http://www.linux-usb.org/SpeedTouch/firmware/firmware-extractor.tar.gz qui]).<br />
+Mettere tutti i file in un floppy o penna usb e copiarli nella propria home in Fedora. E' necessario avere già installato un compilatore per il firmware-extractor, ''gcc'' va benissimo. Per installarlo:
+
+ #yum install gcc
+
+==Installazione==
+
+Estrarre il file ''SpeedTouch330_firmware_3012.zip'', all'interno ci sono 2 file: ''KQD6_3.012'' e ''ZZZL_3.012''.
+Se si possiede il modem viola rinominare il primo file in ''mgmt.o''; se si possiede quello argento fare la stessa cosa con il secondo file.<br />
+A questo punto estrarre il ''firmware-extractor'' in una cartella e copiare nella stessa il file appena rinominato (cioè mgmt.o); adesso bisogna compilare il programma: basta aprire un terminale in questa cartella ''Applicazioni > Accessori > Terminale'' e digitare:
+
+ $ ./configure
+ $ make
+
+A questo punto si deve diventare amministratori (root) e digitare:
+
+ # make install
+
+Fatto ciò, senza chiudere il terminale, copiare nella stessa cartella il file ''SpeedTouch330_firmware_3012.zip'' (si può lavorare anche in modi diversi, ma è più semplice così dato che il terminale è già aperto in questa cartella) e ritornare ad essere un utente normale (digitando ''exit'').<br />
+Ora, a seconda del modem è necesario digitare:
+
+=== Modem viola (rev.2) ===
+
+ $ unzip SpeedTouch330_firmware_3012.zip &&
+ $ chmod +x firmware-extractor &&
+ $ ./firmware-extractor KQD6_3.012
+
+=== Modem argento (rev.4) ===
+
+ $ unzip SpeedTouch330_firmware_3012.zip &&
+ $ chmod +x firmware-extractor &&
+ $ ./firmware-extractor ZZZL_3.012
+
+Ora bisogna aprire un editor di testo ''Applicazioni > Accessori > Editor di testi''. In esso si digiterà:
+
+ "username@isp" "*" "password"
+
+Al posto di ''username'' scrivere il proprio nome utente e al posto di ''isp'' inserire il proprio ISP (ad esempio alice.it). Naturalmente poi si dovrà sostituire la password con la propria; non modificare assolutamente le virgolette e l’asterico! Salvare il file sempre nella stessa cartella con il nome '''secrets'''.
+
+Ora si dovrà aprire un nuovo documento dell’editor di testo e copiarci dentro quanto segue:
+<pre>PEERDNS=yes
+TYPE=xDSL
+DEVICE=ppp0
+BOOTPROTO=dialup
+PIDFILE=/var/run/pppoa-adsl.pid
+CONNECT_POLL=6
+CONNECT_TIMEOUT=300
+SYNCHRONOUS=no
+DEFROUTE=yes
+LCP_INTERVAL=10
+LCP_FAILURE=2
+USER='username@isp'
+VPI=8
+VCI=35
+LINUX_PLUGIN=pppoatm.so</pre>
+Di nuovo, al posto di ''username'', sostituire il proprio nome utente e al posto di ''isp'' sostituire il proprio ISP. Salvare il file con il nome di '''ifcfg-ppp0'''.<br />
+Ora da root si digiterà nel terminale:
+
+ # cp speedtch-{1,2}.bin /lib/firmware
+ # install -m400 ifcfg-ppp0 /etc/sysconfig/network-scripts
+ # install -m400 secrets /etc/ppp/chap-secrets
+ # install -m400 secrets /etc/ppp/pap-secrets
+
+Chiudere e riavviare il computer (questa volta con il modem collegato) ed si avrà da subito la possibilità di collegarsi ad Internet (basta aprire un browser per verificarlo).<br />
+
+==Riferimenti==
+
+* [http://www.linux-usb.org/SpeedTouch/fedora/index.html http://www.linux-usb.org/SpeedTouch/]
+
+[[Categoria:Hardware]]

@@ -1,0 +1,58 @@
+Introduzione
+------------
+
+I seguenti sono due script per amministrare l'abilitazione degli utenti.
+Questo articolo tratta di un piccolo serverino dove si collegano per lavoro una decina di utenti. Ho cominciato da qualche settimana a studiare gli script della bash ed ho prodotto questi script di cui sono molto orgoglioso (sono i primi che faccio in vita mia). Siccome ho imparato molto da questo sito li metto a disposizione a voi anche per miglioramenti.
+
+Operazioni di esempio
+---------------------
+
+Alle 7:00 del mattino il demone crond fa partire questo script. Abilita gli utenti solo se non è sabato o domenica:
+
+    #!/bin/bash
+    VARDATA=`date +%a`
+    echo $VARDATA
+    echo
+    echo
+    function permetti() {
+    passwd -u utente1
+    passwd -u utente2
+    passwd -u utente3
+    passwd -u utente4
+    clear
+    echo
+    echo
+    echo ATTENZIONE Utenti sbloccati
+    echo
+    echo
+    echo
+    }
+    function quit() {
+    echo Sabato o domenica. Utenti non sbloccati.
+    exit
+    }
+    case $VARDATA in
+    sab) quit;;
+    dom) quit;;
+    Sat) quit;; # Occorre dare in inglese il valore
+    Sun) quit;; # Occorre dare in inglese il valore
+    *) permetti;;
+    esac
+
+Alle sette di sera il demone crond fa partire invece questo script:
+
+    #!/bin/sh
+    clear
+    passwd -l utente1
+    passwd -l utente2
+    #passwd -l utente3
+    passwd -l utente4
+    echo
+    echo Utenti temporaneamente sospesi!
+    echo ------------------------------
+    echo
+    echo
+
+Saranno un po' rospi, ma funzionano.
+
+[Categoria:Programmazione e Sviluppo](Categoria:Programmazione_e_Sviluppo "wikilink")

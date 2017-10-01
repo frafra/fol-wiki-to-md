@@ -1,0 +1,52 @@
+\_\_TOC\_\_
+
+Introduzione
+------------
+
+Audiopreview è un tool avviabile da terminale che permette di ascoltare o vedere delle anteprime di file multimediali. Utilizza i codec gstreamer, quindi, prima di compilare e installare, bisogna fornirgli le librerie necessarie perché funzioni.
+
+`# yum install gstreamer-plugins-bad-free gstreamer-plugins-bad-free-devel gstreamer-ffmpeg gstreamer plugins-ugly gstreamer-plugins-good gstreamer-plugins-bad gstreamer-plugins-bad-nonfree gstreamer-plugins-base gstreamer-plugins-base-devel`
+
+A questo punto si può iniziare con l'installazione.
+
+Installazione
+-------------
+
+Per prima cosa si scarica il file sorgente compresso:
+
+`$ wget `[`http://audiopreview.codealpha.net/dl.php?file=audiopreview-0.6.tar.gz`](http://audiopreview.codealpha.net/dl.php?file=audiopreview-0.6.tar.gz)
+
+Dopodiché bisogna spostarsi nella directory dove è stato scaricato il file, dando successivamente:
+
+`$ tar xvf audiopreview-0.6.tar.gz`
+`$ cd audiopreview-0.6`
+`$ ./configure`
+`$ make `
+`$ su`
+` password root`
+`# make install `
+`# exit`
+
+Utilizzo
+--------
+
+Ora che il tool è installato è utile vedere qualche esempio:
+
+1.  Ascoltare un anteprima di 20" di un set di mp3
+
+$ audiopreview -d 20 \*mp3
+
+<li>
+Ascoltare un anteprima di 60" di due radio (due radio nazionali a caso) in streaming:
+
+</li>
+`$ audiopreview -d 60 `[`mms://151.1.245.36/rtl102.5lq/`](mms://151.1.245.36/rtl102.5lq/)` `[`mms://fastreal.fastweb.it/RDS`](mms://fastreal.fastweb.it/RDS)
+
+<li>
+Vedere un anteprima di 5", senza audio, dall'inizio di ogni file avi contenuto nella directory:
+
+</li>
+`$ audiopreview --no-audio -d 5 -p 0 *.avi`
+
+</ol>
+<Categoria:Multimedia>

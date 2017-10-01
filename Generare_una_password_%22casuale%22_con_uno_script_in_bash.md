@@ -1,0 +1,77 @@
+\_\_TOC\_\_
+
+Introduzione
+------------
+
+Questo script genera password di lunghezza compresa tra gli 8 e i 40 caratteri in maniera casuale.
+L'algoritmo utilizza sia il file ***/dev/urandom*** che i movimenti del mouse (per esempio /dev/mouse1) per generare la password attraverso il comando *sha1sum* ed effettua successive modifiche per migliorare ulteriormente il risultato finale (sostituzione con caratteri MAIUSCOLI e caratteri speciali tipo $,;,%, ecc. ecc.
+
+Lo script
+---------
+
+    #!/bin/bash
+
+    # v0.1 - by Zod
+
+    # --- modificare la seguente riga in base alle proprie esigenze
+    MOUSE_DEVICE=/dev/mouse1
+
+    # --- variabili
+    RANDOM_DATA=`mktemp`
+    BOLD=`tput bold`
+    NORMAL=`tput sgr0`
+    SPECIAL_CHARACTERS='!,.$#;:%£'
+
+    if [ ! "${USER}" = "root" ] 
+    then
+      echo -e "\nE' necessario essere ${BOLD}root${NORMAL} per eseguire ${BOLD}`basename $0`${NORMAL}\n"
+      exit 1
+    fi
+
+    LENGTH=0
+    echo 
+
+    while [ ${LENGTH} -lt 8 -o ${LENGTH} -gt 40 ]
+    do
+     read -p "Lunghezza password da generare (8-40, default 8) > " LENGTH
+     LENGTH=`echo ${LENGTH} | tr -d [:alpha:]`
+     [ "${LENGTH}" = "" ] && LENGTH=8
+    done
+
+    cat ${MOUSE_DEVICE} >${RANDOM_DATA} 2>/dev/null &
+    PID=$!
+    echo
+    read -p "Muovere il mouse in questa finestra e premere INVIO per terminare > " DUMMY
+
+    if [ -s ${RANDOM_DATA} ]
+    then
+     MOUSE_BYTES=`wc -m ${RANDOM_DATA} | awk ' { print $1 } '`
+     let RANDOM_LINES="${RANDOM} % 100"
+     head -${RANDOM_LINES} /dev/urandom >> ${RANDOM_DATA} 2>&1
+     let RANDOM_BYTES=`wc -m ${RANDOM_DATA} | awk ' { print $1 } '`-${MOUSE_BYTES}
+     TEMP_PASSWORD=`sha1sum ${RANDOM_DATA} | cut -b1-${LENGTH}`
+     for i in `seq 1 ${LENGTH}`
+     do
+      let SUBSTITUTION="${RANDOM} % 5"
+      case ${SUBSTITUTION} in 
+      0)
+         PASSWORD="${PASSWORD}`echo ${TEMP_PASSWORD} | cut -b ${i} | tr [:lower:] [:upper:]`"
+         ;;
+      1)
+         let SPECIAL_CHAR_NUMBER="${RANDOM} % ${#SPECIAL_CHARACTERS}"
+         PASSWORD="${PASSWORD}${SPECIAL_CHARACTERS:${SPECIAL_CHAR_NUMBER}:1}"
+         ;;
+      *)  
+         PASSWORD="${PASSWORD}`echo ${TEMP_PASSWORD} | cut -b ${i}`"
+      esac
+     done
+     echo -e "\nE' stata generata la seguente password: ${BOLD}${PASSWORD}"
+     echo -e "\n${NORMAL}utilizzando ${BOLD}${MOUSE_BYTES}${NORMAL} bytes di movimenti del mouse \c"
+     echo -e "e ${BOLD}${RANDOM_BYTES}${NORMAL} bytes di dati casuali\n"
+    else
+     echo -e "\nIl mouse ${BOLD}non è stato mosso ${NORMAL}a sufficienza\n"
+    fi
+    rm -f ${RANDOM_DATA} >/dev/null 2>&1
+    kill -9 ${PID} >/dev/null 2>&1
+
+<Categoria:Sicurezza>

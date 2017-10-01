@@ -1,0 +1,67 @@
+{{InCorso|autore=GiuseppeDelvecchio}}
+{{Autore|GiuseppeDelvecchio}}
+{{Collaboratori|SimoneZaminga}} 
+
+== Introduzione ==
+
+Molti utenti, provenienti da altri sistemi, trasferiscono il proprio comportamento, adottato precedentemente, al loro sistema Fedora.
+Essi attribuiscono al sistema le proprie difficoltà e i loro problemi, senza rendersi conto che sono stati i propri atteggiamenti la vera causa.<br />
+Questo articolo '''non''' vuole proporre cose da fare da parte di un nuovo utente di un sistema Fedora per risolvere i propri problemi.<br />
+Questo articolo vuole proporre cose da '''non''' fare da parte di un nuovo utente di un sistema Fedora per non trovarsi in difficoltà.<br />
+Esso è basato sull' analisi statistica dei contenuti del forum di Fedoraonline e degli errori comuni che si commettono nella gestione del sistema.
+
+Occorre tener presente che Fedora è un sistema all'avanguardia per quanto attiene alle versioni di software installati.
+A volte viene distribuito software ancora sotto testing e/o incompleto da parte dello stesso progetto di sviluppo.
+Se questo fatto vi mette in condizione di provare software di ultimissima generazione, dall'altra parte vi metterà in difficoltà per quanto riguarda malfunzionamenti temporanei e/o trovare soluzioni in rete che si adattano al vostro sistema.
+
+Questo articolo si propone di "arginare" comportamenti che possano essere causa di ulteriori difficoltà.
+
+{{Scrittura|Il simbolo '''$''' vuol dire che le operazioni possono essere eseguite da terminale utente.<br />il simbolo '''#''' vuol dire che le operazioni devono essere eseguite in terminale root ovvero con poteri superutente.}}
+
+Vediamo quali errori si commettono più frequentemente durante la:
+
+== Installazione ==
+
+Supponiamo che stiate eseguendo l'installazione dal [http://fedoraproject.org/it/get-fedora-all DVD] e non da una live.
+
+* usare il partizionatore automatico
+** spesso ci si pente di questa scelta, in quanto le nostre necessità sono cambiate e la situazione non è più adatta. Vi consigliamo, prima di procedere, di verificare con cura quali sono e saranno le nostre necessità di spazio sul disco.<br /> Fedora ha bisogno di poco spazio, le specifiche ufficiali parlano di almeno 10 Gb di spazio sul disco. Personalmente ho installato Fedora ( non live ) su supporto fisso da 2 Gb.<br /> Inoltre l'uso predefinito della GPT ( GUID Partition Table ) da parte di Fedora invece del MBR ( Master Boot Record ) potrebbe darvi problemi sull'installazione soprattutto se il Bios della vostra macchina non è in grado di riconoscere lo stardard GPT, oppure usate sistemi operativi in dual boot che hanno lo stesso problema. Quindi se non volete modificare lo standard della vostra tabella delle partizioni, vi consigliamo di procedere manualmente. Le partizioni da creare sono almeno tre ( primarie o logiche non ha importanza):
+*** la /boot da 1 Gb
+*** la swap da 2 o poco più Gb ( la regola di avere una swap doppia della ram è obsoleta visto l'ampia disponibilità delle macchine attuali )
+*** la / ( root/radice ) da almeno 30 Gb a salire, la / conterrà anche la vostra home se ne avete necessità create una partizione home separata
+* non scegliere il filesystem della propria installazione
+** il partizionatore automatico ha una brutta abitudine: usa gli [http://it.wikipedia.org/wiki/Gestore_logico_dei_volumi LVM] come standard.<br /> In una installazione desktop di solito questa scelta può causarvi una serie di problemi.<br /> L'LVM viene utilizzato su file server o database server per gestire array di dischi o unità Storage Area Network ovvero aggiunge dischi e/o partizioni runtime al vostro sistema, avete bisogno di questo ? Abbiamo i nostri dubbi.<br /> Questo sistema è sicuramente molto performante e molto utile, ma è nostra opinione che in un sistema desktop è sovrabbondante; <br /> inoltre in caso di perdita/cancellazione accidentale di file il loro recupero diventerà assai arduo.<br /> Pertanto vi consigliamo di scegliere il filesystem, ad esempio tra questi:
+*** ext4 -Extended File System 4 - filesystem per tutte le stagioni e tutti gli usi ( se non avete idea di cosa fare, usate questo )
+*** reiser - filesystem ad elevate prestazioni su file e directory di piccole dimensioni, possibile il recupero di file accidentalmente persi
+*** xfs - eXtended FileSystem - filesystem di elevate prestazioni su file di grandi dimensioni fino a 8 milioni di terabyte per singolo file ( il vostro desktop allora è un mainframe...e leggere questo articolo è inutile )
+** naturalmente esistono molte altre scelte che possono essere [http://it.wikipedia.org/wiki/Filesystem#File_system_del_disco effettuate], ma l'unica raccomandazione che ci sentiamo di dare è:<br /> non usare mai filesystem di origine proprietaria ( fat, ntfs, hfs )
+
+* indicare password, root ed utenti, deboli
+* accettare che il proprio utente sia aggregato al gruppo wheel
+* accettare l'orario UTC
+* non indicare un Desktop Environment alternativo
+* reinstallare
+
+== Configurazione ==
+* accettare la configurazione di default del sistema
+* non prendere dimestichezza con la [http://it.wikipedia.org/wiki/Interfaccia_a_riga_di_comando CLI]
+* permettere al sistema l'aggiornamento automatico
+
+== Hardware ==
+
+* credere che il dispositivo hardware non sia riconosciuto
+* essere convinti che vi manca un driver
+* inoculare driver nel kernel
+
+== Connessioni rete ==
+
+* non configurare la propria rete
+
+== Installazione software ==
+* usare software proprietario
+* usare software libero non adatto
+
+== Riferimenti ==
+* Forum [http://forum.fedoraonline.it/ FedoraOnLine]
+
+[[Categoria:Scrittura in corso]]

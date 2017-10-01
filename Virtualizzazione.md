@@ -1,0 +1,69 @@
+Introduzione
+------------
+
+In questo articolo si vuole dare una prima infarinatura sui metodi di virtualizzazione open source. Si prenderà come esempio i sistemi di virtualizzazione più performanti, uno presente nei repositori sotto il gruppo *Virtualizzazione*.
+
+Qemu/KVM
+--------
+
+Per installare il sistema di virtualizzazione di cui sopra, quindi, si digita:
+
+`# yum groupinstall "Virtualizzazione"`
+
+Verranno così installati i pacchetti per attivare ***qemu-kvm*** e le librerie ***libvirt*** e ***xen*** (e relative dipendenze) necessari per un corretto uso del software.
+Prima di avviare la macchina virtuale occorre attivare il *demone libvirtd*, per cui:
+
+`$ system-config-services`
+
+e, alla voce relativa, premere il pulsante "Avvia".
+Nei riavvii successivi il demone sarà abilitato di default. Si consiglia di creare la virtualizzazione sotto qemu/KVM, l'utilizzo di Xen è un po' più complicato.
+
+Xen
+---
+
+Comunque, per utilizzare Xen, occorre installarlo a parte:
+
+`# yum install xen`
+
+Al termine dell'installazione bisogna verificare l'avvio di questi servizi:
+
+`xenconsoled xend xendomains xenrestored`
+
+Per avviare la macchina virtuale:
+
+`$ virt-manager`
+
+oppure, in KDE, *menù K &gt; Applicazioni &gt; Sistema &gt; Manager della macchina virtuale*.
+
+Virtualbox
+----------
+
+È possibile scegliere due strade per installare VirtualBox.
+
+### Repository
+
+È molto consigliato l'utilizzo del [**repository apposito**](VirtualBox_repo "wikilink") per avere sempre l'ultima versione aggiornata di VirtualBox.
+
+### RPM scaricato
+
+È possibile scaricare l'RPM e utilizzare un software esterno come VirtualBox, prelevandolo da [qui](http://www.virtualbox.org/wiki/Linux_Downloads), oppure digitando:
+
+`$ wget `[`http://download.virtualbox.org/virtualbox/4.1.0/VirtualBox-4.1-4.1.0_73009_fedora15-1.x86_64.rpm`](http://download.virtualbox.org/virtualbox/4.1.0/VirtualBox-4.1-4.1.0_73009_fedora15-1.x86_64.rpm)
+`$ su`
+*`password` `di` `root`*
+`# yum install ./VirtualBox*`
+
+**NB: la versione potrebbe cambiare in futuro.**
+
+Durante l'installazione il programma non troverà il modulo del kernel ma se lo compilerà in piena autonomia.
+Importante sarà poi verificare che il proprio utente sia anche nel gruppo ***vboxusers***, cosa che dovrebbe avvenire all'installazione, ma, se non lo fosse, occorre inserirlo; l'una e l'altra cosa si possono fare digitando da terminale:
+
+`$ system-config-users`
+
+Infine, sempre da terminale:
+
+`$ VirtualBox`
+
+e registrarsi.
+
+<Categoria:Virtualizzazione>

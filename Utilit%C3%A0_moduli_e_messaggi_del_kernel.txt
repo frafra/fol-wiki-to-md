@@ -1,0 +1,96 @@
+Spesso si ha bisogno di alcuni comandi per vedere se i propri moduli: sono caricati correttamente, o per comprendere quali sono caricati in automatico dal sistema, più eventuali accortezze.<br />
+Di seguito vengono riportati i comandi principali  che serviranno a capire meglio di cosa trattano e quando usarli:
+
+==modprobe==
+
+Utility per il proprio kernel che permette di caricare dei moduli in memoria eseguendo alcuni test per la configurazione dei parametri.<br />
+Il comando va eseguito come root:
+
+ # modprobe sound
+
+Per caricare il modulo sound. Spesso possono essere utili anche le opzioni:
+
+ # modprobe -l  (per visualizzare tutti i moduli disponibili)
+ # modprobe -c  (per visualizzare la configurazione dei moduli caricati)
+ # modprobe -r  (per scaricare i moduli mantenendo le dipendenze)
+
+==lsmod==
+
+Il comando per visualizzare tutti i moduli caricati in memoria è lsmod:
+
+ # lsmod
+ Module                  Size  Used by
+ fglrx                 225024  0
+ vmnet                  28336  4
+ vmmon                  44096  0
+ parport_pc             26501  1
+ lp                     12077  0
+ parport                36617  2 parport_pc,lp
+ autofs4                22981  0
+ sunrpc                154149  1
+ ipt_REJECT              6593  1
+ ipt_state               1857  1
+ ip_conntrack           40309  1 ipt_state
+ iptable_filter          3521  1
+ ip_tables              16321  3 ipt_REJECT,ipt_state,iptable_filter
+ dm_mod                 55509  0
+ md5                     4033  1
+ ipv6                  230273  12
+ uhci_hcd               31321  0
+ ehci_hcd               34761  0
+ i2c_viapro              7245  0
+ i2c_core               20801  1 i2c_viapro
+ snd_via82xx            27361  2
+ snd_ac97_codec         67105  1 snd_via82xx
+ snd_pcm_oss            47861  0
+ snd_mixer_oss          17089  2 snd_pcm_oss
+ snd_pcm                92233  3 snd_via82xx,snd_ac97_codec,snd_pcm_oss
+ snd_timer              28357  1 snd_pcm
+ snd_page_alloc          9541  2 snd_via82xx,snd_pcm
+ gameport                4801  1 snd_via82xx
+ snd_mpu401_uart         8769  1 snd_via82xx
+ snd_rawmidi            25441  1 snd_mpu401_uart
+ snd_seq_device          8525  1 snd_rawmidi
+ snd                    52261  11 snd_via82xx,snd_ac97_codec,snd_pcm_oss,snd_mixer_oss,snd_pcm,snd_timer,snd_mpu401_uart,
+ snd_rawmidi,snd_seq_device
+ soundcore               9889  2 snd
+ 8139too                26177  0
+ mii                     4673  1 8139too
+ floppy                 57329  0
+ ext3                  116041  2
+ jbd                    68185  1 ext3
+
+==lsusb==
+
+Per leggere le informazioni USB del proprio sistema attraverso lsusb si ha bisogno di aver attivato il supporto per il /proc filesystem. Infatti lsusb legge le informazioni da /proc/bus/usb.
+
+ # lsusb
+ Bus 004 Device 001: ID 0000:0000
+ Bus 003 Device 001: ID 0000:0000
+ Bus 002 Device 001: ID 0000:0000
+ Bus 001 Device 001: ID 0000:0000
+
+Per chi vuole un output molto dettagliato può usare l'opzione:
+
+ # lsusb -v
+
+==dmesg==
+
+E' l'utility che legge tutte le informazioni del kernel compreso i messaggi di boot. Siccome le informazioni che vengono fornite sono davvero tante; utilizzando "more" o "less" si possono per avere più o meno righe di output, ovvero:
+
+ # dmesg | more
+ # dmesg | less
+
+Un esempio di un device USB. Per avere le informazioni sul proprio USB attraverso dmesg basta digitare:
+
+ # dmesg | grep usb
+ usbcore: registered new driver usbfs
+ usbcore: registered new driver hub
+ usbcore: registered new driver hiddev
+ usbcore: registered new driver usbhid
+ drivers/usb/input/hid-core.c: v2.0:USB HID core driver
+ SELinux: initialized (dev usbfs, type usbfs), uses genfs_contexts
+
+In questo modo è possibile interrogare qualsiasi periferica collegata al proprio sistema dall'ultimo boot, in modo semplice, veloce e completo.
+
+[[Categoria:Sistema]]

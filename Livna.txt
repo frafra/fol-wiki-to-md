@@ -1,0 +1,22 @@
+__TOC__
+== Introduzione ==
+
+Livna fa parte dei repository di '''''terze parti'''''. L'installazione è utile per la presenza del pacchetto ''[[Multimedia_Player_e_codecs#Librerie_per_DVD|libdvcss]]'', necessario per i video DVD. Il repo è disponibile attualmente per le versioni da Fedora 8 compresa in poi, sia stabile che testing.<br />
+Tutti gli altri contenuti di Livna nel 2008 sono migrati su [[RPMFusion|RPMFusion]].
+{{Warning|L'utilizzo di Livna potrebbe generare in alcuni pacchetti delle incompatibilità, se si attivano contemporaneamente anche [[ATrpms|ATrpms]].}}
+
+== Installazione ==
+
+L'installazione è molto semplice, perché automatizzata.
+
+ # yum install http://rpm.livna.org/livna-release.rpm
+
+Se per qualche motivo il link principale non fosse raggiungibile, si può puntare su uno dei tanti [http://rpm.livna.org/mirrorlist mirror], per esempio:
+
+ # yum install http://ftp-stud.fht-esslingen.de/pub/Mirrors/rpm.livna.org/livna-release.rpm
+
+== Riferimenti ==
+* [http://rpm.livna.org/ Sito ufficiale Livna]
+
+[[Categoria:Repository]]
+[[Categoria:Yum]]

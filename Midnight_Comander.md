@@ -1,0 +1,12 @@
+Midnight Comander è un bellissimo tool per gestire i propri file, permette di spostarsi velocemente tra le directory, di spostare, editare (utilissimo per modificare i file di configurazione) o cancellare i propri dati.
+Prima di tutto bisogna installarlo:
+
+`# yum install mc`
+
+Ora aprire una console, se bisogna fare operazioni per le quali serve lo stato di root dare adesso "su" e la password di root, poi digitare mc e dare "INVIO". <img src="mc1.jpg" title="fig:Ecco come si presenta MC." alt="Ecco come si presenta MC." width="400" /> Questa schermata è divisa in due parti, e permette di sfogliare due directory contemporaneamente, una sulla destra (attualmente /) e una sulla destra (la mia home). Ci si sposta velocemente tra una directory e l'altra con il tasto "TAB", mentre con le frecce e "INVIO" si sfogliano le directory.
+Contemporaneamente è permesso dare comandi da console, in basso si vede il prompt e sotto ancora le possibilità che si hanno in MC.
+Si può sia cliccare con il proprio mouse sulle voci, oppure (ed è più pratico) selezionare le voci con il tasto F (numero), ad esempio per visualizzare un file si preme F3, per modificarlo F4...
+
+Per spostare o copiare file o intere cartelle impostare le due directory di MC in modo da avere da una parte (non importa quale) il file da copiare e dall'altra la directory di destinazione. <img src="mc2.jpg" title="fig:La copia dei file avviene premendo F5." alt="La copia dei file avviene premendo F5." width="400" /> Ora è importante soltanto posizionarsi sul file da copiare e con F5 verrà chiesta la conferma dello spostamento. <img src="mc3.jpg" title="fig:Prima della copia MC chiede conferma." alt="Prima della copia MC chiede conferma." width="400" /> Fatto!
+
+<Categoria:Sistema>

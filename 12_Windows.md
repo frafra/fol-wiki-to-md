@@ -1,0 +1,116 @@
+Come installare il supporto per NTFS
+------------------------------------
+
+1.  Leggi [Premessa](01_Introduzione_a_Fedora#Premessa "wikilink")
+2.  Leggi [Come aggiungere dei repositories extra](02_Repositories#Come_aggiungere_dei_repositories_extra "wikilink")
+
+yum -y install kernel-module-ntfs-$ (uname -r)
+
+<li>
+Per maggiori informazioni vedi <a href="http://www.linux-ntfs.org"><http://www.linux-ntfs.org></a>
+
+</li>
+</ol>
+Come montare/smontare partizioni Windows (NTFS) manualmente, ed abilitare gli utenti in sola lettura
+----------------------------------------------------------------------------------------------------
+
+1.  Leggi [Premessa](01_Introduzione_a_Fedora#Premessa "wikilink")
+2.  Leggi [Come vedere il contenuto della tabella delle partizioni](08_Hardware#Come_vedere_il_contenuto_della_tabella_delle_partizioni "wikilink")
+
+*Assumiamo che la partizione windows (NTFS) abbia il nome /dev/hda1*
+*Assumiamo che la directory locale di mount sia: /media/windows*
+
+<li>
+Montiamo la partizione Windows
+
+</li>
+`mkdir /media/windows`
+`mount /dev/hda1 /media/windows/ -t ntfs -o nls=utf8,umask=0222`
+
+<li>
+Smontiamo la partizione Windows
+
+</li>
+`umount /media/windows/`
+
+</ol>
+Come montare/smontare partizioni Windows (FAT) manualmente, ed abilitare gli utenti in lettura/scrittura
+--------------------------------------------------------------------------------------------------------
+
+1.  Leggi [Premessa](01_Introduzione_a_Fedora#Premessa "wikilink")
+2.  Leggi [Come vedere il contenuto della tabella delle partizioni](08_Hardware#Come_vedere_il_contenuto_della_tabella_delle_partizioni "wikilink")
+
+*Assumiamo che la partizione windows (FAT) abbia il nome /dev/hda1*
+*Assumiamo che la directory locale di mount sia: /media/windows*
+
+<li>
+Montiamo la partizione Windows
+
+</li>
+`mkdir /media/windows`
+`mount /dev/hda1 /media/windows/ -t vfat -o iocharset=utf8,umask=000`
+
+<li>
+Smontiamo la partizione Windows
+
+</li>
+`umount /media/windows/`
+
+</ol>
+Come montare una partizione Windows (NTFS) al boot, ed abilitare tutti gli utenti in sola lettura
+-------------------------------------------------------------------------------------------------
+
+1.  Leggi [Premessa](01_Introduzione_a_Fedora#Premessa "wikilink")
+2.  Leggi [Come vedere il contenuto della tabella delle partizioni](08_Hardware#Come_vedere_il_contenuto_della_tabella_delle_partizioni "wikilink")
+
+*Assumiamo che la partizione windows (NTFS) abbia il nome /dev/hda1*
+*Assumiamo che la directory locale di mount sia: /media/windows*
+
+`mkdir /media/windows`
+`cp /etc/fstab /etc/fstab_backup`
+`gedit /etc/fstab`
+
+<li>
+Aggiungi la seguente riga alla fine del file
+
+</li>
+`/dev/hda1    /media/windows ntfs  nls=utf8,umask=0222 0    0`
+
+<li>
+Salva il file modificato
+
+</li>
+<li>
+Leggi [Come rimontare /etc/fstab senza effettuare il reboot della macchina](08_Hardware#Come_rimontare_/etc/fstab_senza_effettuare_il_reboot_della_macchina "wikilink")
+
+</li>
+</ol>
+Come montare una partizione Windows (FAT) al boot, ed abilitare tutti gli utenti in lettura/scrittura
+-----------------------------------------------------------------------------------------------------
+
+1.  Leggi [Premessa](01_Introduzione_a_Fedora#Premessa "wikilink")
+2.  Leggi [Come vedere il contenuto della tabella delle partizioni](08_Hardware#Come_vedere_il_contenuto_della_tabella_delle_partizioni "wikilink")
+
+*Assumiamo che la partizione windows (FAT) abbia il nome /dev/hda1*
+*Assumiamo che la directory locale di mount sia: /media/windows*
+
+`mkdir /media/windows`
+`cp /etc/fstab /etc/fstab_backup`
+`gedit /etc/fstab`
+
+<li>
+Aggiungi la seguente riga alla fine del file
+
+</li>
+`/dev/hda1    /media/windows vfat  iocharset=utf8,umask=000  0    0`
+
+<li>
+Salva il file modificato
+
+</li>
+<li>
+Leggi [Come rimontare /etc/fstab senza effettuare il reboot della macchina](08_Hardware#Come_rimontare_/etc/fstab_senza_effettuare_il_reboot_della_macchina "wikilink")
+
+</li>
+</ol>
+<Categoria:Fedoraserver>

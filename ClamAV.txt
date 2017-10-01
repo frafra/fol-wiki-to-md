@@ -1,0 +1,78 @@
+{{Autore|AlessandroBugliazzini}}
+
+==Introduzione==
+
+Clam AntiVirus è un toolkit anti-virus open source (GPL) per UNIX, progettato appositamente per la scansione delle e-mail sul gateway di posta. ClamAV fornisce una serie di utility, tra cui un demone multi-threaded flessibile e scalabile, uno scanner a riga di comando e uno strumento avanzato per gli aggiornamenti automatici del database. Il cuore del pacchetto è un motore anti-virus disponibile in una libreria condivisa.
+
+Elenco delle caratteristiche principali:
+
+* Scansione da riga di comando
+* Demone multi-threaded con supporto per la scansione in accesso
+* Interfaccia milter per sendmail
+* Aggiornamento del database avanzato con supporto per gli aggiornamenti tramite script e firme digitali
+* Virus scanner libreria C
+* Scansione all'accesso (Linux e FreeBSD®)
+* Database dei virus aggiornato più volte al giorno (vedi la [http://www.clamav.net/lang/en/ Home Page di ClamAV] per il numero totale di firme)
+* Supporto integrato per vari formati di archivio, tra cui Zip, RAR, Tar, Gzip, Bzip2, OLE2, Cabinet, CHM, BinHex, SIS e altri
+* Supporto integrato per quasi tutti i formati di file di posta
+* Supporto integrato per gli eseguibili ELF e file eseguibili compressi con UPX portatili, FSG, Petite, Nspack, wwpack32, MEW, Upack e offuscati con SUE, Y0da Cryptor e altri 
+* Supporto integrato per i formati di documenti più diffusi, tra cui MS Office e MacOffice file, HTML, RTF e PDF
+
+Per l'uso domestico del Personal Computer in ambiente Fedora l'utilizzo di un antivirus è da considerarsi superfluo, per la massima sicurezza con qualsiasi distribuzine GNU/Linux è invece necessario utilizzare e configurare un firewall (di default su Fedora), SElinux in modalità enforcing, password robuste e non utilizzare l'utente root se non per operazioni di aggiornamento del sistema o installazione di nuovi programmi.
+
+Tuttavia potrebbe essere necessario (e consigliato) utilizzare un antivirus nel caso sia presente un sistema non GNU/Linux - FreeBSD® in dual boot con Fedora e si desideri scansionare le cartelle nelle partizioni in cui questi sistemi risiedono.
+
+==Installazione==
+Per installare ClamAV non è necessario abilitare repo esterni in quanto esso è già presente nel repository principale di Fedora, per gli utenti più pigri o per quelli che non hanno dimestichezza con la riga di comando è consigliabile installare anche clamtk, una comoda interfaccia grafica per utilizzare ClamAV.
+
+Aprire un terminale e loggarsi come utente root, poi digitare:
+ # yum install clamav clamav-scanner clamav-update clamtk
+
+
+Dopo l'installazione dei pacchetti, per poter utilizzare ClamAV, è necessario aprire il file /etc/freshclam.conf e commentare con il simbolo # la riga in cui è scritto Example.
+{{Suggerimento|In questa guida è stato utilizzato l'editor di testi nano per la sua versatilità con qualsiasi ambiente desktop, in caso non si abbia dimestichezza con tale editor è possibile utilizzare Gedit, Kwrite o qualsiasi altro text editor.}}
+ # nano /etc/freshclam.conf
+
+
+La riga si presentà così:
+ # Comment or remove the line below.
+ Example
+
+Dovrà diventare così:
+ # Comment or remove the line below.
+ # Example
+
+Con il text editor nano premere contemporaneamente i tasti CTRL O per salvare, poi CRTL X per uscire.
+
+==Aggiornamento Database==
+Per aggiornare il database delle definizioni dei virus di ClamAV digitare da utente root:
+ # freshclam
+
+{{nota|Aggiornamento del database e delle definizioni dei virus|Al primo aggiornamento avremmo dei WARNING che ci avvertono che i file main.cvd, daily.cvd e bytecode.cvd non sono presenti, nessun problema, dopo il primo download tali file verrannno scaricati e ai successivi aggiornamenti non ci saranno altri WARNING.}}
+
+==Utilizzo==
+===ClamAV===
+Dopo aver aggiornato il database dei virus per fare una scansione possiamo utilizzare direttamente il terminale tramite il comando clamscan, a tal proposito è consigliato consultare la relativa pagina man:
+ $ man clamscan
+
+
+Alcuni semplici esempi di utilizzo di ClamAV, tratti dalla pagina man:
+
+* Per scansionare un singolo file:
+ $ clamscan file
+
+* Per scansionare tutti i files della directory corrente:
+ $ clamscan
+
+* Per scansionare in maniera ricorsiva tutti files e le sottodirectory della cartella /home:
+ $ clamscan -r /home
+
+===Clamtk===
+In aleternativa è possibile utilizzare la comoda GUI clamtk.
+
+[[File:Clamtk-gtk.png|500px|Finestra di Clamtk con DE Gnome]]
+
+==Riferimenti==
+* http://www.clamav.net/lang/en/
+
+[[Categoria:Sicurezza]]

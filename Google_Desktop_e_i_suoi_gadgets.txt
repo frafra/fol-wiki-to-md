@@ -1,0 +1,35 @@
+{{Warning|Google Desktop è stato abbandonato dal 2 settembre 2011 come da apposita [http://googledesktop.blogspot.com/2011/09/google-desktop-update.html comunicazione di Google].<br />
+Di conseguenza non è disponibile il download e il seguente articolo attualmente non può essere messo in pratica.}}
+__TOC__
+== Introduzione ==
+
+Google Desktop ora è giunto alla maturazione anche per gli utenti Linux, il che significa che non solo si possono effettuare riverche Desktop/Web, ma sono possibili anche molte personalizzazioni grazie ai tanti gadget disponibili.<br />
+Di seguito un piccolo esempio di installazione:
+
+== Installazione ==
+
+Google Desktop può essere scaricato da http://desktop.google.com/it/linux/download.html (sono circa 8 MB) per poi essere installato, spostandosi nella cartella dove è scaricato il file rpm, digitando nel terminale:
+
+ # rpm -ivh google-desktop.xyz-123.rpm
+
+Una volta completata l'installazione si può avviare Google Desktop da ''Applicazioni > Google Desktop'', cliccando su "Preferenze di Google Desktop":
+[[Image:Google-desktop.jpg|350px|thumb|center|Google Desktop si può avviare dal menu ''Applicazioni''.]]
+
+Verranno chieste le proprie preferenze su quello che è gestibile con Google Desktop, come la pagina iniziale di Firefox, i tipi di file da ricercare, GMail, ecc... opzioni che si salvano accettando la licenza d'uso.
+{{Suggerimento|Tenere sempre presente che questo software è potenzialmente in grado di avere accesso alle informazioni che in questa fase vengono flaggate come indicizzabili. Quindi potrebbe rappresentare in qualche occasione un problema di sicurezza!}}
+Una volta terminata la configurazione si potrà fare la prima indicizzazione locale, che sarà più o meno lunga, a seconda della quantità dei dati presenti sul proprio PC. Premendo due volte di seguito il tasto ''CTRL'' si potrà effettuare direttamente una ricerca con ''Google'' tramite una finestrella semitrasparente: i risultati verranno elencati, come di consueto, tramite il browser preferito.
+
+==I Gadgets==
+
+Google Desktop non solo può essere comodo per le ricerche, ma anche per personalizzare il proprio Desktop con alcuni Gadget. In futuro ce ne saranno sicuramente sempre di più, visto che il progetto è ancora relativamente giovane.
+Per installare i Gadget basterà digitare da root:
+
+ # yum install google-gadgets
+
+Questo aggiunferà un menu '''''Google Gadgets''''' sotto ''Applicazioni > Accessori'', cliccando su di esso comparirà una finestra dalla quale si possono scegliere i più svariati applet.<br />
+Di default viene selezionata la lingua che utilizzate con Fedora, quindi l'italiano, ma selezionando la lingua inglese ci sono molti più gadget tra cui scegliere. Si possono posizionare liberamente sul Desktop, anche qui dipende ovviamente dai gusti personali e dal tipo di gadget che si vuole far apparire sul Desktop.
+Un piccolo esempio:
+[[Image:Google-desktop2.jpg|350px|thumb|center|Con i Gadget si può personalizzare l'aspetto del proprio Desktop.]]
+
+[[Categoria:Internet]]
+[[Categoria:Fedora Legacy]]

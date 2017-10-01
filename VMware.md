@@ -1,0 +1,163 @@
+\_\_TOC\_\_
+
+Installazione standard
+----------------------
+
+Emulatore commerciale per installare in modo virtuale qualsiasi sistema operativo.
+
+Prima di cominciare vorrei precisare che VMWare è un emulatore commerciale. Per registrarsi e acquistare la licenza seguite il seguente link:
+[<http://www.vmware.com/download/>](http://www.vmware.com/download/)
+E' possibile provare l'emulatore gratuitamente per un periodo di 30 giorni!
+
+Invece di avere un sistema dual boot sul proprio PC si può decidere di avere un sistema operativo virtuale, qui si andrà ad installare WinXP in una finestra virtuale, mentre fisicamente sul proprio disco fisso è installato solamente Fedora.
+Prima di scaricare il pacchetto Vmware verificare che sia installato gcc:
+
+`$ rpm -q gcc`
+`gcc-3.4.2-6.fc3`
+
+Scaricare il pacchetto [qui](http://download3.vmware.com/software/wkst/VMware-workstation-4.5.2-8848.i386.rpm) e installarlo con:
+
+`# rpm -ivh Vmware-workstation-4.5.2-8848.i386.rpm`
+`Preparing...   #########################(100%)`
+`Vmware-workstation #######################(100%)`
+
+Fatto questo configurare Vmware, chiederà di accettare le condizioni e verificherà se esiste *gcc*, poi chiederà alcune cose:
+
+`# vmware-config.pl`
+`Do you want networking for your virtual machines? yes`
+`Do you want to be able to use NAT networking in your virtual machines? yes`
+`Do you want this program to probe for an unused private subnet? no`
+`What will be the IP address of your host on the private network? inserire il numero ip (es: 192.168.0.1)`
+`What will be the netmask of your private network? (es: 255.255.255.0)`
+`Do you want to be able to use host-only networking in your virtual machines? no`
+`Do you want this program to automatically configure your system to allow your virtual machines`
+`to access the host's filesystem? no`
+
+Per finire creare un link simbolico e si è concluso, Vmware è configurato e pronto per l'uso, lo si può lanciare digitando vmware dalla console.
+
+`cp -a /dev/vm* /etc/udev/devices`
+`ls -l /etc/rc.d/rc6.d/`
+`ln -s /etc/rc.d/init.d/vmware /etc/rc.d/rc0.d/K08vmware`
+
+Lanciare quindi vmware e ci si trova davanti alla seguente finestra:
+
+![](vmware1.png "fig:vmware1.png") ![](vmware2.png "fig:vmware2.png")
+
+Creare una nuova macchina virtuale e scegliere l'installazione tipica. Scegliere il sistema operativo ospite che si vuole installare dal menu a tendina.
+
+![](vmware3.png "vmware3.png")
+
+Per dare al proprio sistema ospite pieno accesso alla rete locale e a Internet scegliere il "bridget networking", che creerà una specie di ponte sul proprio collegamento abituale. Scegliere la dimensione del disco che si vuole dedicare al proprio sistema ospite e finire la configurazione.
+
+![](vmware4.png "vmware4.png")
+
+Ora ci si trova davanti al proprio sistema virtuale (non ancora installato) e si ha la possibilità di scegliere quanta RAM si vuole togliere a Fedora per darla virtualmente a Vmware ecc. Dare un'occhiata all'impostazione del CD-Rom, che ora ci servirà per installare Windows. E' riconosciuto come /dev/cdrom, ma spesso in questo modo non permette di effettuare il boot da CD. A volte dipende dalla configurazione della macchina, provare prima a lasciare /dev/cdrom e aggiungere "legacy emulation", oppure si può modificare la device dandogli il nome /dev/hdc con legacy emulation attiva.
+
+![](vmware5.png "vmware5.png")
+
+Inserire il CD di Windows e far partire la propria macchina virtuale con la freccettina verde. Inizia il boot e parte una normale installazione come se si fosse fisicamente sul harddisk, solo che ci si trova in una finestra e fisicamente sul disco non verrà scritto nulla se non una cartella.
+Niente paura quindi se la propria macchina vi dice che formatterà il disco e tutti i dati verranno persi ecc., Windows è soltanto una cartella che si può cestinare in qualsiasi momento come un semplice file.
+Una volta installato si può scegliere di installare i Tools di Vmware che sono nient'altro che dei driver aggiornati per configurare meglio il sistema virtuale, per farlo andare in VM-&gt;Vmware tools.
+
+Installazione VMware su Fedora Core 6
+-------------------------------------
+
+Qui di seguito si può trovare una semplice guida ai passaggi fondamentali per la corretta installazione e configurazione di VMware Server su una Fedora 6. Non pretende di essere completa ed è assolutamente personalizzabile nella scelta delle varie opzioni, ma spero semplicemente che possa essere d'aiuto nella risoluzione dei problemi più diffusi.
+
+Controllare la versione del kernel in uso:
+
+`$ uname -r `
+
+controllare la presenza e la versione degli header del kernel:
+
+`$ rpm -q kernel-devel `
+
+Se non sono installati, provvedere con:
+
+`# yum install kernel-devel `
+
+Se invece sono presenti ma le versioni non coincidono:
+
+`# yum upgrade kernel kernel-devel `
+
+Scaricare il pacchetto RPM (http://register.vmware.com/content/download.html) ed installarlo, dopo aver ottenuto i privilegi di root:
+
+`# rpm -ivh VMware-server-versione.rpm `
+
+L'installazione è completata, ora bisogna però configurare il programma affinchè funzioni nel modo corretto; eseguire il comando (contenuto in /usr/bin):
+
+`# vmware-config.pl `
+
+1.  accettare la licenza **\[yes\]**
+2.  directory mime type icons **\[enter\]**
+3.  directory desktop menu entry files **\[enter\]**
+4.  directory application's icon **\[enter\]**
+5.  A questo punto è probabile che non riesca a trovare un modulo già pronto per il kernel in uso, ed è quindi necessario crearlo per l'occorrenza. **\[enter\]**
+6.  indicare in quale directory sono contenuti gli header del kernel. Normalmente l'opzione di default dovrebbe essere corretta; per verificare manualmente, aprire una seconda shell e cercarne il percorso tramite il comando:
+
+$ echo /usr/src/kernels/$(uname -r)-$(uname -p)/include
+
+<li>
+networking **\[yes\]**
+
+</li>
+<li>
+probe unused private subnet **\[no\]**
+
+</li>
+<li>
+NAT networking **\[yes\]**
+
+</li>
+<li>
+Inserire indirizzo IP
+
+</li>
+<li>
+Inserire subnet mask
+
+</li>
+<li>
+configure another NAT network **\[no\]**
+
+</li>
+<li>
+host-only networking **\[no\]**
+
+</li>
+<li>
+a questo punto potrebbe succedere che l'operazione fallisca, non essendo in grado di procedere con il build del modulo vnet. In tal caso bisogna installare una patch: andare su <http://ftp.cvut.cz/vmware/> e cercare l'ultima versione disponibile di "vmware-any-any". Dopo averla scaricata, scompattarla:
+
+</li>
+`$ tar -zxvf vmware-any-any-versione.tar.gz `
+`   `
+
+e, da utente root, portarsi all'interno della directory ed eseguire:
+
+`# ./runme.pl `
+
+<li>
+dare sempre "**enter**", finchè non riparte il programma di configurazione.
+
+</li>
+<li>
+ripetere le operazioni 2-6 e, quando possibile (configurazione della rete), mantenere le vecchie impostazioni.
+
+</li>
+<li>
+port for remote console connections: **\[904\]**
+
+</li>
+<li>
+directory for virtual machine files: è molto importante la scelta di questo percorso, perchè sarà quello che conterrà i files (talvolta molto pesanti) delle nostre macchine virtuali. E' quindi necessario indicare una directory all'interno di una partizione che abbia spazio a sufficienza per gestire queste esigenze. Nel dubbio, aprire una nuova shell e digitare il comando "**df -h**" (senza apici).
+
+</li>
+<li>
+inserire il codice seriale, ottenibile alla pagina <http://register.vmware.com/content/registration.html>
+
+</li>
+</ol>
+L'installazione e la configurazione sono ora concluse con successo!
+Ribadisco che i punti 2-4, 7-13 e 17 sono a scopo puramente esemplificativo, è possibile mettere ciò che si ritiene di volta in volta più opportuno.
+
+<Categoria:Virtualizzazione>

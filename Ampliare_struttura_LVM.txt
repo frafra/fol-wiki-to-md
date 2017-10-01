@@ -1,0 +1,55 @@
+__TOC__
+==Introduzione==
+
+Per ampliare un filesystem che poggia su una struttura LVM si potrà svolgere tutto a caldo, senza dover forzatamente smontare i filesystem.<br />
+E' necessario, però, controllare che sul volume group a cui appartiene il logical volume da allargare, ci sia lo spazio libero necessario per l'ampliamento. Lanciare un vgs e controllare che nella colonna "VFree" se c'è abbastanza spazio libero da sfruttare.
+
+ # vgs -a
+   VG         #PV #LV #SN Attr   VSize VFree
+   VolGroup00   2   3   0 wz--n- 9.84G 992.00M
+
+== Ampliamento del Volume Logico ==
+
+Tramite il comando ''lvextend'' allargare il filesystem fino alla dimensione desiderata. E' possibile allargare il Logical Volume per tutta la dimensione libera del Volume group (con -l +100%FREE), oppure di una dimensione specifica (con l'opzione -L )
+
+ # lvs
+   LV       VG         Attr   LSize   Origin Snap%  Move Log Copy%  Convert
+   LogVol00 VolGroup00 -wi-ao   7.38G
+   LogVol01 VolGroup00 -wi-ao 512.00M
+   LogVol02 VolGroup00 -wi-ao   1.00G
+ 
+ # lvextend -l +100%FREE /dev/VolGroup00/LogVol02
+   Extending logical volume LogVol02 to 1.97 GB
+   Logical volume LogVol02 successfully resized
+ 
+ # lvs
+   LV       VG         Attr   LSize   Origin Snap%  Move Log Copy%  Convert
+   LogVol00 VolGroup00 -wi-ao   7.38G
+   LogVol01 VolGroup00 -wi-ao 512.00M
+   LogVol02 VolGroup00 -wi-ao   1.97G
+
+== Ampliamento del filesystem ==
+
+Allargare la dimensione del filesystem, invocando il comando ''resize2fs'' sul filesystem da ampliare.
+
+ # df -h
+ Filesystem            Size  Used Avail Use% Mounted on
+ /dev/mapper/VolGroup00-LogVol00 7.2G  1.6G  5.3G  23% /
+ /dev/mapper/VolGroup00-LogVol02 1.0G   35M  970M   10% /prova
+ /dev/hda1              99M   12M   82M  13% /boot
+ tmpfs                 125M     0  125M   0% /dev/shm
+ 
+ # resize2fs /dev/VolGroup00/LogVol02
+ resize2fs 1.39 (29-May-2006)
+ Filesystem at /dev/VolGroup00/LogVol02 is mounted on /prova; on-line resizing required
+ Performing an on-line resize of /dev/VolGroup00/LogVol02 to 516096 (4k) blocks.
+ The filesystem on /dev/VolGroup00/LogVol02 is now 516096 blocks long.
+ 
+ # df -h
+ Filesystem            Size  Used Avail Use% Mounted on
+ /dev/mapper/VolGroup00-LogVol00 7.2G  1.6G  5.3G  23% /
+ /dev/mapper/VolGroup00-LogVol02 2.0G   35M  1.9G   2% /prova
+ /dev/hda1              99M   12M   82M  13% /boot
+ tmpfs                 125M     0  125M   0% /dev/shm
+
+[[Categoria:Sistema]]

@@ -1,0 +1,816 @@
+==  Come usare Yum ==
+# Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]
+# Leggi [[02_Repositories#Come aggiungere dei repositories extra|Come aggiungere dei repositories extra]]
+
+Yum è un gestore di pacchetti molto potente. Yum risolverà al tuo posto le dipendenze e installerà facilmente le tue applicazioni. Yum anche, su tua richiesta, cercherà, rimuoverà, e farà l'elenco dei pacchetti.
+
+ usage: yum [options] &lt; update | install | info | remove | list |
+ clean | provides | search | check-update | groupinstall |
+ groupupdate | grouplist | groupinfo | groupremove |
+ makecache | localinstall | erase | upgrade | whatprovides |
+ localupdate | resolvedep | shell | deplist >
+ opzioni:
+ -h, --help            show this help message and exit
+ -t, --tolerant        be tolerant of errors
+ -C                    run entirely from cache, don't update cache
+ -c  [config file]     config file location
+ -R  [minutes]         maximum command wait time
+ -d  [debug level]     debugging output level
+ -e  [error level]     error output level
+ -y                    answer yes for all questions
+ --version             show Yum version and exit
+ --installroot=[path]  set install root
+ --enablerepo=[repo]   enable one or more repositories (wildcards allowed)
+ --disablerepo=[repo]  disable one or more repositories (wildcards allowed)
+ --exclude=[package]   exclude package(s) by name or glob
+ --obsoletes           enable obsoletes processing during updates
+ --noplugins           disable Yum plugins
+
+A prima vista questo può spaventare un po', ma in realtà è facile.
+=== Esempi ===
+* Cercare un'applicazione
+Yum cercherà tra tutti i tuoi repos abilitati e ti dirà dove puoi trovare il pacchetto richiesto:
+
+ yum search nome_applicazione 
+
+* Yum può elencare tutti i pacchetti disponibili presso i repos che tu hai abilitato e ti dice da dove puoi ottenere i pacchetti:
+
+ yum list available 
+
+* Per trovare ulteriori informazioni su uno specifico pacchetto:
+
+ yum info nome_applicazione 
+
+* Per installare applicazioni
+L'installazione è veramente molto facile
+
+ yum install nome_applicazione 
+
+* Rimuovere i pacchetti rpm
+
+Yum può rimuovere un'applicazione e le dipendenze installate con l'applicazione in questione. Non rimuoverà le dipendenze se un'altra applicazione installata ne fa uso.
+
+ yum remove nome_applicazione 
+
+* Aggiornamento del sistema
+
+Yum può aggiornare il sistema per te senza ulteriori interventi da parte tua
+
+ yum update 
+
+* Non sei sicuro se hai le updates?
+
+ yum check-update 
+
+* Installazione locale
+
+Hai scaricato un pacchetto rpm e non puoi installarlo con il comando rpm a causa delle dipendenze?
+
+ yum localinstall /percorso/al/pacchetto/rpm 
+
+==  Elenca i tuoi ultimi update con rpm ==
+# Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]
+
+ rpm -qa --last | tac
+
+==  Come installare un'interfaccia grafica (GUI) per yum ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+<li>Leggi [[02_Repositories#Come aggiungere dei repositories extra|Come aggiungere dei repositories extra]]</li>
+
+ yum -y install yumex
+
+<li>Applicazioni -> Strumenti di Sistema -> Yum Extender</li>
+</ol>
+
+==  Network Manager per Gnome ==
+# Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]
+# Leggi [[02_Repositories#Come aggiungere dei repositories extra|Come aggiungere dei repositories extra]]
+Avvia il servizio
+
+ chkconfig --level 345 NetworkManager on
+ chkconfig --level 345 NetworkManagerDispatcher on
+ service NetworkManager start
+ service NetworkManagerDispatcher start
+
+Digita le informazioni per il tuo sistema. [http://www.fedorajim.homelinux.com/samples/NetworkManagerConnected.png Qui] trovi degli screenshot
+
+==  Come installare un Menu Editor per GNOME ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+<li>Leggi [[02_Repositories#Come aggiungere dei repositories extra|Come aggiungere dei repositories extra]]</li>
+
+ yum -y install alacarte
+
+<li>Applicazioni -> Accessori -> Alacarte Menu Editor</li>
+</ol>
+
+==  Come installare Clipboard Daemon per GNOME ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+<li>I primi 6 comandi vengono eseguiti da root, l'ultimo dall'utente (exit ti riporta al tuo ambiente di lavoro).</li>
+
+ wget -c http://easylinux.info/uploads/gnome-clipboard-daemon-1.0.bin.tar.bz2
+ tar jxvf gnome-clipboard-daemon-1.0.bin.tar.bz2 -C /usr/bin/
+ rm -f gnome-clipboard-daemon-1.0.bin.tar.bz2
+ chown root:root /usr/bin/gnome-clipboard-daemon
+ chmod 755 /usr/bin/gnome-clipboard-daemon
+ gnome-clipboard-daemon &amp;
+ exit
+ export EDITOR=gedit &amp;&amp; crontab -e
+
+<li>Aggiungi la seguente linea alla fine del file</li>
+
+ @reboot gnome-clipboard-daemon
+
+<li>Salva il file modificato</li>
+</ol>
+
+==  Come installare J2SE Runtime Environment (JRE) con il Plug-in per Mozilla Firefox ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+<li>Scarica il file autoestraente per Linux (jre-1_5_0_06-linux-i586.bin) da [http://java.com/en/download/manual.jsp qui] e salvalo nella tua home.</li>
+
+ mv jre-1_5_0_06-linux-i586.bin /opt
+ cd /opt
+ chmod +x jre-1_5_0_06-linux-i586.bin
+ ./jre-1_5_0_06-linux-i586.bin
+ ln -s /opt/jre1.5.0_06/plugin/i386/ns7/libjavaplugin_oji.so 
+ /usr/lib/mozilla/plugins/libjavaplugin_oji.so
+
+<li>Il plugin Java è ora installato. Conferma con il comando seguente che il link simbolico sia di colore verde</li>
+
+ ls /usr/lib/mozilla/plugins
+
+<li>Per avviare applicazioni java come limewire, continua cosi:</li>
+
+ gedit /etc/profile.d/java.sh
+
+<li>Inserisci le seguenti righe nel nuovo file</li>
+
+ #!/bin/sh
+ JAVA_HOME=/usr/java/jre1.5.0_06
+ export JAVA_HOME
+ JAVA_BIN=$JAVA_HOME/bin
+ CLASSPATH=$CLASSPATH:$JAVA_HOME:$JAVA_HOME/lib
+ PATH=$JAVA_BIN:$PATH
+ export JAVA_BIN CLASSPATH PATH
+
+<li>Salva il file che hai editato</li>
+
+ source /etc/profile.d/java.sh
+ /usr/sbin/alternatives --install /usr/bin/java java /opt/jre1.5.0_06/bin/java 2
+ /usr/sbin/alternatives --config java
+
+<li>Vedrai la seguente schermata</li>
+
+ There are 2 programs which provide 'java'.
+ 
+   Selection    Command
+ -----------------------------------------------
+ 
+ *+ 1           /usr/lib/jvm/jre-1.4.2-gcj/bin/java
+    2           /opt/jre1.5.0_06/bin/java
+ 
+ Enter to keep the current selection[+], or type selection number:
+ 
+<li>Digita 2
+* Testa la tua installazione di Java</li>
+</ol>
+
+==  Come installare il plug-in di Flash Player (Macromedia Flash) per Mozilla Firefox ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+<li>Leggi [[02_Repositories#Come aggiungere dei repositories extra|Come aggiungere dei repositories extra]]</li>
+
+ yum --enablerepo=flash install flash-plugin
+
+<li>Riavvia Mozilla Firefox</li>
+</ol>
+
+==  Come installare un lettore per file PDF (Adobe Reader) ==
+Tu puoi già leggere i documenti in formato .pdf, ma se desideri farlo con Adobe Reader:
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+<li>Leggi [[02_Repositories#Come aggiungere dei repositories extra|Come aggiungere dei repositories extra]]</li>
+
+ wget -c http://ardownload.adobe.com/pub/adobe/reader/unix/7x/7.0.5/enu/AdobeReader_enu-7.0.5-1.i386.rpm
+ yum -y install compat-libstdc++-33
+ rpm -i AdobeReader_enu-7.0.5-1.i386.rpm
+ rm -f AdobeReader_enu-7.0.5-1.i386.rpm
+
+<li>Applicazioni -> Office -> Adobe Reader</li>
+</ol>
+
+==  Aggiungere Adobe Acrobat ai plugins di mozilla ==
+# Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]
+Linkare Acrobat Reader nella directory dei plug-in di mozilla, ti permetterà di vedere i file pdf nel browser invece che con l'Acrobat Reader
+
+ cd /usr/lib/mozilla/plugins
+ ln -s /usr/local/Adobe/Acrobat7.0/Browser/intellinux/nppdf.so
+
+==  Come installare un Download Manager (Downloader for X) ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+<li>Leggi [[02_Repositories#Come aggiungere dei repositories extra|Come aggiungere dei repositories extra]]</li>
+
+ yum -y install d4x
+
+<li>Applicazioni -> Internet -> Downloader for X</li>
+</ol>
+
+==  Come installare un Client FTP (gFTP) ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+<li>Leggi [[02_Repositories#Come aggiungere dei repositories extra|Come aggiungere dei repositories extra]]</li>
+
+ yum -y install gftp
+
+<li>Applicazioni -> Internet -> gFTP</li>
+</ol>
+
+==  Come installare una File share utility (DC++) ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+
+ wget -c http://easylinux.info/uploads/linuxdcpp.tar.gz
+ tar zxvf linuxdcpp.tar.gz -C /opt
+ rm -f linuxdcpp.tar.gz
+ gedit /usr/share/Applicazioni/dcpp.desktop
+
+<li>Inserisci le seguenti righe nel nuovo file:</li>
+
+ [Desktop Entry]
+ Encoding=UTF-8
+ Name=DC++
+ Exec=/opt$ /opt/linuxdcpp/dcpp
+ Terminal=false
+ Type=Application
+ StartupNotify=true
+ Icon=eyes.png
+ Categories=Application;Network;
+
+<li>Applicazioni -> Internet -> DC++</li>
+</ol>
+
+==  Come installare un client P2P per BitTorrent (Azureus) ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+<li>Leggi [[#Come installare J2SE Runtime Environment (JRE) con il Plug-in per Mozilla Firefox|Come installare J2SE Runtime Environment (JRE) con il Plug-in per Mozilla Firefox]]</li>
+
+ wget -c http://heanet.dl.sourceforge.net/sourceforge/azureus/Azureus_2.3.0.6_linux.tar.bz2
+ tar jxvf Azureus_2.3.0.6_linux.tar.bz2 -C /opt
+ gedit /usr/share/Applicazioni/azureus.desktop
+
+<li>Aggiungi le seguenti righe nel nuovo file</li>
+
+ [Desktop Entry]
+ Name=Azureus
+ Comment=A Bittorrent client
+ Exec=/opt/azureus/azureus
+ Icon=/opt/azureus/Azureus.png
+ Terminal=false
+ Type=Application
+ Categories=Application;Network;
+
+<li>Applicazioni -> Internet -> Azureus</li>
+</ol>
+
+==  Come installare un Client P2P per eMule (aMule) ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+<li>Leggi [[02_Repositories#Come aggiungere dei repositories extra|Come aggiungere dei repositories extra]]</li>
+
+ yum -y install amule
+
+<li>Applicazioni -> Internet -> aMule</li>
+</ol>
+
+==  Come installare un Client P2P per Gnutella (LimeWire) ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+<li>Leggi [[#Come installare J2SE Runtime Environment (JRE) con il Plug-in per Mozilla Firefox|Come installare J2SE Runtime Environment (JRE) con il Plug-in per Mozilla Firefox]]</li>
+
+ wget -c http://easylinux.info/uploads/LimeWireOther.zip
+ unzip -u LimeWireOther.zip -d /opt/
+ rm -f LimeWireOther.zip
+ gedit /usr/bin/runLime.sh
+
+<li>Aggiungi le seguenti righe nel nuovo file</li>
+
+ cd /opt/LimeWire/
+ ./runLime.sh
+
+<li>Salva il file</li>
+
+ chmod +x /usr/bin/runLime.sh
+ gedit /usr/share/Applicazioni/LimeWire.desktop
+
+<li>Aggiungi le seguenti righe nel nuovo file</li>
+
+ [Desktop Entry]
+ Name=LimeWire
+ Comment=LimeWire
+ Exec=runLime.sh
+ Icon=/opt/LimeWire/LimeWire.ico
+ Terminal=false
+ Type=Application
+ Categories=Application;Network;
+
+<li>Salva il file</li>
+<li>Applicazioni -> Internet -> LimeWire</li>
+</ol>
+
+==  Come installare Messenger (Skype) ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+
+ wget -c http://download.skype.com/linux/skype_staticQT-1.2.0.18.tar.bz2
+ tar jxvf skype_staticQT-1.2.0.18.tar.bz2 -C /opt/
+ ln -s /opt/skype-1.2.0.18/skype /usr/bin/skype
+ cp /opt/skype-1.2.0.18/skype.desktop /usr/share/Applicazioni/skype.desktop
+ cp /opt/skype-1.2.0.18/icons/skype_32_32.png /usr/share/pixmaps/skype.png
+ rm -f skype_staticQT-1.2.0.18.tar.bz2
+
+<li>Applicazioni -> Internet -> Skype</li>
+</ol>
+
+==  Come installare Codecs per applicazioni multimediali ==
+# Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]
+
+ yum -y install gstreamer-plugins*
+ yum -y install lame
+ yum -y install ffmpeg
+ yum -y install mjpegtools
+ yum --enablerepo=atrpms install w32codec
+ gst-register-0.8
+
+==  Come installare la possibilità di riprodurre a video i DVD ==
+# Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]
+# Leggi [[02_Repositories#Come aggiungere dei repositories extra|Come aggiungere dei repositories extra]]
+
+ wget -c http://download.videolan.org/pub/libdvdcss/1.2.9/rpm/libdvdcss2-1.2.9-1.i386.rpm
+ rpm -i libdvdcss2-1.2.9-1.i386.rpm
+
+==  Come installare un lettore di contenuti multimediali (MPlayer) con il relativo Plug-in per Mozilla Firefox ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+<li>Leggi [[02_Repositories#Come aggiungere dei repositories extra|Come aggiungere dei repositories extra]]</li>
+<li>Leggi [[#Come installare Codecs per applicazioni multimediali|Come installare Codecs per applicazioni multimediali]]</li>
+<li>Leggi [[#Come installare la possibilità di riprodurre a video i DVD|Come installare la possibilità di riprodurre a video i DVD]]</li>
+
+ yum -y install mplayer-gui
+ yum -y install mplayerplug-in
+
+<li>Applicazioni -> Audio e Video -> MPlayer</li>
+<li>Riavvia Mozilla Firefox</li>
+</ol>
+
+==  Come installare un lettore di contenuti multimediali (VLC) ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+<li>Leggi [[02_Repositories#Come aggiungere dei repositories extra|Come aggiungere dei repositories extra]]</li>
+<li>Leggi [[#Come installare Codecs per applicazioni multimediali|Come installare Codecs per applicazioni multimediali]]</li>
+<li>Leggi [[#Come installare la possibilità di riprodurre a video i DVD|Come installare la possibilità di riprodurre a video i DVD]]</li>
+
+ yum -y install videolan-client
+
+<li>Applicazioni -> Audio e Video -> MPlayer</li>
+</ol>
+
+==  Come installare un lettore di contenuti multimediali (XMMS) ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+<li>Leggi [[02_Repositories#Come aggiungere dei repositories extra|Come aggiungere dei repositories extra]]</li>
+<li>Leggi [[#Come installare Codecs per applicazioni multimediali|Come installare Codecs per applicazioni multimediali]]</li>
+
+ yum -y install xmms
+ yum -y install xmms-mp3
+ yum -y install xmms-skins
+
+<li>Applicazioni -> Audio e Video -> XMMS</li>
+</ol>
+
+==  Come installare un lettore di contenuti multimediali (amaroK) ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+<li>Leggi [[02_Repositories#Come aggiungere dei repositories extra|Come aggiungere dei repositories extra]]</li>
+<li>Leggi [[#Come installare Codecs per applicazioni multimediali|Come installare Codecs per applicazioni multimediali]]</li>
+
+ yum -y install amarok
+
+<li>Applicazioni -> Audio e Video -> amarok</li>
+</ol>
+
+==  Come installare un lettore di contenuti multimediali (RealPlayer 10) ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+<li>Leggi [[02_Repositories#Come aggiungere dei repositories extra|Come aggiungere dei repositories extra]]</li>
+
+ yum -y install compat-libstdc++-33
+
+<li>Scarica RealPlayer Gold da [http://www.real.com/realcom/R?href=http%3A%2F%2Fforms.real.com%2Freal%2Fplayer%2Fdownload.html%3Ff%3Dunix%2FRealPlayer10GOLD.rpm%26product%3Dplayerplus%26system%3Dlinux&amp;pageid=linuxPage&amp;pageregion=advanced_install&amp;src=linux&amp;pcode=rn&amp;opage=linux qui].</li>
+<li>Installalo.<br />
+''Supponiamo che il file .rpm è stato scaricato sul tuo Desktop, perché Firefox lo fa per impostazione predefinita.''</li>
+
+ rpm -ivh Desktop/RealPlayer10GOLD.rpm
+ yum remove HelixPlayer
+
+<li>Applicazioni -> Audio e Video -> RealPlayer 10</li>
+</ol>
+
+==  Come installare un'applicazione per Streaming (streamtuner) ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+
+ wget -c ftp://ftp.freshrpms.net/pub/dag/dries/packages/streamtuner/fc4-i386/streamtuner-0.99.99-1.2.fc4.rf.i386.rpm
+ rpm -ivh streamtuner-0.99.99-1.2.fc4.rf.i386.rpm
+ rm -f streamtuner-0.99.99-1.2.fc4.rf.i386.rpm
+
+<li>Applicazioni -> Audio e Video -> streamtuner</li>
+</ol>
+
+==  Come installare ID3 Tag Editor (EasyTAG) ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+<li>Leggi [[02_Repositories#Come aggiungere dei repositories extra|Come aggiungere dei repositories extra]]</li>
+
+ yum --enablerepo=freshrpms install easytag
+
+<li>Applicazioni -> Audio e Video -> EasyTAG</li>
+</ol>
+
+==  Come installare un editor per file Video (Kino) ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+<li>Leggi [[02_Repositories#Come aggiungere dei repositories extra|Come aggiungere dei repositories extra]]</li>
+<li>Leggi [[#Come installare Codecs per applicazioni multimediali|Come installare Codecs per applicazioni multimediali]]</li>
+
+ yum -y install kino
+
+<li>Applicazioni -> Audio e Video -> Kino</li>
+</ol>
+
+==  Come installare un editor per file Audio (Audacity) ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+<li>Leggi [[02_Repositories#Come aggiungere dei repositories extra|Come aggiungere dei repositories extra]]</li>
+<li>Leggi [[#Come installare Codecs per applicazioni multimediali|Come installare Codecs per applicazioni multimediali]]</li>
+
+ yum -y install audacity
+
+<li>Applicazioni -> Audio e Video -> Audacity</li>
+</ol>
+
+==  Come installare un ripper per DVD (dvd::rip) ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+<li>Leggi [[02_Repositories#Come aggiungere dei repositories extra|Come aggiungere dei repositories extra]]</li>
+<li>Leggi [[#Come installare Codecs per applicazioni multimediali|Come installare Codecs per applicazioni multimediali]]</li>
+<li>Leggi [[#Come installare la possibilità di riprodurre a video i DVD|Come installare la possibilità di riprodurre a video i DVD]]</li>
+<li>Leggi [[#Come installare un lettore di contenuti multimediali (MPlayer) con il relativo Plug-in per Mozilla Firefox|Come installare un lettore di contenuti multimediali (MPlayer) con il relativo Plug-in per Mozilla Firefox]]</li>
+<li>Leggi [[#Come installare un compressore RAR (rar)|Come installare un compressore RAR (rar)]]</li>
+
+ yum -y install perl-Video-DVDRip
+ yum --enablerepo=freshrpms install vcdimager
+ yum -y install cdrdao
+ yum --enablerepo=freshrpms install subtitleripper
+ ln -fs /usr/bin/rar /usr/bin/rar-2.80
+ gedit /usr/share/Applicazioni/dvdrip.desktop
+
+<li>Inserisci le seguenti linee nel nuovo file</li>
+
+ [Desktop Entry]
+ Name=dvd::rip 
+ Comment=dvd::rip
+ Exec=dvdrip
+ Icon=/usr/share/perl5/Video/DVDRip/icon.xpm
+ Terminal=false
+ Type=Application
+ Categories=Application;AudioVideo;
+
+<li>Salva il file modificato</li>
+<li>Applicazioni -> Audio e Video -> dvd::rip</li>
+</ol>
+
+==  Come installare un visualizzatore di Immagini (Gwenview) ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+<li>Leggi [[02_Repositories#Come aggiungere dei repositories extra|Come aggiungere dei repositories extra]]</li>
+
+ yum -y install gwenview
+ yum -y install kipi-plugins
+ yum -y install ImageMagick
+
+<li>Applicazioni -> Grafica -> Gwenview</li>
+</ol>
+
+==  Come installare un client per la posta elettronica (Mozilla Thunderbird) ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+<li>Leggi [[02_Repositories#Come aggiungere dei repositories extra|Come aggiungere dei repositories extra]]</li>
+
+ yum -y install thunderbird
+
+<li>Applicazioni -> Internet -> Thunderbird EMail</li>
+</ol>
+
+==  Come installare un lettore di News (Pan) ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+<li>Leggi [[02_Repositories#Come aggiungere dei repositories extra|Come aggiungere dei repositories extra]]</li>
+
+ yum -y install pan
+
+<li>Applicazioni -> Internet -> Pan Lettore di News</li>
+</ol>
+
+==  Come installare un lettore per RSS/RDF/Atom (RSSOwl) ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+<li>Leggi [[#Come installare J2SE Runtime Environment (JRE) con il Plug-in per Mozilla Firefox|Come installare J2SE Runtime Environment (JRE) con il Plug-in per Mozilla Firefox]]</li>
+
+ wget -c http://easylinux.info/uploads/rssowl_linux_1_1_3_bin.tar.gz
+ tar zxvf rssowl_linux_1_1_3_bin.tar.gz -C /opt/
+ chown -R root:root /opt/rssowl_linux_1_1_3_bin/
+ gedit /usr/bin/runRSSOwl.sh
+
+<li>Inserisci le seguenti linee nel nuovo file</li>
+
+ export MOZILLA_FIVE_HOME=/usr/lib/mozilla-firefox
+ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${MOZILLA_FIVE_HOME}:${LD_LIBRARY_PATH}
+ cd /opt/rssowl_linux_1_1_3_bin/
+ ./run.sh
+
+<li>Salva il file modificato</li>
+
+ chmod +x /usr/bin/runRSSOwl.sh
+ gedit /usr/share/Applicazioni/RSSOwl.desktop
+
+<li>Inserisci le seguenti linee nel nuovo file</li>
+
+ [Desktop Entry]
+ Name=RSSOwl
+ Comment=RSSOwl
+ Exec=runRSSOwl.sh
+ Icon=/opt/rssowl_linux_1_1_3_bin/rssowl.xpm
+ Terminal=false
+ Type=Application
+ Categories=Application;Network;
+
+<li>Salva il file modificato</li>
+<li>Applicazioni -> Internet -> RSSOwl</li>
+</ol>
+
+==  Come installare un CHM viewer (GnoCHM) ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+<li>Leggi [[02_Repositories#Come aggiungere dei repositories extra|Come aggiungere dei repositories extra]]</li>
+
+ yum -y --enablerepo=dries install gnochm
+
+<li>Applicazioni -> Accessori -> CHM Viewer</li>
+</ol>
+
+==  Come installare un Web Authoring System (Nvu) ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+<li>Leggi [[02_Repositories#Come aggiungere dei repositories extra|Come aggiungere dei repositories extra]]</li>
+
+ yum -y install xorg-x11-deprecated-libs
+ wget -c http://www.nvu.com/download/linux/1.0/nvu-1.0-RedHat_and_Fedora/nvu-1.0-1.rhel4.fs.i386.rpm
+ rpm -ivh nvu-1.0-1.rhel4.fs.i386.rpm
+
+<li>Applicazioni -> Programmazione -> Nvu</li>
+</ol>
+
+==  Come installare un Web Authoring System (bluefish) ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+<li>Leggi [[02_Repositories#Come aggiungere dei repositories extra|Come aggiungere dei repositories extra]]</li>
+
+ yum -y install bluefish
+
+<li>Applicazioni --> Programmazione --> Bluefish Editor</li>
+</ol>
+
+==  Come installare un ambiente di sviluppo orientato al web per KDE (quanta plus) ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+<li>Leggi [[02_Repositories#Come aggiungere dei repositories extra|Come aggiungere dei repositories extra]]</li>
+
+ yum -y install kdewebdev
+
+<li>Applicazioni -> Programmazione -> Quanta Plus</li>
+</ol>
+
+==  Come installare un'applicazione per la contabilità personale (GnuCash) ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+<li>Leggi [[02_Repositories#Come aggiungere dei repositories extra|Come aggiungere dei repositories extra]]</li>
+
+ yum -y install gnucash
+ rm -fr /usr/share/gnome/apps/Applicazioni/
+ gedit /usr/share/Applicazioni/GnuCash.desktop
+
+<li>Inserisci le seguenti linee nel nuovo file</li>
+
+ [Desktop Entry]
+ Name=GnuCash
+ Comment=GnuCash Personal Finance
+ Exec=gnucash
+ Icon=/usr/share/pixmaps/gnucash/gnucash-icon.png
+ Terminal=false
+ Type=Application
+ Categories=Application;Office;
+
+<li>Salva il file modificato</li>
+<li>Applicazioni -> Office -> GnuCash</li>
+</ol>
+
+==  Come installare un'applicazione per il Desktop Publishing (Scribus) ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+<li>Leggi [[02_Repositories#Come aggiungere dei repositories extra|Come aggiungere dei repositories extra]]</li>
+
+ yum -y install scribus
+
+<li>Applicazioni -> Office -> Scribus</li>
+</ol>
+
+==  Come installare un'applicazione per masterizzare CD/DVD (GnomeBaker) ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+<li>Leggi [[02_Repositories#Come aggiungere dei repositories extra|Come aggiungere dei repositories extra]]</li>
+
+ yum -y install gnomebaker
+
+<li>Applicazioni -> Audio e Video -> GnomeBaker</li>
+</ol>
+
+==  Come installare un'applicazione per masterizzare CD/DVD (k3b) ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+<li>Leggi [[02_Repositories#Come aggiungere dei repositories extra|Come aggiungere dei repositories extra]]</li>
+
+ yum -y install k3b
+
+<li>Applicazioni -> Audio e Video -> K3b</li>
+</ol>
+
+==  Come installare un Editor di partizioni (GParted) ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+<li>Leggi [[02_Repositories#Come aggiungere dei repositories extra|Come aggiungere dei repositories extra]]</li>
+
+ yum -y install gparted
+
+<li>Applicazioni -> Strumenti di Sistema -> GParted</li>
+</ol>
+
+==  Come installare un Firewall personale (Firestarter) ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+<li>Leggi [[02_Repositories#Come aggiungere dei repositories extra|Come aggiungere dei repositories extra]]</li>
+
+ yum -y install firestarter
+
+<li>Applicazioni -> Strumenti di Sistema -> Firestarter</li>
+</ol>
+
+==  Come installare un analizzatore di traffico di rete (Ethereal) ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+<li>Leggi [[02_Repositories#Come aggiungere dei repositories extra|Come aggiungere dei repositories extra]]</li>
+
+ yum -y install ethereal ethereal-gnome
+
+<li>Applicazioni -> Internet -> Ethereal</li>
+</ol>
+
+==  Come installare un compressore RAR (rar) ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+<li>Leggi [[02_Repositories#Come aggiungere dei repositories extra|Come aggiungere dei repositories extra]]</li>
+
+ yum --enablerepo=freshrpms install rar unrar
+
+<li>Applicazioni -> Accessori -> Archive Manager</li>
+</ol>
+
+==  Come installare dei Fonts aggiuntivi ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+<li>Leggi [[02_Repositories#Come aggiungere dei repositories extra|Come aggiungere dei repositories extra]]</li>
+
+ yum -y install xfonts-arabic
+ yum -y install xfonts-chinese
+ yum -y install xfonts-gujarati
+ yum -y install xfonts-hebrew
+ yum -y install xfonts-hindi
+ yum -y install xfonts-japanese
+ yum -y install xfonts-xorg-truetype
+ wget -c http://easylinux.info/uploads/msttcorefonts-1.3-4.noarch.rpm
+ rpm -ivh msttcorefonts-1.3-4.noarch.rpm
+ /etc/init.d/xfs restart
+
+<li>Leggi #15.4 Come riavviare GNOME senza riavviare il computer</li>
+</ol>
+
+==  Come installare delle Applets per il Desktop (gDesklets) ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+<li>Leggi [[02_Repositories#Come aggiungere dei repositories extra|Come aggiungere dei repositories extra]]</li>
+
+ yum -y install gdesklets
+
+<li>Applicazioni -> Accessori -> gDesklets</li>
+<li>Per ulteriori informazioni vedi [http://gdesklets.gnomedesktop.org/ questo]</li>
+</ol>
+
+==  Come installare un Compilatore ==
+# Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]
+# Leggi [[02_Repositories#Come aggiungere dei repositories extra|Come aggiungere dei repositories extra]]
+
+ yum -y install gcc
+ yum -y install gcc-c++
+
+
+==  Come implementare un ambiente di sviluppo ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+<li>Leggi [[02_Repositories#Come aggiungere dei repositories extra|Come aggiungere dei repositories extra]]</li>
+<li>Aggiungi i repo di sviluppo</li>
+
+ gedit /etc/yum.repos.d/fedora-devel.repo
+
+<li>Aggiungi le seguenti linee al nuovo file</li>
+
+ [development]
+ name=Fedora Core $releasever - Development Tree
+ #baseurl=http://download.fedora.redhat.com/pub/fedora/linux/core/development/$basearch/
+ mirrorlist=http://fedora.redhat.com/download/mirrors/fedora-core-rawhide
+ enabled=1
+ gpgcheck=0
+
+<li>Salva il file modificato</li>
+
+ yum groupinstall "Development Tools"
+
+</ol>
+
+==  Come installare un'IDE, Integrated Development Environment (Anjuta) ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+<li>Leggi [[02_Repositories#Come aggiungere dei repositories extra|Come aggiungere dei repositories extra]]</li>
+
+ rpm --import /usr/share/rhn/RPM-GPG-KEY
+ yum -y install anjuta
+
+<li>Applicazioni -> Programmazione -> Anjuta IDE</li>
+</ol>
+
+==  Come installare un tool per la modellazione 3D (Blender 3d) ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+<li>Leggi [[02_Repositories#Come aggiungere dei repositories extra|Come aggiungere dei repositories extra]]</li>
+
+ yum -y install blender
+
+<li>Applicazioni -> Grafica -> Blender 3D modeller</li>
+</ol>
+
+==  Come installare il gioco jFrozen-Bubble ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+<li>Leggi [[02_Repositories#Come aggiungere dei repositories extra|Come aggiungere dei repositories extra]]</li>
+
+ yum -y install frozen-bubble
+
+<li>Applicazioni -> Giochi -> Frozen-Bubble</li>
+<li>Per altri giochi vedi [http://games.linux.sk/ questo] oppure [http://www.tuxgames.com/ il sito di Tuxgames]</li>
+</ol>
+
+==  Come installare un planetario virtuale (Stellarium) ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+<li>Leggi [[02_Repositories#Come aggiungere dei repositories extra|Come aggiungere dei repositories extra]]</li>
+
+ yum -y install stellarium
+
+<li>Applicazioni -> Grafica -> Stellarium nightsky renderer</li>
+</ol>
+
+==  Come installare le applicazioni KDE Edutainment ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+<li>Leggi [[02_Repositories#Come aggiungere dei repositories extra|Come aggiungere dei repositories extra]]</li>
+
+ yum -y install kdeedu
+
+<li>Applicazioni -> Edutainment -> ...</li>
+</ol>
+
+{{Link/prec|02_Repositories|02 Repositories}}{{Link/succ|05 Altri Desktop Environments|05 Altri Desktop Environments}}
+
+[[Categoria:Fedoraserver]]

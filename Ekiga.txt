@@ -1,0 +1,115 @@
+== Introduzione ==
+
+Con questo articolo si vuole dare delle indicazioni esaurienti sull'installazione ed il setup di Ekiga su Fedora; dato che si è alla ricerca di software alternativo a Skype, si spera di poter essere d'aiuto a coloro che vogliono utilizzare software e servizi Voip liberi ed open-source.
+
+== Installazione ==
+
+=== Via Yum ===
+L'installazione dai repository Fedora risulta essere molto semplice; nei repo è presente la versione 4.0.1-6 (agosto 2014):
+
+ # yum install ekiga
+<!-- erano presenti anche questi pacchetti:
+   alsa-lib alsa-utils sox inotify-tools zenity
+ma non credo servano. eventualmente basta rollbackarli
+-->
+
+=== Dai sorgenti ===
+{{suggerimento|Si consiglia di effettuare sempre l'installazione dai repository ufficiali fedora, per avere sempre il pacchetto il più aggiornato e sicuro possibile.
+<br>La compilazione tramite sorgenti potrebbe subire variazioni; verificare la procedura corretta all'interno del file ''INSTALL'' del pacchetto scaricato.
+}}
+
+Di seguito viene illustrata la compilazione dei sorgenti della [http://ftp.gnome.org/pub/gnome/sources/ekiga/3.2/ versione 3.2.6] effettuata su Fedora 14 32bit (su Fedora 15 ci sono alcuni problemi per la compilazione, probabilmente legati alla versione dei pacchetti OPAL / PTLIB, tuttavia la versione 3.3.0 nei repo Fedora 15 sembra funzionare).<br>
+Installazione tool e librerie di sviluppo:
+
+ # yum groupinstall 'Librerie di sviluppo' 'Strumenti di sviluppo'
+
+Installazione dipendenze:
+
+ # yum-builddep ekiga
+
+Dopo aver scaricato l'archivio dei sorgenti lo devi compilare:
+
+ $ cd ekiga-3.2.6
+ $ ./configure --prefix=/usr
+ $ make
+
+Durante la compilazione può succedere di avere degli errori che impediscono la prosecuzione:
+
+ In file included from /usr/include/libnotify/notify.h:28:0,
+ from ../../../../lib/engine /components /libnotify/libnotify-ma in.cpp:41:
+ /usr/include/libnotify/notification.h:28:21: fatal error: gtk/gtk.h: File o directory non esistente
+ compilation terminated.
+
+oppure:
+
+ /usr/bin/ld:../lib/engine /.libs /libekiga _engine.a (xvwindow.o): undefined reference to symbol 'XShmQueryExtension'
+ /usr/bin/ld:note:'XShmQueryExtension' is defined in DSO /usr/lib/libXext.so.6 so try adding it to the linker command line
+ /usr/lib/libXext.so.6: could not read symbols: Invalid operation
+ collect2: ld returned 1 exit status
+
+Un aiuto per superare l'ostacolo è il seguente:
+* Nel primo caso bisogna editare il makefile nella directory /lib/engine/components/libnotify prima di avviare il comando $make:
+alla riga #372 aggiungi il flag $(GTK_CFLAGS).
+* Nel secondo caso bisogna editare il make file nella directory /lib prima di avviare il comando $make:
+alla riga #57 aggiungi -lX11 -lXext così:
+
+ $(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) -lX11 -lXext  \
+
+Una volta compilato, installalo:
+
+ # make install
+
+==Setup==
+
+[[Image:Ekiga.png|right|thumb|150px|La schermata di Ekiga.]]
+Per poter utilizzare Ekiga bisogna registrare un proprio account: [https://www.ekiga.net/?page=register registrazione]<br>
+Una volta ottenuto e configurato il tuo account su Ekiga come nell'immagine, assicurati che il tuo indirizzo venga registrato.
+[[Image:Ekiga_account.png|left|thumb|200px|Creazione dell'account.]]
+
+<br>
+==Test di chiamata==
+
+Ekiga.net predispone dei numeri di chiamata per testare la propria configurazione; ecco i principali:
+
+* ''sip:500@ekiga.net'' Echo test, supporta il video (H264, H263-1998, H261 only) e audio (PCMA only) - audio bassa qualità
+* ''sip:520@ekiga.net'' Call-me test (chiama, aggancia e richiama), supporta solo l'audio
+* ''sip:501@ekiga.net'' Public conference room Ekiga.net (deve essere abilitato il PCMA audio codec)
+* ''sip:501xxxx@ekiga.net'' Room pubbliche (x = 0 a 9)
+* ''sip:5011122@ekiga.net'' Conference room francese 1122
+
+<br>
+== Troubleshooting ==
+
+===Problemi con la connessione (NAT router)===
+Il NAT (network address translation) è una sorta di "filtro" implementato in molti router in commercio che modifica gli indirizzi IP in transito. Ekiga ha migliorato il supporto a questo sistema molto diffuso collegandosi ad un server STUN (stun.ekiga.net), quindi nella maggior parte dei casi non è necessario effettuare alcun modifica per far chiamate.<br>
+Verifica dell'impostazione:
+
+ $ gconftool-2 -g /apps/ekiga/general/nat/stun_server
+
+L'output del comando riporta il supporto abilitato o meno al server stun.ekiga.net. Solitamente durante la prima configurazione dell'account, Ekiga rileva automaticamente la rete utilizzata, in caso di rilevazione di NAT simmetrici (nel caso sia l'account chiamante che l'account ricevente la chiamata sono dietro ad un router NAT) è necessario il port forwarding.<br>
+Porte firewall da aprire per chiamare con Ekiga:
+
+ SIP 5000 to 5100 UDP
+ STUN 3478 to 3479 UDP
+ H323 1720 TCP
+ H323 5000 to 5100 UDP
+
+===Dynamic navigation dei NAT router simmetrici (Trigger port)===
+Molti router NAT permettono la creazione di regole (rules) dedicate a delle porte specifiche. Aprendo le porte 3478/3479 UDP per il server STUN, i pacchetti in ricezione destinati alle stesse porte vengono invece redirezionati sulle porte (5000-5100 UDP) di proposito. Tecnicamente è molto simile al port forwarding.<br>
+In figura c'é un esempio (non tutti i router permettono di impostare le trigger port):
+[[Image:Ekiga_trigger.jpg|center|thumb|350px|Il Trigger porting sul router.]]
+{{Warning|Mai disabilitare il NAT del router!}}
+
+===Qualità audio===
+Tra le preferenze di Ekiga, nella scheda codec audio si trova una lista di codec attivabili ed "ordinabili"; è utile attivare il codec con un consumo di banda più (16 KHz) o meno larga (8 KHz) o ad una qualità alta (G722) o media (Speex) in base alla propria connessione Internet.<br>
+L'ordine ideale dei '''codec audio attivi''' normalmente è:<br>
+Speex, PCMU, PCMA.
+
+===Compatibilità con altri client===
+Ekiga non è compatibile con Skype!<br>
+Il proprio account Ekiga.net può essere usato anche con altri client. [http://wiki.ekiga.org/index.php/Which_programs_work_with_Ekiga_%3F Qui] una lista.
+
+== Riferimenti ==
+* [http://ekiga.net Ekiga.net]
+
+[[Categoria:Internet]]

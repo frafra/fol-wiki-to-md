@@ -1,0 +1,49 @@
+\_\_TOC\_\_
+
+Introduzione
+------------
+
+[Churchyard-chromium-russianfedora-tested](http://copr.fedoraproject.org/coprs/churchyard/chromium-russianfedora-tested/) è un repository di software di terze parti reso disponibile dal fedoraproject attraverso il servizio [Copr](http://copr.fedoraproject.org/coprs/).
+L'installazione è necessaria se si intende utilizzare il browser open-source Chromium su Fedora 20 o versioni successive.
+
+Installazione Manuale Repository
+--------------------------------
+
+Creare un file **/etc/yum.repos.d/churchyard-chromium-russianfedora-tested.repo** e modificarlo (ad es. con un software di editing testuale come *nano*, oppure altri simili) digitando da root:
+
+`# nano /etc/yum.repos.d/churchyard-chromium-russianfedora-tested.repo`
+
+inserire al suo interno le seguenti righe:
+
+`[churchyard-chromium-russianfedora-tested]`
+`name=Copr repo for chromium-russianfedora-tested owned by churchyard`
+`baseurl=`[`http://copr-be.cloud.fedoraproject.org/results/churchyard/chromium-russianfedora-tested/fedora-$releasever-$basearch/`](http://copr-be.cloud.fedoraproject.org/results/churchyard/chromium-russianfedora-tested/fedora-$releasever-$basearch/)
+`skip_if_unavailable=True`
+`gpgcheck=0`
+`enabled=1`
+
+Salvare e chiudere.
+
+Installazione Automatica Repository
+-----------------------------------
+
+Si può evitare il passaggio della scrittura manuale recuperando il file direttamente dal repo attraverso il plugin di yum **yum-plugin-copr**, oppure tramite *dnf* (l'alternativa a yum) che dispone già del plugin adatto.
+Attraverso yum basta quindi dare un:
+
+`# yum copr enable churchyard/chromium-russianfedora-tested`
+
+ricordando di avere il suddetto pacchetto yum-plugin-copr già installato.
+Se si preferisce utilizzare dnf basta semplicemente sostituire yum con *dnf* e il gioco è fatto!
+
+Installazione Chromium
+----------------------
+
+Per installare il browser di casa google attenersi alla relativa [guida nella documentazione](Chromium "wikilink").
+
+Riferimenti
+-----------
+
+-   [Homepage del servizio Copr](http://copr.fedoraproject.org/coprs/).
+-   Homepage del software open-source [Chromium](http://fedoraproject.org/wiki/Chromium).
+
+<Categoria:Repository>

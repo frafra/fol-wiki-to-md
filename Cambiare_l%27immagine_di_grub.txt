@@ -1,0 +1,17 @@
+Per rallegrare l'avvio di Fedora, è possibile modificare l'immagine che appare all'avvio di Grub, il boot loader di Fedora.<br />
+Questi sono i passaggi da seguire affinchè si possa cambiare l'immagine di sfondo di Grub:
+<ol>
+<li> Prendere un'immagine e ridimensionarla a 640x480 px, salvandola in formato .PNG</li>
+<li> Aprire un terminale e posizionarsi nella cartella dove si trova l'immagine.png, poi digitare:
+<pre># convert-geometry 640x480 -colors 14 immagine.png immagine.xpm
+$ gzip immagine.xpm
+$ cp immagine.xpm.gz /boot/grub</pre>
+</li>
+<li> Dopodiché digitare:
+<pre># vim /boot/grub/grub.conf</pre>
+e modificare la riga:
+<pre>splashimage=(hd0,0)/boot/grub/immagine.xpm.gz</pre>
+</li></ol>
+Riavviare il sistema e si vedrà l'immagine scelta come sfondo.
+
+[[Categoria:Grub]]

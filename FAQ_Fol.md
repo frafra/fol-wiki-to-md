@@ -1,0 +1,62 @@
+Fedora Online: domande generiche
+--------------------------------
+
+### Qual è lo scopo del sito?
+
+Fedora online vuole essere un supporto per tutti gli utenti di Fedora, soprattutto per chi è alle prime armi o si cimenta con linguaggi, Server o Database nuovi, e vorrebbe far parte di una comunità alla quale può postare le sue problematiche. Con la sezione delle guide sotto forma di Wiki e le News vogliamo fornire le informazioni più richieste in un unico sito.
+
+### E' obbligatorio registrarsi?
+
+No, con la versione 2.0 di Fedora Online tutti i contenuti sono liberamente consultabili. Per poter inviare dei contributi sul Forum invece è necessario creare un account.
+
+### Posso caricare un avatar personalizzato?
+
+Sì, fin dalla registrazione è possibile caricare un proprio avatar personalizzato, rispettando le dimensioni 70x70px e un peso non superiore a 5kb.
+
+### Posso cambiare l'indirizzo e-mail del mio profilo?
+
+Sì, una volta fatto l'accesso al proprio utente basta navigare nel menù **Profilo** &gt; **Essenziali** &gt; **Indirizzo email valido** e seguire le istruzioni per cambiare il proprio indirizzo e-mail.
+
+### Sono un nuovo utente, come mi dovrei avvicinare a FOL?
+
+Come in tutte le comunità è essenziale capire come ci si comporta correttamente e che abitudini ci sono all'interno del forum. Per questo è consigliato osservare un po' come si muovono gli altri e cosa consigliano i moderatori.
+Inoltre è importante leggere la netiquette e in caso di prime domande utilizzare la funzione "Cerca", che in molti casi è sufficiente per ottenere la risposta al problema.
+Infatti, oltre a dare supporto immediato, il forum deve essere una fonte di informazioni anche per chi legge le discussioni successivamente.
+
+### Posso contribuire? Come?
+
+Certamente, ogni utente che ha voglia di dare un contributo a Fol è benvenuto. Leggi le linee guida per essere registrato come redattore e scopri la nostra Mailing List.
+
+Forum
+-----
+
+### Esiste una Netiquette? Dove la trovo?
+
+Sì, per il corretto funzionamento del Forum è necessario che tutti si attengano alla nostra netiquette. Puoi leggerla [qui](http://forum.fedoraonline.it/misc.php?action=rules).
+
+### Perchè non sono gradite discussioni sull'argomento P2P?
+
+Vista la evoluzione continua della legge a riguardo, FOL ha deciso di intraprendere la strada più conservativa per mantenere una posizione più neutrale possibile.
+Gli argomenti che riguardano i programmi e i loro problemi tecnici rientrano naturalmente nel supporto che vogliamo dare agli utenti e sono benvenuti. Non vogliamo, però, sostituirci ai forum dedicati al P2P, per cui tutto quello che va oltre alla mera installazione dell'applicativo P2P verrà osservato attentamente e se necessario chiuso dai moderatori.
+Post che trattano link a server specifici, siti P2P con login obbligatorio, consigli su dati o file da scambiare e domande sul dove trovarli ecc. verranno cancellati immediatamente.
+
+### Ci sono delle regole non scritte per utilizzare il Forum al meglio?
+
+Sì, oltre ad attenersi rigorosamente alla nostra Netiquette, è buona norma rispettare anche queste regole non scritte:
+\# Per ogni problema va aperta una discussione assestante
+
+1.  Non usare il maiuscolo o titoli che iniziano con "help" o "urgente"
+
+<!-- -->
+
+1.  Non usare i colori nei post
+
+<!-- -->
+
+1.  Non postare output non richiesti
+
+<!-- -->
+
+1.  Non utilizzare immagini
+
+<Categoria:FAQ>

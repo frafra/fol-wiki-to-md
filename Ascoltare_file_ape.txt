@@ -1,0 +1,40 @@
+Una delle cose a cui una persona è più affezionata, è senz'altro la "propria" musica, quella che ascolta più spesso.<br />
+Ma se una parte di essa è in formato .ape, l'impatto con Fedora10 (o altra distribuzione linux) potrebbe essere difficile in quanto non ci sono, apparentemente, le possibilità per ascoltarla.<br />
+In realtà i modi ci sono......e sono anche semplici.
+
+La presente non vuole essere una guida, solo una raccolta di link che chiunque potrebbe trovare con un po' di pazienza.
+
+Una possibilità è usare VLC, un programma sempre più diffuso, e molto versatile. Se non lo abbiamo già apriamo una shell, diventiamo root e lo installiamo con 
+
+ # dnf install vlc*
+
+Questo comando installerà un po' di roba: il programma vero e proprio, e tutte le librerie che servono per ascoltare i vari formati musicali, ma non gli ape.<br />
+Si risolve facilmente: andare qui:<br />
+http://rpmfind.net/linux/rpm2html/search.php?query=libmac.so.2<br />
+e scaricare il pacchetto mac-3.99-2.u4b5.fc7.i386.rpm (è per fedora 7 ma va benissimo per le successive).<br />
+Fatto ciò portarsi con una shell nella directory dove lo si è scaricato, e dare
+
+ # rpm -ivh mac-3.99-2.u4b5.fc7.i386.rpm 
+
+come root, per installarlo.<br />
+Il gioco è fatto, adesso VLC può riprodurre gli ape.<br />
+Alcuni sono probabilmente abituati a usare xmms per la loro musica, e vorrebbero continuare a farlo anche per gli ape. Fortunatamente è possibile!<br />
+Se non lo si possiede già, installare xmms e dipendenze varie con:
+
+ # dnf install xmms*
+
+e in seguito andare qui:<br />
+http://orion.lcg.ufrj.br/RPMS/myrpms-f8/repoview/repoview/xmms-mac-0-0.3.1-1.fc8.html<br />
+e scaricare il pacchetto xmms-mac-0.3.1-1.fc8.i386.rpm<br />
+Portatesi quindi nella directory dove lo si è scaricato, e installarlo con 
+
+ # rpm -ivh xmms-mac-0.3.1-1.fc8.i386.rpm
+
+E' tutto, adesso xmms dovrebbe riprodurre senza problemi gli ape!
+
+Buon ascolto :-D
+
+{{Nota|Nota:|Purtroppo ad oggi non ho trovato un metodo per leggere gli ape con Amarok. I metodi suddetti sono testati e funzionanti su fedora10, ma credo funzionino anche per fedora 8 e 9.
+Se si è appena installato xmms e va in crash appena si prova a riprodurre una canzone, vuol dire che si ha configurato male l'output audio!}}
+
+[[Categoria:Multimedia]]

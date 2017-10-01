@@ -1,0 +1,19 @@
+Per avere la lista dei servizi e relativi runlevel in cui sono stati attivati:
+{{Scrittura|I comandi sotto riportati sono da eseguire con '''privilegi di root'''.}}
+ # chkconfig --list
+
+Per conoscere lo stato di attivazione di un particolare servizio nei vari runlevel:
+
+ # chkconfig --list nome_servizio
+
+Per attivare, disattivare o "resettare" un servizio su vari livelli:
+
+ # chkconfig --level (3456) nome_servizio on|off|reset
+
+Con (3456) si intende uno o più runlevel....
+
+Ulteriori informazioni:
+
+ $ man chkconfig
+
+[[Categoria:Sistema]]

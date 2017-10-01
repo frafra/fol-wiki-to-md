@@ -1,0 +1,75 @@
+==  Come usare un CD di installazione di Fedora, per accedere al sistema con i privilegi di root ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+<li>Inserisci il CD #1 di Fedora nel lettore CD-ROM ed avvia il sistema da esso </li>
+
+ linux rescue
+</ol>
+
+==  Come modificare la password di GRUB, se l'hai dimenticata ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+
+ grub
+
+ grub&gt; md5crypt
+ Password: ****** (Fedora)
+ Encrypted: $1$ZWnke0$1fzDBVjUcT1Mpdd4u/T961 (la password crittata)
+ grub&gt; quit
+ 
+ cp /boot/grub/menu.lst /boot/grub/menu.lst_backup
+ gedit /boot/grub/menu.lst
+
+<li>Trova questa riga</li>
+
+ ...
+ password --md5 $1$gLhU0/$aW78kHK1QfV3P2b2znUoe/
+ ...
+
+<li>Sostituiscila con la riga seguente</li>
+
+ password --md5 $1$ZWnke0$1fzDBVjUcT1Mpdd4u/T961 (encrypted password above)
+
+<li>Salva il file modificato</li>
+</ol>
+
+==  Come recuperare il menu di GRUB dopo un'installazione di Windows ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+<li>Leggi [[#Come usare un CD di installazione di Fedora, per accedere al sistema con i privilegi di root|Come usare un CD di installazione di Fedora, per accedere al sistema con i privilegi di root]]</li>
+''Assumiamo che /dev/hda sia il dispositivo della partizione /boot''
+
+ # grub-install /dev/hda
+</ol>
+
+==  Come aggiungere la selezione per l'avvio di Windows nel menu di GRUB ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+<li>Leggi [[08 Hardware#Come vedere il contenuto della tabella delle partizioni|Come vedere il contenuto della tabella delle partizioni]]</li>
+''Assumiamo che /dev/hda1 sia la partizione Windows ''
+
+ cp /boot/grub/menu.lst /boot/grub/menu.lst_backup
+ gedit /boot/grub/menu.lst
+
+<li>Aggiungi le seguenti righe alla fine del file</li>
+
+ title		Microsoft Windows
+ root		(hd0,0)
+ savedefault
+ makeactive
+ chainloader	+1
+
+<li>Salva il file modificato</li>
+</ol>
+
+==  Come leggere le partizioni Linux (ext2, ext3) da Windows ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+<li>Scarica Explore2fs da [http://easylinux.info/uploads/explore2fs-1.07.zip qui]</li>
+''oppure''
+<li>Vedi [http://www.fs-driver.org/index.html www.fs-driver.org]</li>
+</ol>
+
+{{Link/prec|13 Sicurezza|13 Sicurezza}}{{Link/succ|15 Trucchi vari|15 Trucchi vari}}
+
+[[Categoria:Fedoraserver]]

@@ -1,0 +1,155 @@
+== Introduzione ==
+Le quote permettono di specificare dei limiti in due aspetti dello spazio sul disco: il numero di inode che può avere un utente o un gruppo di utenti e il numero di blocchi sul disco che possono essere allocati ad un utente o a un gruppo di utenti.<br />
+L'idea che sta dietro a ciò consiste nel fatto che gli utenti siano costretti a rimanere sotto a un limite di utilizzo del disco, togliendo loro la possibilità di consumare spazio illimitato su un sistema. Le quote sono gestite per utente e per filesystem. Se c'è più di un filesystem nel quale è previsto che un utente possa creare file, allora la quota d'uso deve essere impostata per ogni filesystem separatamente.
+
+== Strumenti ==
+
+Sono disponibili diversi strumenti per amministrare e automatizzare le regole per le quote sul proprio sistema.
+
+* Nel file /boot/config-<versione kernel> controllare che i parametri CONFIG_QUOTA e CONFIG_QUOTACTL siano impostati a "y". Solitamente su sistemi RedHat le quote sono abilitate di default.
+
+ [root@vrhel5 boot]# uname -r
+ 2.6.18-128.el5
+ [root@vrhel5 boot]# cat /boot/config-2.6.18-128.el5 | grep -i CONFIG_QUOTA
+ CONFIG_QUOTA=y                                                            
+ CONFIG_QUOTACTL=y  
+
+* Controllare che l'rpm quota sia installato sul sistema in questione altrimenti provvederne all'installazione (se non è installato lanciare il comando "yum install -y quota"). 
+
+ [root@vrhel5 boot]# rpm -qa | grep -i quota
+ quota-3.13-1.2.5.el5                       
+ [root@vrhel5 boot]# rpm -ql quota-3.13-1.2.5.el5
+ /etc/quotagrpadmins
+ /etc/quotatab
+ /etc/warnquota.conf
+ /sbin/quotacheck
+ /sbin/quotaoff
+ /sbin/quotaon
+ /usr/bin/quota
+ /usr/include/rpcsvc/rquota.h
+ /usr/include/rpcsvc/rquota.x
+ /usr/sbin/convertquota
+ /usr/sbin/edquota
+ /usr/sbin/quotastats
+ /usr/sbin/repquota
+ /usr/sbin/rpc.rquotad
+ /usr/sbin/setquota
+ /usr/sbin/warnquota
+ /usr/share/locale/fr/LC_MESSAGES/quota.mo
+ /usr/share/locale/pl/LC_MESSAGES/quota.mo
+ /usr/share/man/man1/quota.1.gz
+ /usr/share/man/man2/quotactl.2.gz
+ /usr/share/man/man3/rquota.3.gz
+ /usr/share/man/man8/convertquota.8.gz
+ /usr/share/man/man8/edquota.8.gz
+ /usr/share/man/man8/quotacheck.8.gz
+ /usr/share/man/man8/quotaon.8.gz
+ /usr/share/man/man8/quotastats.8.gz
+ /usr/share/man/man8/repquota.8.gz
+ /usr/share/man/man8/rquotad.8.gz
+ /usr/share/man/man8/setquota.8.gz
+ /usr/share/man/man8/warnquota.8.gz
+ /usr/share/man/man8/xqmstats.8.gz
+
+* Per abilitare un filesystem ad utilizzare le quote bisognerà modificare le opzioni nel /etc/fstab aggiungendo usrquota per attivare le quote per gli utenti mentre grpquota per attivare quelle dei gruppi. Dopo aver modificato il filesystem si dovrà rimontare il filesystem tramite il comando ''mount'' e l'opzione ''-o remount''. Se questo metodo non funziona (verificando sotto il file ''/proc/mounts''), si dovrà eseguire il reboot del sistema per apportare le modifiche al filesystem. 
+
+ [root@vrhel5 ~]# vim /etc/fstab
+ /dev/VolGroup00/LogVol00 /                       ext3    defaults,usrquota,grpquota        1 1
+ LABEL=/boot             /boot                   ext3    defaults        1 2
+ tmpfs                   /dev/shm                tmpfs   defaults        0 0
+ devpts                  /dev/pts                devpts  gid=5,mode=620  0 0
+ sysfs                   /sys                    sysfs   defaults        0 0
+ proc                    /proc                   proc    defaults        0 0
+ /dev/VolGroup00/LogVol01 swap                    swap    defaults        0 0
+ [root@vrhel5 ~]# mount -o remount / 
+ [root@vrhel5 ~]# cat /proc/mounts | grep /dev/root
+ /dev/root / ext3 rw,data=ordered,usrquota,grpquota 0 0
+
+* Non appena il filesystem sia stato rimontato con le nuove opzioni, si dovrà utilizzare il comando ''quotacheck'' per inizializzare i file ''aquota.user'' e ''aquota.group'', che conterranno le informazioni delle diverse quote. Per ogni filesystem che viene abilitato alle quote, dovrà essere controllato tramite il comando ''quotacheck''. 
+
+ [root@vrhel5 ~]# quotacheck -cugmv /
+ quotacheck: Scanning /dev/mapper/VolGroup00-LogVol00 [/] done
+ quotacheck: Checked 6760 directories and 78769 files
+ [root@vrhel5 /]# ls -latr / | grep -i aquota
+ -rw-------  1 root root  6144 Apr  8 12:07 aquota.user
+ -rw-------  1 root root  6144 Apr  8 12:07 aquota.group
+
+* Per impostare ora i limiti di gruppi e utenti bisogna utilizzare il comando ''edquota''. Con l'opzione ''-u'' vengono specificate le quote per un singolo utente mentre con l'opzione ''-g'' vengono specificate le quote per un gruppo. Verrà sempre aperto un editor dove per ogni filesystem ci saranno le colonne che indicano diversi parametri.<br />
+La block indica lo spazio in blocchi (un blocco è pari ad 1k) attualmente usato, la inods indica lo spazio in inodes attualmente usato. Per entrambe la soft indica la quota che un utente non può superare, e nel caso in cui venga superata verrà mostrato un messaggio d'errore ma si potrà comunque scrivere. Impostando anche un tempo di grace period, se verrà sorpassata la quota soft, passato l'intervallo di tempo specificato, l'utente non potrà più accedere o eseguire alcuna operazione.<br />
+La hard indica una soglia che non può essere sorpassata e provando a scrivere un file di dimensione più grandi di questo valore, verrà mostrato un messaggio di errore e la scrittura verrà bloccata automaticamente. Per attivare il grace period lanciare il comando ''edquota -t'', impostando il tempo per blocchi o inodes di ogni filesystems. Nell'esempio sotto riportato l'utente provausr, potrà scrivere al massimo 5MB come soglia hard e 1MB come soglia soft, con un grace period di una settimana. 
+
+ [root@vrhel5 ~]# edquota -u provausr
+ Disk quotas for user provausr (uid 500):
+   Filesystem                   blocks       soft       hard     inodes     soft     hard
+   /dev/mapper/VolGroup00-LogVol00          0       1000       5000          0        0        0
+ Grace period before enforcing soft limits for users:
+ [root@vrhel5 ~]# edquota -t
+ Time units may be: days, hours, minutes, or seconds
+   Filesystem             Block grace period     Inode grace period
+   /dev/mapper/VolGroup00-LogVol00                  7days                  7days
+
+* Per avere un riepilogo delle quote attive per ogni singolo utente lanciare il comando ''quota -uv'' seguito dal nome dell'utente. Mentre per avere un riepilogo delle quote su tutti i filesystems lanciare il comando ''repquota'' con l'opzione ''-av''. 
+
+ [root@vrhel5 /]# quota -uv provausr
+ Disk quotas for user provausr (uid 500):
+      Filesystem  blocks   quota   limit   grace   files   quota   limit   grace
+ /dev/mapper/VolGroup00-LogVol00
+                       0    1000    5000               0       0       0
+ /dev/mapper/VolGroup00-LogVol02
+                    5000*   1000    5000               9       0       0
+ [root@vrhel5 /]# repquota -av
+ *** Report for user quotas on device /dev/mapper/VolGroup00-LogVol00
+ Block grace time: 7days; Inode grace time: 7days                    
+                         Block limits                File limits
+ User            used    soft    hard  grace    used  soft  hard  grace
+ ----------------------------------------------------------------------
+ root      -- 1880920       0       0          66461     0     0
+ daemon    --      20       0       0              3     0     0
+ lp        --      16       0       0              2     0     0
+ rpc       --       4       0       0              1     0     0
+ smmsp     --      16       0       0              2     0     0
+ rpcuser   --       8       0       0              1     0     0
+ ntp       --       8       0       0              1     0     0
+ avahi     --      20       0       0              3     0     0
+ xfs       --       4       0       0              1     0     0
+ provauser --       0    1000    5000              0     0     0
+ 
+ Statistics:
+ Total blocks: 7
+ Data blocks: 1
+ Entries: 10
+ Used average: 10.000000
+
+* Per attivare le quote sul filesystem lanciare il comando ''quotaon'' sul filesystem, altrimenti le modifiche apportate in precedenza non avranno effetto. Per disattivarle lanciare il comando ''quotaoff''. 
+
+ [root@vrhel5 /]# quotaon /
+
+* Provando a superare la soglia soft verrà mostrato solo un messaggio di errore per indicare che si è superata la quota, ma la scrittura continuerà senza problemi. Nell'esempio sotto riportato viene creato un file da 1M e poi da 2 M. In entrambe i casi la scrittura avviene comunque ma viene mostrato un messaggio d'errore. 
+
+ [provausr@vrhel5 ~]$ dd if=/dev/zero of=/home/provausr/prova bs=1024 count=1000
+ dm-1: warning, user block quota exceeded.                                
+ 1000+0 records in                                                        
+ 1000+0 records out
+ 1024000 bytes (1.0 MB) copied, 0.00851858 seconds, 120 MB/s
+ [provausr@vrhel5 ~]$ dd if=/dev/zero of=/home/provausr/prova bs=1024 count=2000
+ dm-1: warning, user block quota exceeded.
+ 2000+0 records in
+ 2000+0 records out
+ 2048000 bytes (2.0 MB) copied, 0.0127222 seconds, 161 MB/s
+ [provausr@vrhel5 ~]$ ls -lash /home/provausr/prova
+ total 2.1M
+ 2.0M -rw-rw-r-- 1 prova prova 2.0M Apr  8 14:53 prova
+
+* Provando a superare la soglia hard verrà mostrato un messaggio di errore per indicare che si è superata la quota, e la scrittura verrà interrotta. Nell'esempio sotto riportato viene creato un file da 6M ma come si nota il file viene scritto solo fino a 5M dato che la soglia hard era stata impostata a quel valore .
+
+ [provausr@vrhel5 ~]$ dd if=/dev/zero of=/home/provausr/prova bs=1024 count=6000
+ dm-1: warning, user block quota exceeded.
+ dm-1: write failed, user block limit reached.
+ dd: writing `/home/prova/prova': Disk quota exceeded
+ 4985+0 records in
+ 4984+0 records out
+ 5103616 bytes (5.1 MB) copied, 0.0389076 seconds, 131 MB/s
+ [provausr@vrhel5 ~]$ ls -lash /home/provausr/prova
+ 4.9M -rw-rw-r-- 1 prova prova 4.9M Apr  8 14:53 prova
+
+[[Categoria:Sistema]]

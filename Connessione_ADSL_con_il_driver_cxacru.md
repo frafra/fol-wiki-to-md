@@ -1,0 +1,186 @@
+Introduzione
+------------
+
+Questa guida ha lo scopo di semplificare la configurazione e l'utilizzo di una connessione ADSL con il driver *cxacru*.
+
+La Fedora Core 5 utilizzata è:
+
+`[root@localhost ~]# uname -srvp`
+`Linux 2.6.17-1.2174_FC5smp #1 SMP Tue Aug 8 16:00:39 EDT 2006 i686`
+
+Il modem utilizzato è il Pocket USB ADSL Modem Atlantis-Land: <http://www.atlantis-land.com/scheda_prodotto.php?prodottiID=111&language=ing>
+
+La connessione configurata è per Libero ADSL.
+
+Installazione del firmware
+--------------------------
+
+L'articolo citato contiene diversi dettagli a riguardo, segnalo le principali differenze del mio caso:
+
+1.  NON ho ricompilato il kernel.
+2.  Ho scaricato l'utility per estrarre il firmware da: <http://pmarchet.web.cs.unibo.it/cxacru-fw>
+3.  Ho scaricato il driver di tipo WAN dal sito del produttore.
+4.  Ho estratto il firmware dal driver (file **cxacru-fw.bin**) e l'ho copiato nella directory **/lib/firmware/**.
+
+Successivamente ho provato con successo il driver impostando la connessione come indicato precedentemente.
+
+Configurazione della connessione ADSL
+-------------------------------------
+
+Per prima cosa bisogna aggiungere la seguente riga nel file **/etc/modprobe.conf**:
+
+`alias ppp0 cxacru`
+
+Poi si crea una connessione fittizia verso il dispositivo **/dev/ttyS0**. Per farlo si usa (come utente root) il comando **system-config-network** (menu Administration -&gt; Network), creando una nuova configurazione hardware di tipo "Modem" denominata "ppp0" con i seguenti parametri (la mia interfaccia è in inglese):
+
+`[Modem properties]`
+`Modem device: /dev/ttyS0`
+`Baud rate: (choose_one)`
+`Flow control: None`
+`Modem volume: Off`
+`Use touch tone dialog: Checked`
+
+Successivamente si crea una configurazione di device di tipo "Modem connection" denominata sempre "ppp0" con i seguenti parametri:
+
+`[General]`
+`Nickname: ppp0`
+`Allow all users to enable and disable the device: Checked`
+`Automatically obtain IP address settings with: dialup`
+`Automatically obtain DNS information from provider: Checked`
+`[Provider]`
+`Phone Number: 0123456789`
+`Provider name: (your_provider, e.g. LiberoADSL)`
+`Login name: (your_userATyour_domain)`
+`Password: (your_password)`
+`[Options]`
+`PPP option: plugin pppoatm.so 8.35`
+`[Advanced]`
+`Hangup timeout: 600`
+`Dial mode: manual`
+`Let PPP do all authentication: Checked`
+`Make this connection the default route: Checked`
+`Modem port: ppp0`
+
+Ovviamente bisogna rimpiazzare i valori tra **( )** con i propri dati (es. utente, password ecc.).
+
+Il numero di telefono utilizzato è fittizio (non si effettua una chiamata).
+Libero richiede anche il dominio per identificare l'utente.
+I parametri **VPI.VCI** (nel mio caso **8.35**) possono cambiare se il provider non è lo stesso.
+La porta **ppp0** e il file scelto (**/dev/ttyS0**) non devono essere utilizzati da altre connessioni o dispositivi.
+
+Come risultato, dopo aver salvato la configurazione, si ottengono i seguenti files:
+
+-   File **/etc/wvdial.conf**:
+
+`[ppp0]`
+`Baud = 9600`
+`SetVolume = 0`
+`Dial Command = ATDT`
+`Init1 = ATZ`
+`Init3 = ATM0`
+`Modem = /dev/ttyS0`
+`FlowControl = NOFLOW`
+`[Dialer ppp0]`
+`Username = (your_userATyour_domain)`
+`Password = (your_password)`
+`Phone = 0123456789`
+`Stupid Mode = 1`
+`Init1 = ATZ`
+`Init2 = ATQ0 V1 E1 S0=0 &C1 &D2 +FCLASS=0`
+`Inherits = ppp0`
+
+-   File **/etc/ppp/pap-secrets**:
+
+`# Secrets for authentication using PAP`
+`# client                server  secret          IP addresses`
+`####### redhat-config-network will overwrite this part!!! (begin) ##########`
+`"your_userATyour_domain"     "ppp0"  "your_password"`
+`"your_userATyour_domain"     *       "your_password"`
+`####### redhat-config-network will overwrite this part!!! (end) ############`
+
+-   File **/etc/ppp/chap-secrets**:
+
+`# Secrets for authentication using CHAP`
+`# client        server  secret                  IP addresses`
+`####### redhat-config-network will overwrite this part!!! (begin) ##########`
+`"your_userATyour_domain"     "ppp0"  "your_password"`
+`"your_userATyour_domain"     *       "your_password"`
+`####### redhat-config-network will overwrite this part!!! (end) ############`
+
+-   File **/etc/ppp/peers/ppp0**:
+
+`connect "/usr/bin/wvdial --remotename ppp0 --chat 'ppp0'"`
+
+-   File **/etc/sysconfig/network-scripts/ifcfg-ppp0**:
+
+`# Please read /usr/share/doc/initscripts-*/sysconfig.txt`
+`# for the documentation of these parameters.`
+`ONBOOT=no`
+`USERCTL=yes`
+`PEERDNS=yes`
+`TYPE=Modem`
+`DEVICE=ppp0`
+`BOOTPROTO=dialup`
+`AC=off`
+`BSDCOMP=off`
+`VJCCOMP=off`
+`CCP=off`
+`PC=off`
+`VJ=off`
+`PROVIDER=LiberoADSL`
+`DEFROUTE=yes`
+`PERSIST=no`
+`PAPNAME='your_userATyour_domain'`
+`WVDIALSECT=ppp0`
+`MODEMNAME=ppp0`
+`DEMAND=no`
+`IPV6INIT=no`
+`PPPOPTIONS='plugin pppoatm.so 8.35'`
+`IDLETIMEOUT=600`
+`LINESPEED=9600`
+`MODEMPORT=/dev/ttyS0`
+
+Avvio della connessione ADSL
+----------------------------
+
+A questo punto è possibile avviare/chiudere la connessione ADSL direttamente dall'applet **system-control-network** (menu System -&gt; Network Device Control), selezionando l'interfaccia **ppp0** e cliccando sui pulsanti **Activate/Deactivate**.
+
+Avviando la connessione nel file **/var/log/messages** dovrebbe apparire:
+
+`Sep  4 22:48:48 localhost ifup-ppp: Setting up a new /etc/ppp/peers/ppp0 config file`
+`Sep  4 22:48:48 localhost ifup-ppp: pppd started for ppp0 on /dev/ttyS0 at 9600`
+`Sep  4 22:48:48 localhost pppd[3640]: Plugin pppoatm.so loaded.`
+`Sep  4 22:48:48 localhost pppd[3640]: PPPoATM plugin_init`
+`Sep  4 22:48:48 localhost pppd[3640]: PPPoATM setdevname_pppoatm - SUCCESS:8.35`
+`Sep  4 22:48:48 localhost pppd[3640]: pppd 2.4.3 started by root, uid 0`
+`Sep  4 22:48:48 localhost pppd[3640]: Using interface ppp0`
+`Sep  4 22:48:48 localhost pppd[3640]: Connect: ppp0 <--> 8.35`
+`Sep  4 22:48:49 localhost pppd[3640]: PAP authentication succeeded`
+`Sep  4 22:48:49 localhost pppd[3640]: local  IP address 151.37.160.219`
+`Sep  4 22:48:49 localhost pppd[3640]: remote IP address 151.6.131.65`
+`Sep  4 22:48:49 localhost pppd[3640]: primary   DNS address 193.70.152.15`
+`Sep  4 22:48:49 localhost pppd[3640]: secondary DNS address 193.70.152.25`
+`Sep  4 22:48:49 localhost NET[3682]: /etc/sysconfig/network-scripts/ifup-post : updated /etc/resolv.conf`
+
+Chiudendo la connessione nel file **/var/log/messages** dovrebbe apparire:
+
+`Sep  4 22:50:47 localhost pppd[3640]: Terminating on signal 15`
+`Sep  4 22:50:47 localhost pppd[3640]: Connect time 2.0 minutes.`
+`Sep  4 22:50:47 localhost pppd[3640]: Sent 0 bytes, received 0 bytes.`
+`Sep  4 22:50:47 localhost pppd[3640]: Connection terminated.`
+`Sep  4 22:50:47 localhost NET[3758]: /etc/sysconfig/network-scripts/ifdown-post : updated /etc/resolv.conf`
+`Sep  4 22:50:47 localhost pppd[3640]: Exit.`
+
+I vantaggi sono evidenti: facilità d'uso, nessuna necessità di collegarsi come root, modifica automatica del file **/etc/resolv.conf**, ecc..
+Il trucco sta nel creare una connessione modem dialup fittizia e poi lasciare che facciano tutto il demone **pppd** (che utilizza PPPoATM opportunamente configurato) e gli script di sistema.
+
+E' possibile avviare la connessione anche col comando:
+
+`[root@localhost ~]# ifup ppp0`
+
+Il file **/etc/resolv.conf** viene modificato automaticamente dagli script di avvio della connessione se l'opzione PEERDNS=yes del file **/etc/sysconfig/network-scripts/ifcfg-ppp0** è stata attivata.
+
+Ho avuto qualche problema con le applet di configurazione, in quanto a volte riportano inaspettatamente i parametri impostati ai rispettivi valori di default (in particolare quelli con la selezione a tendina).
+**Soluzione:** controllare sempre tutte le impostazioni prima di salvare la configurazione.
+
+<Categoria:Hardware>

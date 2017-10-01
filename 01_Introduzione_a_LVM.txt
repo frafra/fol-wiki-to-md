@@ -1,0 +1,34 @@
+{{Autore|RobertMayr}}
+
+Logical Volume Manager (acronimo LVM), introdotto dalla Fedora 2, permette di gestire in modo più dinamico i drive fisici, creando un'astrazione sopra di essi e generando dei volumi logici virtuali. In questo modo non si è limitati dalla dimensione e struttura dei dischi fisici, perché a livello software viene mascherato il tutto, mostrando un volume logico che potrà essere ridimensionato e riallocato a piacimento. Inoltre gli altri vantaggi sono:
+* ridimensionamento dei dischi
+* capacità dei filesystem flessibile
+* disk striping
+* mirror dei volumi
+* snapshot dei volumi
+La struttura LVM è composta da 3 componenti fondamentali, che sono:
+* Physical Volumes (PVs)
+* Volume Groups (VGs)
+* Logical Volumes (LVs)
+=== Physical Volume ===
+Per inizializzare delle block device (dischi o partizioni) come componenti basilari della struttura LVM, entrano in gioco i Physical Volume. Per inizializzare queste device, viene scritta una label all'interno del secondo settore (in linux il settore identifica un'area di 512 bytes), che identifica quella block device come un PV appartenente alla struttura LVM con un codice identificativo UUID. Subito dopo vengono scritti dei metadata codificati in ASCII, che contengono le informazioni sulla block device e sul Volume Group a cui appartengono. Una copia dei metadata viene salvata su ogni singolo PV che appartiene ad un determinato VG. Lo spazio allocabile sui PV viene suddiviso in extent di dimensione fissa chiamata Physical Extents (o PE) che potranno essere allocati quando verranno inizializzati dei Logical Volume.<br>
+
+Un PV può essere inizializzato anche su un disco non partizionato, ma per pulizia e tracciabilità dell'utilizzo del disco, conviene sempre inizializzare una partizione (se si usa l'intero disco) e poi invocare sopra di essa la creazione del PV. Se si invoca la creazione di un PV su una block device non partizionata, non si avranno problemi di funzionamento.
+=== Volume Group ===
+Dopo aver inizializzato uno o più PV si potranno creare dei pool o contenitori chiamati Volume Group, che metteranno a disposizione dello spazio da poter suddividere tra i diversi Logical Volume. Lo spazio libero del Volume Group sarà formato dalla somma di tutto lo spazio fornito da tutti i PV che apparterranno a questo VG. Lo spazio disponibile sui VG viene suddiviso in extents ed avranno una dimensione fissa.
+=== Logical Volume ===
+Lo spazio disponibile messo a disposizione dai VG verrà suddiviso in parti chiamate Logical Volume (o LV), e saranno l'ultimo strato di astrazione che verrà mostrato da LVM al sistema operativo ed alle diverse applicazioni. Lo spazio disponibile dei LV verrà suddiviso in extent di dimensione fissa che si chiamano Logical Extents. Esistono diversi tipi di Logical Volume:
+* Linear LV
+* Striped LV
+* Mirrored LV
+* Snapshot
+Il Linear LV è il classico tipo di LV dove lo spazio di tutti i PV viene concatenato e la scrittura viene svolta riempiendo il PV e passando a quello successivo quando termina lo spazio.
+
+Lo Striped LV è un particolare tipo di LV che scrive i dati distribuendo la scrittura e la lettura sui diversi PV in parallelo. Questa modalità di I/O sui PV rende più efficaci le prestazioni della struttura LVM.<br>
+
+Il Mirrored LV è un particolare tipo di LV che scrive i dati mantenendo una copia su un altro PV. Questo tipo di scrittura implementa un backup per eventuali fault su uno dei PV. Verrà poi mantenuto un log delle scritture svolte sui diversi PV, che potrà essere salvato su disco per ricaricarlo al reboot, oppure da salvare in memoria (che verrà perso ad ogni nuovo boot). Le prestazioni di questa tipologia di LV sono molto ridotte rispetto al Mirrored LV e al Linear LV.<br>
+
+Lo snapshot permette di catturare l'istantanea di un determinato Logical Volume e salvarlo in un altro PV. Questo potrebbe servire per verificare lo stato dei LV durante un problema o prima del lancio di un fsck, come backup per poi importarlo su una macchina virtuale o su un'altra macchina fisica.
+
+[[Categoria:LVM]]
+{{Link/succ|02_Ampliare_un_filesystem_con_LVM|02 Ampliare un filesystem con LVM}}

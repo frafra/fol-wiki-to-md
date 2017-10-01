@@ -1,0 +1,44 @@
+VI è un utilissimo editor a riga di comando presente in ogni sistema operativo Unix/Linux e quindi anche in Fedora.
+Tutti dovrebbero sapere almeno i comadi base. D'accordo che editor grafici come Gedit ed eventuali altri, sono più semplici da utilizzare, ma in caso di emergenza, tipo dover entrare in modalità testo perché X non si avvia, Gedit non funzionerebbe. Oppure, se Fedora non parte, bisogna avviare in modalità rescue e poi entrare in chroot/mnt/sysimage, da dove si può accedere al File System ed eventualmente fare delle modifiche... magari al grub.conf. Ecco, in questo caso è essenziale conoscere come poter utilizzare vi.
+
+Per avviarlo basta digitare:
+
+`# vi `<nome_file>
+
+L'editor dispone di due modi base per la manipolazione del testo:
+
+-   modo Comando
+-   modo Inserimento testo
+
+Di default, appena aperto il file ci si trova in modalità Comando. Per entrare in modalità inserimento basta premere il tasto "i" ed in basso a sinistra appare la scritta INSERT che indica appunto in che modalità ci si trova.
+Ci si può ora spostare con le frecce ed inserire del testo dove si preferisce. Per cancellare eventuali errori di battitura basta andare indietro con backspace.
+Per entrare in modalità Comando premere il tasto Esc, se si preme 2 volte emette un beep che assicura di esserci effettivamente in questa modalità. Da questa modalità si hanno a disposizione i seguenti comandi:
+
+`:q!  uscire senza salvare le modifiche effettuate`
+`:wq  uscire e salvare le modifiche`
+`:w   salvare senza uscire`
+`:w `<nome_file>`  salvare sotto un'altro `<nome_file>
+`:x   cancellare il carattere sotto il cursore`
+`:3x  cancellare n caratteri da quello evidenziato in poi (3 in questo caso)`
+`:dw  cancellare dal cursore alla parola successiva`
+`:dd  cancellare una riga`
+`:dG  tutte le righe inclusa l'attuale`
+`:numero di riga per andare a quella determinata riga`
+`/parola  per trovare una parola`
+`. n per continuare la ricerca `
+`. N per invertirne la direzione`
+
+Per rientrare in modalità Inserimento premere di nuovo "i".
+Conoscere questi comandi di base basta ed avanza per interventi di emergenza.
+
+Attenzione! VI non perdona. Una volta salvato NON c'è possibilità di annullare le modifiche. Si consiglia di fare una copia del file che si andrà a modificare con
+
+`# mv `<nome_originale>`  `<nome_originale-old>`  `
+
+poi
+
+`# vi  `<nome_originale-old>` `
+
+e salvarlo con i comandi sopra come <nome_originale>
+
+[Categoria:Programmazione e Sviluppo](Categoria:Programmazione_e_Sviluppo "wikilink") <Categoria:Ufficio>

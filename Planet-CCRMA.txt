@@ -1,0 +1,33 @@
+__TOC__
+== Introduzione ==
+
+L'installazione CCRMA è utile per l'ottimizzazione audio del sistema. Il repo è disponibile attualmente per le versioni da Fedora 12 compresa in poi.
+
+== Installazione ==
+
+Per l'installazione è necessario specificare sempre, all'interno del link, la propria versione di Fedora.
+* Installazione per Fedora 17
+ # yum install --nogpgcheck http://ccrma.stanford.edu/planetccrma/mirror/fedora/linux/planetccrma/17/i386/planetccrma-repo-1.1-3.fc17.ccrma.noarch.rpm
+ # yum install --nogpgcheck http://ccrma.stanford.edu/planetccrma/mirror/fedora/linux/planetccrma/17/i386/planetccrma-repo-testing-1.1-3.fc17.ccrma.noarch.rpm
+
+* Installazione per Fedora 16
+ # yum install --nogpgcheck http://ccrma.stanford.edu/planetccrma/mirror/fedora/linux/planetccrma/16/i386/planetccrma-repo-1.1-3.fc16.ccrma.noarch.rpm
+ # yum install --nogpgcheck http://ccrma.stanford.edu/planetccrma/mirror/fedora/linux/planetccrma/16/i386/planetccrma-repo-testing-1.1-3.fc16.ccrma.noarch.rpm
+
+* Installazione per Fedora 15
+ # yum install --nogpgcheck http://ccrma.stanford.edu/planetccrma/mirror/fedora/linux/planetccrma/15/i386/planetccrma-repo-1.1-3.fc15.ccrma.noarch.rpm
+ # yum install --nogpgcheck http://ccrma.stanford.edu/planetccrma/mirror/fedora/linux/planetccrma/15/i386/planetccrma-repo-testing-1.1-3.fc15.ccrma.noarch.rpm
+
+* Installazione per Fedora 14
+ # yum install --nogpgcheck http://mirrors.ircam.fr/pub/planetccrma/mirror/fedora/linux/planetccrma/14/i386/planetccrma-repo-1.1-2.fc14.ccrma.noarch.rpm
+ # yum install --nogpgcheck http://mirrors.ircam.fr/pub/planetccrma/mirror/fedora/linux/planetccrma/14/i386/planetccrma-repo-testing-1.1-2.fc14.ccrma.noarch.rpm
+
+* Installazione per Fedora 13
+ # yum install --nogpgcheck http://mirrors.ircam.fr/pub/planetccrma/mirror/fedora/linux/planetccrma/13/i386/planetccrma-repo-1.1-2.fc13.ccrma.noarch.rpm
+ # yum install --nogpgcheck http://mirrors.ircam.fr/pub/planetccrma/mirror/fedora/linux/planetccrma/13/i386/planetccrma-repo-testing-1.1-2.fc13.ccrma.noarch.rpm
+
+* Installazione per Fedora 12
+ # yum install --nogpgcheck http://mirrors.ircam.fr/pub/planetccrma/mirror/fedora/linux/planetccrma/12/i386/planetccrma-repo-1.1-2.fc12.ccrma.noarch.rpm
+ # yum install --nogpgcheck http://mirrors.ircam.fr/pub/planetccrma/mirror/fedora/linux/planetccrma/12/i386/planetccrma-repo-testing-1.1-2.fc12.ccrma.noarch.rpm
+
+[[Categoria:Repository]]

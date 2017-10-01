@@ -1,0 +1,28 @@
+== Come installare KDE ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+<li>Leggi [[02_Repositories#Come aggiungere dei repositories extra|Come aggiungere dei repositories extra]]</li>
+<li>Puoi anche dare un'occhiata agli Screenshots dal sito di KDE</li>
+<li>Usa Desktop -> Impostazioni di Sistema -> Aggiungere/Rimuovere Applicazioni</li>
+oppure
+
+ yum -y install htdig
+ yum -y install kdebase
+ yum -y install arts
+ yum -y install desktop-printing
+ yum -y install kdegraphics
+ yum -y install kdenetwork
+ yum -y install kdemultimedia
+ yum -y install kdeaddons
+ yum -y install kdeutils
+ yum -y install kdeartwork
+ yum -y install autorun
+
+<li>Log out</li>
+<li>In Sessione scegli KDE</li>
+<li>Log in</li>
+</ol>
+
+{{Link/prec|04 Aggiungere Applicazioni|04 Aggiungere Applicazioni}}{{Link/succ|06 Applicazioni Commerciali|06 Applicazioni Commerciali}}
+
+[[Categoria:Fedoraserver]]

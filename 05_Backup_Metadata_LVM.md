@@ -1,0 +1,79 @@
+E' possibile svolgere un backup dei metadata di tutti i VG presenti sul sistema, per poter ripristinare in caso di problemi la vecchia configurazione dei VG. Si ricorda che per backup dei metadata si parla della sola parte di configurazione dei VG e non dei dati contenuti nel VG attivi sul nostro sistema.
+Di default il backup delle attuali configurazione viene mantenuto sotto il direttorio /etc/lvm/backup, ma è possibile modificare il path di destinazione all'interno del file di configurazione /etc/lvm/lvm.conf. Sarà possibile disabilitare il salvataggio dei backup dei metadata sempre dal file di configurazione /etc/lvm/lvm.conf.
+
+    [root@pc backup]# vgs
+      VG      #PV #LV #SN Attr   VSize  VFree
+      vg_data   1   1   0 wz--n- 62.47G    0 
+      vg_root   1   2   0 wz--n- 48.82G    0
+    [root@pc lvm]# cd /etc/lvm/backup/
+    [root@pc backup]# ls -l
+    total 8
+    -rw------- 1 root root 1138 2010-03-03 17:26 vg_data
+    -rw------- 1 root root 1458 2010-03-03 17:26 vg_root
+
+Per eseguire manualmente il backup delle configurazioni basterà utilizzare il comando vgcfgbackup, per aggiornare i file sotto il path /etc/lvm/backup/.
+
+    [root@pc backup]# vgcfgbackup 
+      Volume group "vg_data" successfully backed up.
+      Volume group "vg_root" successfully backed up.
+
+Sempre sotto il direttorio /etc/lvm/ è presente la directory archive che contiene invece le vecchie configurazioni dei metadata. Dal file di configurazione /etc/lvm/lvm.conf sarà possibile modificare il path di destinazione dove salvare gli archive, modificare il numero minimo di archive da mantenere e il numero di giorni di ritenzione per gli archive. E' possibile verificare tramite il comando vgcfgrestore, con l'opzione -l, tutta la lista di archive disponibili per un determinato VG.
+
+    [root@pc backup]# vgcfgrestore -l vg_data
+       
+      File:     /etc/lvm/archive/vg_data_00000.vg
+      VG name:      vg_data
+      Description:  Created *before* executing 'vgcreate vg_data /dev/sda3'
+      Backup Time:  Fri Dec  4 09:21:20 2009
+
+       
+      File:     /etc/lvm/archive/vg_data_00001.vg
+      VG name:      vg_data
+      Description:  Created *before* executing 'lvcreate -l +100%FREE vg_data -n lv_data'
+      Backup Time:  Fri Dec  4 09:21:42 2009
+
+       
+      File:     /etc/lvm/backup/vg_data
+      VG name:      vg_data
+      Description:  Created *after* executing 'vgcfgbackup'
+      Backup Time:  Wed Mar  3 21:38:12 2010
+
+Per eseguire il restore dei metadata basterà passare il nome del backup o archive desiderato ed il nome del VG associato a quel VG.
+
+    [root@pc backup]# vgcfgrestore -f /etc/lvm/backup/vg_data vg_data
+      Restored volume group vg_data
+
+Qui sotto è riportato lo stralcio di configurazione del file /etc/lvm/lvm.conf relativo al backup dei metadata. Si ricorda che ad ogni modifica del file di configurazione /etc/lvm/lvm.conf andrà ricreato il ram-disk manualmente mediante dracut, per rendere effettive le modifiche svolte.
+
+    # Configuration of metadata backups and archiving.  In LVM2 when we
+    # talk about a 'backup' we mean making a copy of the metadata for the
+    # *current* system.  The 'archive' contains old metadata configurations.
+    # Backups are stored in a human readeable text format.
+    backup {
+
+        # Should we maintain a backup of the current metadata configuration ?
+        # Use 1 for Yes; 0 for No.
+        # Think very hard before turning this off!
+        backup = 1
+
+        # Where shall we keep it ?
+        # Remember to back up this directory regularly!
+        backup_dir = "/etc/lvm/backup"
+
+        # Should we maintain an archive of old metadata configurations.
+        # Use 1 for Yes; 0 for No.
+        # On by default.  Think very hard before turning this off.
+        archive = 1
+
+        # Where should archived files go ?
+        # Remember to back up this directory regularly!
+        archive_dir = "/etc/lvm/archive"
+
+        # What is the minimum number of archive files you wish to keep ?
+        retain_min = 10
+
+        # What is the minimum time you wish to keep an archive file for ?
+        retain_days = 30
+    }
+
+<Categoria:LVM>

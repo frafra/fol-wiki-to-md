@@ -1,0 +1,177 @@
+Qui puoi trovare le guide che sono attualmente in lavorazione (nuove guide, modifiche di guide obsolete, ecc.).
+
+== Legenda ==
+Qui sotto riportiamo la tabella esplicativa per una immediata identificazione visiva dello stato avanzamento dei lavori che si compone di tre fasi.
+{| {{TabellaBase}}
+| '''Terminato'''
+| {{StatoTerminato}} | Terminato
+|-
+| '''In corso'''
+| {{StatoInCorso}} | In corso
+|-
+| '''Da fare'''
+| {{StatoDaFare}} | Da fare
+|}
+Abbiamo creato un template che faciliti la modifica dello stato che deve passare, progressivamente, da ''"Da fare"'' ad ''"In corso"'' ed infine a ''"Terminato"''.<br />
+Questi tre stati, si ripetono per le altrettante tre fasi della pubblicazione dell'articolo (Stesura, Modifica, Rilettura), anche se la modifica è utile anche per altri scopi (ad esempio l'aggiornamento di un file preesistente).
+
+== Articoli in corso di stesura ==
+
+Dopo aver proposto l'articolo alla Mailing List dei redattori, come ben specificato alla pagina [[Contribuisci#Registrati_alla_Mailing_List_del_Wiki|"contribuisci"]], e dopo essere stato accettato, occorre inserirlo in questa stessa pagina utilizzando il template '''''<tt>AggiungiArticolo</tt>''''' (l'aggiunta va fatta selezionando il tasto modifica di questa sezione oppure [http://doc.fedoraonline.it/index.php?title=CantiereWiki&action=edit&section=2 cliccando qua] e inserendo il template in fondo alla lista degli articoli già inseriti) che si presenta così:
+
+ <nowiki>{{AggiungiArticolo|articolo=Titolo della Guida|autore=NomeWiki|fonte=[url titolo_del_link]<br/>varie altre cose|note=testo utile|data=data|stato=stato}}</nowiki>
+dove (tutti separati dal pipe (il simbolo '''|''')):
+*'''<nowiki>{{</nowiki>''' è il markup che indica l'inizio del template e non è da modificare;
+*'''AggiungiArticolo''' è il nome del template da richiamare, anch'esso da non modificare;
+*'''articolo=Titolo della Guida''' dove "Titolo della Guida" deve essere sostituito con il titolo che avete scelto per la vostra guida. Ciò creerà il link rosso che andrete a selezionare per cominciare la redazione dell'articolo.
+*'''autore=NomeWiki''' dovrete andare a sostituire NomeWiki con il vostro nome inteso come ''NomeCognome'', in relazione al vostro login.
+*'''<nowiki>fonte=[url titolo_del_link]<br/>[url2 altro_link]</nowiki>''' gli eventuali indirizzi web della fonte da cui quell'articolo è scaturito (se più di uno, il tag <nowiki><br/></nowiki> vi permette di inserirli su più righe);
+*'''note=testo utile''' spazio per inserire del testo, o dei link, utili agli altri rilettori per "orientarsi";
+*'''stato=stato''' dovrete definire l'avanzamento dei lavori inserendo (al posto di "stato") uno di questi tre paramentri obbligatori:
+**''DaFare''
+**''InCorso''
+**''Terminato''
+*'''<nowiki>}}</nowiki>''' è il markup di chiusura del template.
+
+
+Salvando la pagina, l'articolo verrà inserito tra quelli in stesura, evidenziato con il link rosso se la pagina non è stata ancora creata. Con un click sul link si aprirà la pagina di creazione/modifica per l'inizio dei lavori.<br />
+Ricordarsi di scrivere in fondo alla guida il markup '''<nowiki>[[Categoria:Scrittura in corso]]</nowiki>''' <!--(con i ":" davanti a "Categoria")--> come unica categoria. Non si deve inserire la categoria definitiva di appartenenza, in quanto l'articolo non è stato ancora completato.<br />
+In questa sezione non ci saranno articoli in riscrittura, non occorre aggiornare le guide obsolete (in tutto o in parte), sono da riscrivere ex-novo; tranne in rari casi, concordati comunque in Mailing List da inserire nella categoria [[CantiereWiki#Articoli_in_corso_di_aggiornamento|articoli in corso di aggiornamento]].<br />
+Al termine della redazione dell'articolo, modificando lo stato in ''Terminato'' occorrerà inserirlo tra le [[CantiereWiki#Rilettura_in_corso|riletture in corso]].
+
+{| {{TabellaBase}}
+! Articolo
+! Autore
+! Fonte
+! Note, riferimenti, link
+! Data
+! Stato
+
+{{AggiungiArticolo|articolo=Samba_Server|autore=MauroMassimino|data=16/11/2015|stato=InCorso}}
+{{AggiungiArticolo|articolo=Galateo Fedora: comportamento corretto utente Desktop|autore=GiuseppeDelvecchio|data=-|stato=InCorso}}
+{{AggiungiArticolo|articolo=Configurazione di gedit su Filezilla|autore=LucioMilone|data=-|stato=InCorso}}
+|}
+
+''NOTA: il tag '''fonte''' o '''note''' non è necessario: se non è presente verrà automaticamente sostituito da uno spazio vuoto nella tabella.''
+
+== Rilettura in corso ==
+
+Come nella precedente sezione, anche qui occorre utilizzare un template, '''''<tt>RiletturaArticolo</tt>''''':
+ <nowiki>{{RiletturaArticolo|articolo=Titolo della guida|autore=NomeWiki|rilettore=NomeWiki|note=testo utile|data=data|stato=Stato}}</nowiki>
+
+
+Aggiungere il markup: '''<nowiki>[[Categoria:Rilettura in corso]]</nowiki>''' senza rimuovere la categoria di appartenenza originaria della guida.<br />
+Gli articoli in questa sezione sono quelli che dovranno essere approvati dai rilettori per la pubblicazione (previa comunicazione in Mailing List), oppure rigettate inviando una  mail che '''ne riporta i motivi''' all'autore, oppure passate alla sezione [[CantiereWiki#Articoli_in_aggiornamento| articoli in aggiornamento]] per una revisione anche in questo caso con una mail all'autore '''che ne riporti le motivazioni'''.<br />
+Qualsiasi redattore può prendersi in carico una o più guide modificando lo stato, sostituendo cioè la barra con il proprio ''NomeWiki'' (di login).
+
+{| {{TabellaBase}}
+! Articolo
+! Autore
+! Rilettore
+! Note, riferimenti, link
+! Data
+! Stato
+
+{{RiletturaArticolo|articolo=Vsftpd|autore=MauroMassimino|rilettore=-|note=Guida completa su FTP e SFTP|data=16/11/2015|stato=DaFare}}
+{{RiletturaArticolo|articolo=Monitoraggio del sistema e SNMP|autore=AntonioDeSantis|rilettore=AndreaMasala|note=in quali categorie rientra? da inserire|data=09/06/2015|stato=Terminato}}
+{{RiletturaArticolo|articolo=Gnome-Shell|autore=-|rilettore=-|data=25/04/2015|stato=DaFare|note=bisogna vedere come si comporta con F22}}
+{{RiletturaArticolo|articolo=Nautilus scripts e personalizzazioni|autore=Riccardo Volpe|rilettore=-|data=25/04/2015|stato=DaFare|note=è ancora utile il metodo attraverso python? perché sulla 21 a me funziona mettendo un modello vuoto nella cartella Modelli.<br>vedere anche [http://forum.fedoraonline.it/viewtopic.php?id=23532 qua] ... ~bebo}}
+{{RiletturaArticolo|articolo=Segnalare un bug|autore=GiulioErler|rilettore=AlbertoChiusole|note=Aggiornata, riscritta guida precedente.<br>[bebo]se qualcuno passa di qua prima di me e ha tempo di rileggerla (dovrebbe essere tutto ok), lo dica in ML e poi la si può "rilasciare".|data=20/09/2015|stato=DaFare}}
+{{RiletturaArticolo|articolo=Creare LiveUSB|autore=GiulioErler|rilettore=-|data=09/11/2015|release=F23|stato=DaFare}}
+|}
+
+''NOTA: il tag '''note''' non è necessario: se non è presente verrà automaticamente sostituito da uno spazio vuoto nella tabella.''
+
+== Articoli in corso di aggiornamento ==
+
+Qualora l'articolo fosse in stato di "Terminato" nella sezione [[CantiereWiki#Articoli_in_corso_di_stesura |articoli in corso di stesura]] ma dovesse essere stato ritenuto "non pubblicabile" in fase di rilettura ([[CantiereWiki#Rilettura_in_corso |rilettura in corso]]), esso verrà inserito in questa sezione dai redattori che provvederanno ad inviare una mail all'autore per richiedere il completamento o, la correzione per quanto rilevato.
+<br>La medesima comunicazione dovrà essere inviata anche '''''per conoscenza''''' alla Mailing List.<br />
+L'autore potrà quindi trovare qui il proprio articolo pronto per essere modificato/corretto per poi venire riproposto alla pubblicazione, cioè reinserito nella sezione di rilettura.<br />
+Come detto in precedenza, in questa sezione trovano posto anche quelle guide che in Mailing List si è stabilito che possono essere aggiornate anzichè riscritte.<br />
+Occorre utilizzare il template '''''<tt>ModificaArticolo</tt>''''' (per la spiegazione del markup si rimanda a quanto precisato in [[CantiereWiki#Articoli_in_corso_di_stesura |articoli in corso di stesura]]) :
+ <nowiki>{{ModificaArticolo|articolo=Titolo della guida|autore=NomeWiki|responsabile=NomeWiki|note=testo utile|data=data|stato=stato}}</nowiki>
+
+
+Verificare di aggiungere il markup: '''<nowiki>[[Categoria:Modifica in corso]]</nowiki>''' senza rimuovere la categoria di appartenenza originaria della guida.
+
+{| {{TabellaBase}}
+! Articolo
+! Autore
+! Responsabile della modifica
+! Note, riferimenti, link
+! Data
+! Stato
+
+{{ModificaArticolo|articolo=Pagina_principale|autore=/|responsabile=AlbertoChiusole|note=cambiare alcune guide con alcune più usate.|data=25/10/2013|stato=DaFare}}
+{{ModificaArticolo|articolo=:Categoria:Yum|autore=/|responsabile=AlbertoChiusole|note=togliere tutte le guide che riguardano repo, in quanto esiste l'apposita categoria repository.|data=25/10/2013|stato=DaFare}}
+{{ModificaArticolo|articolo=Installazione_Driver_ATI|autore=/|responsabile=FrancescoFrassinelli|note=vedere mail in [https://admin.fedoraproject.org/mailman/private/doc-fol/2015-May/001797.html ML].|data=23/05/2015|stato=Terminato}}
+{{ModificaArticolo|articolo=Configurare_un_SSD|autore=/|responsabile=/|note=vedere mail in [https://admin.fedoraproject.org/mailman/private/doc-fol/2014-June/001403.html ML].|data=22/02/2014|stato=DaFare}}
+{{ModificaArticolo|articolo=Boot_sequence_Fedora|autore=/|responsabile=/|note=vedere mail in [https://admin.fedoraproject.org/mailman/private/doc-fol/2014-October/001482.html ML]|data=08/10/2014|stato=DaFare}}
+{{ModificaArticolo|articolo=:Categoria:Repository|autore=/|responsabile=AlbertoChiusole|note=rendere più visibile la categoria, anche nella pagina principale.|data=09/10/2014|stato=DaFare}}
+{{ModificaArticolo|articolo=Adobe_Acrobat_Reader|autore=SimoneDresti|responsabile=/|data=14/02/2014|stato=InCorso}}
+|}
+
+''NOTA: il tag '''note''' non è necessario: se non è presente verrà automaticamente sostituito da uno spazio vuoto nella tabella.''
+
+Terminata la fase di aggiornamento dovrà essere reinserita tra le guide in rilettura ([[CantiereWiki#Rilettura_in_corso |rilettura in corso]]) secondo le modalità ed il template descritti nella sezione.
+
+==Articoli a revisione periodica==
+La documentazione di Fedora Online contiene delle guide che hanno la necessità di essere revisionate periodicamente. Questa sezione ha lo scopo di elencare quelle che la comunità ritiene di dover aggiornare più frequentemente.
+La prassi vuole che prima di ogni rilascio tutte le guide sottoelencate debbano essere riallineate e rese compatibili con la futura versione di fedora.Dopo ogni rilascio di fedora le ultime due caselle di ogni riga vanno azzerate (i.e. responsabile=- e stato=DaFare).
+
+
+L'aggiunta degli articoli a revisione periodica viene fatta utilizzando il template ''GuidePeriodiche'' come segue:
+
+ <nowiki>{{GuidePeriodiche|articolo=Titolo articolo|autore=NomeCognome|note=Osservazioni|data=Data|release=Release|responsabile=Responsabile|stato=Stato}}</nowiki>
+La tabella usa il template '''GuidePeriodiche''', ed è necessario utilizzare i parametri secondo queste direttive:
+*'''data=Data''' è la data dell'ultimo aggiornamento.
+*'''release=Release''' indica la release di fedora in cui la guida è stata controllata durante l'ultimo aggiornamento (es: F22).
+*'''responsabile=Responsabile''' indica la persone che ha scelto di prendersi a carico l'aggiornamento della guida.
+
+
+{| {{TabellaBase}}
+! Articolo
+! Autore
+! Note, riferimenti, link
+! Ultimo update
+! Ultima release
+! Responsabile
+! Stato
+
+{{GuidePeriodiche|articolo=Installazione Fedora 22|autore=GiulioErler|data=28/05/15|release=F22|responsabile=-|stato=DaFare}}
+{{GuidePeriodiche|articolo=Aggiornamento Fedora con FedUp|autore=AlbertoChiusole|note=guida ufficiale [https://fedoraproject.org/wiki/FedUp fpo].|data=19/11/2015|release=F22|responsabile=-|stato=DaFare}}
+{{GuidePeriodiche|articolo=RPMFusion|autore=-|note=Va controllata la compatibilità.<br>sito [http://www.rpmfusion.org/ ufficiale.]|data=04/06/15|release=F22|responsabile=-|stato=DaFare}}
+{{GuidePeriodiche|articolo=Gnome-Shell|autore=RobertMayr|data=14/03/2015|release=21|responsabile=-|stato=DaFare}}
+|}
+
+==Proposte di nuovi articoli==
+Di seguito viene riportata una tabella per tenere traccia degli articoli che vengono proposti nella Mailing List, sul forum, durante i meeting, ecc..<br>
+Questa tabella può essere aggiornata da chiunque, ma prima di ''rimuovere'' una proposta di articolo, è opportuno discuterne sulla ML insieme agli altri redattori.
+
+Per aggiungere una nuova proposta, inserire una nuova riga con queste caratteristiche:
+ <nowiki>{{ArticoloProposto|articolo=Titolo della guida|ideatore=NomeWiki|collaboratori=[[Utente:NomeWiki]] e [[Utente:AltroNomeWiki]]|fonte=[url testo_url]|note=testo utile|data=data}}</nowiki>
+NB: per inserire dei collaboratori, bisogna circondare il loro nome dell'account con '''<nowiki>[[Utente:</nowiki>'''''NomeWiki'''''<nowiki>]]</nowiki>''': ad esempio <nowiki>[[Utente:MarioRossi]]</nowiki>.
+
+{| {{TabellaBase}}
+! Articolo proposto
+! Ideatore
+! Collaboratori interessati
+! Fonte
+! Note, riferimenti, link
+! Data
+{{ArticoloProposto|articolo=BFO|ideatore=AlbertoChiusole|collaboratori=[[Utente:TizioCaio]], [[Utente:Pippo]] e [[Utente:Pluto]] (chi potrebbe essere interessato, sostituisca il suo nome a questi di esempio).|fonte=guida su [http://www.if-not-true-then-false.com/2010/fedora-netinstall-net-install-with-gpxe-and-bfo-boot-fedoraproject-org/ if-not-true-then-false]|note=sarebbe interessante avere una guida per la creazione di un supporto per '''B'''oot.'''F'''edoraproject.'''O'''rg (se esiste ancora)|data=10/4/2015}}
+{{ArticoloProposto|articolo=Accelerazione SNA su schede Intel|ideatore=AlessandroBugliazzini|note=prima bozza fatta da Yatta [http://doc.fedoraonline.it/Utente:AlessandroBugliazzini/Yattabox/box1&oldid=3323#Introduzione qui].<br>si pensava di fare una pagina singola per ogni "brand" (intel, nvidia, ..) dedicata alle caratteristiche che centrano con fedora delle varie schede, vedi [https://admin.fedoraproject.org/mailman/private/doc-fol/2014-January/001269.html qui].|data=19/06/2015}}
+|}
+
+''NOTA: i tag '''collaboratori''', '''fonte''' e '''note''' non sono necessari: se non sono presenti verranno automaticamente sostituiti da uno spazio vuoto nella tabella.''
+
+
+
+==Note conclusive==
+
+Quando un articolo è pronto per essere pubblicato, il rilettore lo comunica in Mailing List, dopodiché verrà inserito online.<br>
+'''Solo i componenti dello staff hanno la competenza per togliere l'articolo dagli elenchi di CantiereWiki dopo la sua pubblicazione.'''
+
+Buon lavoro a tutti e grazie per la collaborazione.
+
+[[Categoria:FedoraOnline]]

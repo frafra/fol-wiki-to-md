@@ -1,0 +1,62 @@
+{{Warning|Questa breve procedura è stata utilizzata su una Fedora 8 ad architettura i386/i686 per compilare ed installare il modulo Creative Labs SB X-Fi.}}
+{{Scrittura|Il prompt '''$''' significa che le istruzioni sono eseguite da utente dektop non privilegiato (utente normale);<br />
+Il prompt '''#''' identifica istruzioni eseguite come utente root.}}
+Per comodita' si riassumono i passi per installare il MININO di sistema di sviluppo che permette la compilazione dei drivers:
+
+ # yum install kernel-devel kernel-headers gcc make glibc-devel glibc-headers
+
+Scaricare il file ''XFiDrv_Linux_Public_US_1.00.tar.gz'', per esempio da qui: [http://pt.europe.creative.com/support/downloads/download.asp?searchString=XFiDrv_Linux http://pt.europe.creative.com/support/downloads/download.asp?searchString=XFiDrv_Linux]<br />
+Poi:
+
+ $ tar zxvf XFiDrv_Linux_Public_US_1.00.tar.gz
+ $ cd XFiDrv_Linux_Public_US_1.00
+ $ make
+ ... alcuni warnings ma la compilazione termina con successo; verificare che ora esista il file:
+   
+ $ ll ctxfi.ko
+ -rw-rw-r-- 1 user group 1081762 2009-01-22 18:20 ctxfi.ko  
+
+Così ad occhio si stabilisce che il make install non funzionerà.. ;-) Pertanto si può copiare a manina il modulo... ad esempio qui:
+
+ # cp /home/user/XFiDrv_Linux_Public_US_1.00/ctxfi.ko /lib/modules/`uname -r`/kernel/sound
+
+Nel caso descritto qui ''/lib/modules/2.6.26.8-57.fc8/kernel/sound''; ora con il terminale monitorare gli eventi:
+
+ # tail -f /var/log/messages
+
+Ed ora finalmente si possono aggiornare le dipendenze dei moduli e provare a "caricare" quello per l x-fi.
+
+ # depmod -a
+ # modprobe ctxfi
+
+Il file messages riporta solo questa riga..
+
+ Jan 22 17:58:17 hp kernel: ACPI: PCI Interrupt 0000:02:04.0[A] -> GSI 16 (level, low) -> IRQ 16
+
+Ma ecco apparire in ''/dev'' alcuni preziosi devices:
+
+ crw-rw----+ 1 root     root  14,   1 2009-01-22 17:58 sequencer
+ crw-rw----+ 1 root     root  14,   8 2009-01-22 17:58 sequencer2
+ crw-rw----+ 1 root     root  14,   3 2009-01-22 17:58 dsp
+ crw-rw----+ 1 root     root  14,   4 2009-01-22 17:58 audio
+ crw-rw----+ 1 root     root  14,   0 2009-01-22 17:58 mixer
+ drwxr-xr-x  2 root     root      140 2009-01-22 17:58 snd
+ 
+ $ ll /dev/snd
+ total 0
+ crw-rw----+ 1 root root 116, 6 2009-01-22 17:58 controlC0
+ crw-rw----+ 1 root root 116, 5 2009-01-22 17:58 pcmC0D0c
+ crw-rw----+ 1 root root 116, 4 2009-01-22 18:04 pcmC0D0p
+ crw-rw----+ 1 root root 116, 3 2009-01-22 17:58 seq
+ crw-rw----+ 1 root root 116, 2 2009-01-22 17:58 timer
+
+ed i relativi moduli attivatori:
+
+ # lsmod | grep ctx
+ ctxfi                  60564  2 
+ snd_pcm                61509  2 ctxfi,snd_pcm_oss
+ snd                    46437  12 ctxfi,snd_seq_oss,snd_seq,snd_seq_device,snd_pcm_oss,snd_mixer_oss,snd_pcm,snd_timer
+
+P.S: In virtù (anche) del comando ''depmod -a'' il sistema tenterà di caricare ctxfi all'avvio.
+
+[[Categoria:Hardware]]

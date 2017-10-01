@@ -1,0 +1,79 @@
+E' possibile modificare il logging che viene svolto da LVM2 in modo da monitorare eventuali attività o errori dal sistema. Nel file di configurazione /etc/lvm/lvm.conf è possibile definire il livello di logging di LVM2 che di default è impostato a 0 (con un valore massimo di 7). Sempre nel file di configurazione è possibile specificare se inviare i messaggi al syslogd e definire un log di riferimento (che solitamente non è definito).
+
+    [root@pc ~]# vgcfgbackup
+    [root@pc log]# tail -100 /var/log/lvm2.log 
+    commands/toolcontext.c:189   Logging initialised at Wed Mar  3 22:00:30 2010
+    commands/toolcontext.c:210   Set umask to 0077
+    toollib.c:523   Finding all volume groups
+    toollib.c:432   Finding volume group "vg_data"
+    format_text/archiver.c:384   Creating volume group backup "/etc/lvm/backup/vg_data" (seqno 3).
+    vgcfgbackup.c:84   Volume group "vg_data" successfully backed up.
+    toollib.c:432   Finding volume group "vg_root"
+    format_text/archiver.c:384   Creating volume group backup "/etc/lvm/backup/vg_root" (seqno 3).
+    vgcfgbackup.c:84   Volume group "vg_root" successfully backed up.
+    cache/lvmcache.c:1284   Wiping internal VG cache
+
+Sarà possibile aumentare il verbose che verrà mostrato in stdout o stderr, che solitamente è disabilitato. È possibile aumentarlo fino ad un livello di 3 (molto verboso) per operazioni di debug.
+
+    [root@pc ~]# vgcfgbackup
+        Logging initialised at Wed Mar  3 21:57:57 2010
+        Set umask to 0077
+    vgcfgbackup    Finding all volume groups
+    vgcfgbackup    Finding volume group "vg_data"
+    vgcfgbackup    Creating volume group backup "/etc/lvm/backup/vg_data" (seqno 3).
+    vgcfgbackup  Volume group "vg_data" successfully backed up.
+    vgcfgbackup    Finding volume group "vg_root"
+    vgcfgbackup    Creating volume group backup "/etc/lvm/backup/vg_root" (seqno 3).
+    vgcfgbackup  Volume group "vg_root" successfully backed up.
+    vgcfgbackup    Wiping internal VG cache
+
+Qui sotto è riportata la parte di configurazione relativa al logging di LVM2 contenuto nel file di configurazione /etc/lvm/lvm.conf. Si ricorda che ad ogni modifica del file di configurazione, bisognerà ricreare manualmente il ram-disk tramite dracut per apportare le modifiche.
+
+    # This section that allows you to configure the nature of the
+    # information that LVM2 reports.
+    log {
+
+        # Controls the messages sent to stdout or stderr.
+        # There are three levels of verbosity, 3 being the most verbose.
+        verbose = 0
+
+        # Should we send log messages through syslog?
+        # 1 is yes; 0 is no.
+        syslog = 1
+
+        # Should we log error and debug messages to a file?
+        # By default there is no log file.
+        #file = "/var/log/lvm2.log"
+
+        # Should we overwrite the log file each time the program is run?
+        # By default we append.
+        overwrite = 0
+
+        # What level of log messages should we send to the log file and/or syslog?
+        # There are 6 syslog-like log levels currently in use - 2 to 7 inclusive.
+        # 7 is the most verbose (LOG_DEBUG).
+        level = 0
+
+        # Format of output messages
+        # Whether or not (1 or 0) to indent messages according to their severity
+        indent = 1
+
+        # Whether or not (1 or 0) to display the command name on each line output
+        command_names = 0
+
+        # A prefix to use before the message text (but after the command name,
+        # if selected).  Default is two spaces, so you can see/grep the severity
+        # of each message.
+        prefix = "  "
+
+        # To make the messages look similar to the original LVM tools use:
+        #   indent = 0
+        #   command_names = 1
+        #   prefix = " -- "
+
+        # Set this if you want log messages during activation.
+        # Don't use this in low memory situations (can deadlock).
+        # activation = 0
+    }
+
+<Categoria:LVM>

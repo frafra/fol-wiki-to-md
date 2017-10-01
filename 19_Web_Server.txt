@@ -1,0 +1,94 @@
+==  Come installare un Web Server ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+<li>Leggi [[02_Repositories#Come aggiungere dei repositories extra|Come aggiungere dei repositories extra]]</li>
+
+ yum install httpd mod_ssl httpd-manual mod_perl mod_auth_mysql crypto-utils mod_python
+ /etc/init.d/httpd start
+ 
+<li>http://localhost </li>
+</ol>
+
+==  Come installare il supporto a PHP in un Web Server ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+<li>Leggi [[02_Repositories#Come aggiungere dei repositories extra|Come aggiungere dei repositories extra]]</li>
+<li>Leggi [[#Come installare un Web Server|Come installare un Web Server]]</li>
+
+ yum -y install php
+ yum -y install php-mysql
+
+ /etc/init.d/httpd restart
+ gedit /var/www/html/testphp.php
+
+<li>Inserisci la riga seguente nel file</li>
+
+ &lt;?php phpinfo(); ?&gt;
+
+<li>Salva il file modificato</li>
+<li>http://localhost/testphp.php</li>
+</ol>
+
+==  Come installare MYSQL ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+<li>Leggi [[02_Repositories#Come aggiungere dei repositories extra|Come aggiungere dei repositories extra]]</li>
+<li>Leggi [[#Come installare un Web Server|Come installare un Web Server]]</li>
+<li>Leggi [[#Come installare il supporto a PHP in un Web Server|Come installare il supporto a PHP in un Web Server]]</li>
+<li>Leggi [[#Come installare MYSQL Database Server|Come installare MYSQL Database Server]]</li>
+
+ /etc/init.d/httpd restart
+</ol>
+
+==  Come fare in modo che URLs raggiungano directory al di fuori di /var/www/ ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+<li>Leggi [[#Come installare un Web Server|Come installare un Web Server]]</li>
+ 
+ gedit /etc/httpd/conf.d/alias
+
+<li>Inserisci le seguenti righe nel file</li>
+
+ Alias /URL-path /location_of_directory/
+
+ &lt;Directory /location_of_directory/&gt;
+   Options Indexes FollowSymLinks
+   AllowOverride All
+   Order allow,deny
+   Allow from all
+ &lt;/Directory&gt;
+
+<li>Salva il file modificato</li>
+
+ /etc/init.d/httpd restart
+
+<li>http://localhost/URL-path</li>
+</ol>
+
+==  Come cambiare il numero di porta di default in Apache HTTP Server ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+<li>Leggi [[#Come installare un Web Server|Come installare un Web Server]]</li>
+<i>Assumiamo che il nuovo numero di porta sia il 78</i>
+
+ cp /etc/httpd/ports.conf /etc/httpd/ports.conf_backup
+ gedit /etc/httpd/ports.conf
+
+<li>Trova questa riga</li>
+
+ Listen 80
+
+<li>Sostituiscila con la seguente</li>
+
+ Listen 78
+
+<li>Salva il file modificato</li>
+
+ /etc/init.d/httpd restart
+
+<li>http://localhost:78</li>
+</ol>
+
+{{Link/prec|18 Database Server|18 Database Server}}{{Link/succ|20 FTP Server|20 FTP Server}}
+
+[[Categoria:Fedoraserver]]

@@ -1,0 +1,36 @@
+==Montaggio di una iso==
+Come montare una ISO direttamente, senza doverla masterizzare su un CD; può tornare utile in alcuni casi...<br />
+Per prima cosa bisogna creare una cartellina dove montare la iso in questo modo:
+
+ # mkdir /media/iso/
+
+ora per montare una iso basta eseguire questo comando:
+
+ # mount -t iso9660 -o ro,loop=/dev/loop0 /home/spyrotsk/sacred.iso /media/iso
+
+L'argomento ''-t'' specifica il tipo di mount che si deve fare. L'opzione ''-o'' accetta una lista di argomenti separati da una virgola, inclusi i seguenti:
+
+* '''nodev''' Non permette l'interpretazione di dispositivi speciali sul file system. Questa è un'utile opzione di sicurezza.
+* '''noexec''' Non permette l'esecuzione di binari su questo file system. Questa è un'altra utile opzione di sicurezza.
+* '''nosuid''' Non permette l'interpretazione delle flag setuid o setgid sul file system. Anche questa è un'utile opzione di sicurezza.
+
+Invece l'argomento ''-r'' monta il file system in sola lettura. Questo è identico ad usare l'argomento ''ro'' (rdonly per versioni di FreeBSD dopo la 5.2) con l'opzione ''-o''.
+
+Oppure più semplicemente:
+
+ # mount -o ro,loop /home/spyrotsk/sacred.iso /media/iso
+
+==Smontaggio di una iso==
+
+Per smontare una iso caricata precedentemente basta eseguire il comando:
+
+ # umount /media/iso
+
+==Creazione di un link alla directory della iso==
+
+Per creare un link simbolico alla directory dell'iso in modo da mettertelo sul desktop basta eseguire questo comando:
+
+ $ ln -s /media/iso /home/spyrotsk/Desktop
+
+[[Categoria:Sistema]]
+[[Categoria:Multimedia]]

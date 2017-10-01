@@ -1,0 +1,125 @@
+==  Come installare un Server FTP per un servizio di Trasferimento file ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+<li>Leggi [[02_Repositories#Come aggiungere dei repositories extra|Come aggiungere dei repositories extra]]</li>
+
+ yum -y install proftpd
+ /etc/init.d/proftpd start
+</ol>
+
+==  Come configurare un Server FTP per consentire accesso anonimo in sola lettura ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+<li>Leggi [[#Come installare un Server FTP per un servizio di Trasferimento file|Come installare un Server FTP per un servizio di Trasferimento file]]</li>
+
+ cp /etc/proftpd.conf /etc/proftpd.conf_backup
+ gedit /etc/proftpd.conf
+
+<li>Aggiungi le seguenti righe alla fine del file</li>
+
+ &lt;Anonymous ~ftp&gt;
+  User            ftp
+  Group            nogroup
+  UserAlias          anonymous ftp
+  DirFakeUser on ftp
+  DirFakeGroup on ftp
+  RequireValidShell      off
+  MaxClients         10
+  DisplayLogin        welcome.msg
+  DisplayFirstChdir      .message
+  &lt;Directory *&gt;
+   &lt;Limit WRITE&gt;
+    DenyAll
+   &lt;/Limit&gt;
+  &lt;/Directory&gt;
+ &lt;/Anonymous&gt;
+
+<li>Salva il file modificato</li>
+
+ /etc/init.d/proftpd restart
+</ol>
+
+==  Come configurare un Server FTP per consentire accesso anonimo in lettura/scrittura ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+<li>Leggi [[#Come installare un Server FTP per un servizio di Trasferimento file|Come installare un Server FTP per un servizio di Trasferimento file]]</li>
+
+ cp /etc/proftpd.conf /etc/proftpd.conf_backup
+ gedit /etc/proftpd.conf
+
+<li>Aggiungi le seguenti righe alla fine del file</li>
+
+ &lt;Anonymous ~ftp&gt;
+  User            ftp
+  Group            nogroup
+  UserAlias          anonymous ftp
+  DirFakeUser on ftp
+  DirFakeGroup on ftp
+  RequireValidShell      off
+  MaxClients         10
+  DisplayLogin        welcome.msg
+  DisplayFirstChdir      .message
+ &lt;/Anonymous&gt;
+
+<li>Salva il file modificato</li>
+
+ /etc/init.d/proftpd restart
+</ol>
+
+==  Come abilitare un FTP anonimo al di fuori di /home/ftp/ ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+<li>Leggi [[#Come installare un Server FTP per un servizio di Trasferimento file|Come installare un Server FTP per un servizio di Trasferimento file]]</li>
+
+ cp /etc/proftpd.conf /etc/proftpd.conf_backup
+ gedit /etc/proftpd.conf
+
+<li>Aggiungi le seguenti righe alla fine del file</li>
+
+ &lt;Anonymous /location_of_folder/&gt;
+  User            ftp
+  Group            nogroup
+  UserAlias          anonymous ftp
+  DirFakeUser on ftp
+  DirFakeGroup on ftp
+  RequireValidShell      off
+  MaxClients         10
+  DisplayLogin        welcome.msg
+  DisplayFirstChdir      .message
+  &lt;Directory *&gt;
+   &lt;Limit WRITE&gt;
+    DenyAll
+   &lt;/Limit&gt;
+  &lt;/Directory&gt;
+ &lt;/Anonymous&gt;
+
+<li>Salva il file modificato</li>
+
+ /etc/init.d/proftpd restart
+</ol>
+
+==  Come cambiare il numero di porta usato di default in un server FTP ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+<li>Leggi [[#Come installare un Server FTP per un servizio di Trasferimento file|Come installare un Server FTP per un servizio di Trasferimento file]]</li>
+''Assumiamo che la nuova porta abbia numero 77''
+
+ cp /etc/proftpd.conf /etc/proftpd.conf_backup
+ gedit /etc/proftpd.conf
+
+<li>Trova questa riga</li>
+
+ Port              21
+
+<li>Sostituiscila con la seguente</li>
+
+ Port              77
+
+<li>Salva il file modificato</li>
+
+ /etc/init.d/proftpd restart
+</ol>
+
+{{Link/prec|19 Web Server|19 Web Server}}
+
+[[Categoria:Fedoraserver]]

@@ -1,0 +1,150 @@
+==  Come fare funzionare il chip wireless Intel IPW2200 b,g ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+<li>Leggi [[02_Repositories#Come aggiungere dei repositories extra|Come aggiungere dei repositories extra]]
+Scarica [http://ipw2200.sourceforge.net/firmware.php?fid=6 il firmware], accetta la licenza d'uso e salva il file sul tuo desktop; quindi apri un terminale e digita quanto segue:</li>
+
+ mkdir tmp
+ mv ~/Desktop/*-2.4.tgz ~/tmp 
+ cd tmp
+ tar -zxvf ipw2200-fw-2.4.tgz
+ cp * /lib/firmware
+ rmmod ipw2200
+ modprobe ipw2200
+ iwconfig
+
+dovresti vedere un access point. Puoi utilizzare Network Manager per controllare la tua attività wireless
+<li>Leggi [[04 Aggiungere Applicazioni#Network manager per Gnome|Network manager per Gnome]]</li>
+</ol>
+
+==  Come installare i driver della scheda grafica (NVIDIA) ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+<li>Leggi [[02_Repositories#Come aggiungere dei repositories extra|Come aggiungere dei repositories extra]]</li>
+
+ yum -y install nvidia-glx kernel-module-nvidia-$(uname -r)
+
+<li>Leggi [[15 Trucchi vari#Come riavviare GNOME senza riavviare il computer|Come riavviare GNOME senza riavviare il computer]]</li>
+<li>In caso di problemi leggi nV News sul forum [http://www.nvnews.net/vbulletin/forumdisplay.php?s=&amp;forumid=14 "Linux and nVidia Graphics"]</li>
+</ol>
+
+==  Come installare i driver della scheda grafica (ATI) ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+<li>Leggi [[02_Repositories#Come aggiungere dei repositories extra|Come aggiungere dei repositories extra]]</li>
+
+ yum -y install ati-fglrx kernel-module-fglrx-$(uname -r)
+
+<li>Se possiedi una motherboard Intel, dovrai modificare il tuo xorg.conf dopo avere installato i drivers:</li>
+
+ gedit /etc/X11/xorg.conf
+
+<li>Trova la seguente riga</li>
+
+ Driver "fglrx"
+
+<li>Aggiungi la riga seguente</li>
+
+ Option "UseInternalAGPGART" "no"
+</ol>
+
+==  Come identificare il chipset del tuo modem ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+<li>Leggi [[04 Aggiungere Applicazioni#Come installare un Compilatore|Come installare un Compilatore]]</li>
+
+ wget -c http://easylinux.info/uploads/scanModem.gz
+ gunzip -c scanModem.gz &gt; scanModem
+ chmod +x scanModem
+ cp scanModem /usr/bin/
+
+<li>Per identificare il chipset del modem</li>
+
+ scanModem
+ gedit Modem/ModemData.txt
+</ol>
+
+==  Come vedere il contenuto della tabella delle partizioni ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+
+ fdisk -l
+</ol>
+
+==  Come vedere lo spazio usato su disco dal filesystem ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+
+ df -T -h
+</ol>
+
+==  Come vedere quali dispositivi sono montati ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+
+ mount
+</ol>
+
+==  Come elencare i dispositivi PCI ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+
+ lspci
+</ol>
+
+==  Come elencare i dispositivi USB ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+
+ lsusb
+</ol>
+
+==  Come incrementare la velocità del CD/DVD-ROM ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+'' Assumiamo che /dev/cdrom sia il CD/DVD-ROM ''
+
+ /sbin/hdparm -d1 /dev/cdrom
+ gedit /etc/hdparm.conf
+
+<li>Inserisci le seguenti linee nel nuovo file</li>
+
+ /dev/cdrom {
+     dma = on
+ }
+
+<li>Salva il file modificato</li>
+</ol>
+
+==  Come montare/smontare manualmente il CD/DVD-ROM, e come mostrare tutti i file/directory nascoste ed associate ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+''Assumiamo che /dev/cdrom0 sia il CD/DVD-ROM''
+<li>Per montare il CD/DVD-ROM</li>
+
+ mount /media/cdrom0/ -o unhide
+
+<li>Per smontare il CD/DVD-ROM</li>
+
+ umount /media/cdrom0/
+</ol>
+
+==  Come forzare manualmente il montaggio/smontaggio del CD/DVD-ROM ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+''Assumiamo che /dev/cdrom0 sia il CD/DVD-ROM''
+
+ umount /media/cdrom0/ -l
+</ol>
+
+==  Come rimontare /etc/fstab senza effettuare il reboot della macchina ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+
+ mount -a
+</ol>
+
+
+{{Link/prec|07 Amministrazione di utenti|07 Amministrazione di utenti}}{{Link/succ|09 Masterizzare CD/DVD|09 Masterizzare CD/DVD}}
+
+[[Categoria:Fedoraserver]]

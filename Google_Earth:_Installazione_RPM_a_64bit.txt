@@ -1,0 +1,27 @@
+{{InCorso|autore=AndreaMalfatti}}
+
+__TOC__
+
+== Introduzione ==
+
+Google Earth, famoso programma in grado di virtualizzare immagini del nostro pianeta, da tempo è disponibile a 32 bit, mentre per PC a 64bit fino ad ora esisteva soltanto la compilazione dai file sorgente.<br>
+Ora è disponibile un RPM a 64bit, anche se per un corretto funzionamento l'installazione necessità comunque di alcuni pacchetti a 32bit.
+
+==Installazione dipendenze==
+
+Il pacchetto obbligatorio per Google Earth è:
+
+ # dnf install redhat-lsb.i686
+
+==Installazione pacchetto==
+{{Warning|'''SOLO per chi avesse installato il [[Installazione_Driver_NVidia|driver Nvidia]] proprietario''', bisogna aggiungere:
+  # dnf install gtk2.i686 mesa-libGL.i686 libSM.i686}}
+
+Installati i pacchetti è possibile installare [http://www.google.it/intl/it/earth/download/ge/agree.html Google Earth].<br/>Occorre scegliere tra la versione a 32 bit e quella 64 bit e, una volta scaricato il file è possibile installarlo, spostandosi nella cartella in cui si trova, con:
+
+ # dnf install /percorso/al/file/google-earth-stable_current_*.rpm
+
+Peccato che Google non abbia pensato di dotare il pacchetto RPM delle informazioni necessarie per risolvere in automatico eventuali dipendenze mancanti.<br>
+A questo proposito, visto che sono stati installati i pacchetti in precedenza, l'installazione dovrebbe avvenire con successo e l'uso di Google Earth compenserà gli sforzi fatti con una nuova veste grafica.
+
+[[Categoria:Internet]]

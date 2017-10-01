@@ -1,0 +1,39 @@
+Già nei repository ufficiali di Fedora si riescono a trovare software interessanti per l'analisi forense.
+Esiste però un repository del [CERT](http://www.cert.org/) dedicato a Fedora, CentOS e RHEL che fornisce una vasta scelta di software utili all'analisi forense: Il [Linux Forensics Tools Repository](http://www.cert.org/forensics/tools/).
+
+Per installare i repository sul proprio sistema andare [qui](http://www.cert.org/forensics/tools/#fedorasupport) e scaricare il pacchetto specifico per la propria versione di Fedora. Installare il pacchetto con yum:
+
+`# yum localinstall /percorso/al/pacchetto.rpm`
+
+Tramite il comando:
+
+`# yum repolist`
+
+si può verificare la corretta presenza del repository *forensics* e *forensics-splunk*.
+
+Il repository offre, inoltre, un metapacchetto apposito per installare in un colpo solo tutti i software forniti:
+
+`# yum install CERT-Forensics-Tools`
+
+Accortezza: disabilitare il repo
+--------------------------------
+
+Come per tutti i repository non ufficiali di Fedora si consiglia di tenere disabilitato il repository yum ed abilitarlo solo all'occorrenza.
+
+Aprire con il proprio editor di testo preferito il file di configurazione:
+
+`# vim /etc/yum.repos.d/cert-forensics-tools.repo`
+
+modificare la/le voce/i
+
+`enabled=1`
+
+in
+
+`enabled=0`
+
+Salvare e chiudere. Da yum si potrà abilitare il repo con l'opzione enablerepo, per aggiornare i pacchetti precedentemente installati, per esempio dare:
+
+`# yum --enablerepo=forensics --enablerepo=forensics-splunk update`
+
+<Categoria:Repository>

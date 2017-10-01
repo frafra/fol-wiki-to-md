@@ -1,0 +1,170 @@
+Questa guida mostra come installare un compilatore GCC alternativo a partire dai sorgenti usando Fedora Core. Usando questa guida sarai in grado di configurare ed installare qualunque compilatore GCC che desideri. Potrai upgradare il tuo compilatore GCC oppure potrai downgradare il tuo compilatore GCC , se lo desideri. Libera traduzione di Guido Caruso dall'originale pubblicato il 6 marzo 2006 (aggiornamento 6 marzo 2006).
+Trovate il file originale in lingua inglese a [questo](http://www.mjmwired.net/resources/mjm-fedora-gcc.html) riferimento.
+
+Installare un Compilatore GCC alternativo su Fedora, di Mauriat Miranda
+-----------------------------------------------------------------------
+
+### Il problema
+
+Alcuni rilasci di distribuzioni Linux, come quelli di Fedora Core, vengono forniti con una versione del compilatore GCC che potrebbe non essere compatibile con altro software. In qualche caso il compilatore è molto recente (GCC4.1 in FC5) e in altri casi il compilatore potrebbe non essere standard (GCC2.96 in RH7.3). Generalmente non dovrebbero esserci grandi problemi. Tuttavia molte applicazioni open source NON verranno compilate adeguatamente usando specifiche versioni di GCC. In aggiunta a ciò, molte applicazioni o codice potrebbero non pienamente utilizzare/supportare le più recenti versioni di GCC. Certi sviluppatori, inoltre, potrebbero volere installare il proprio specifico compilatore. *Così se **non ti serve** compilare, allora questa guida non ti sarà necessaria.*
+
+### Avere diversi Compilatori
+
+Avere diversi compilatori è un'opzione tipicamente riservata a sviluppatori che devono compilare per varie architetture (ad es. "**cross compiling**"). Redhat e Fedora vengono fornite con vari compilatori (entrambe [FC4](http://www.mjmwired.net/resources/mjm-fedora-fc4.html#gcc3) e [FC5](http://www.mjmwired.net/resources/mjm-fedora-fc5.html#gcc3) sono dotate di GCC4.x e di GCC3.2).
+Con Linux è conveniente che tu possa avere tanti compilatori quanto ne desideri.
+
+### Software richiesto
+
+Devi avere almeno un compilatore installato con Fedora. Il compilatore cambia con le differenti versioni di Fedora. Comunque, molte installazioni installeranno una versione di GCC per default. Nei rilasci più recenti (per esempio in FC4) il compilatore è incluso in: Strumenti di sviluppo nel [processo di installazione di FC4](http://www.mjmwired.net/resources/mjm-fedora-fc4.shtml#install) -OPPURE- puoi anche andare in : *Applicazioni &gt; Add/Remove Software &gt; Sviluppo &gt; Strumenti di Sviluppo*. Il seguente è un esempio per FC4:
+
+`[mirandam@charon fc4]$ rpm -q gcc`
+`gcc-4.0.0-8`
+
+### Files richiesti
+
+Per installare da sorgente, scarica GCC da uno qualunque dei [siti mirror per GCC](http://gcc.gnu.org/mirrors.html). E' **una tua prerogativa personale** quella di scegliere la versione di GCC. Al momento in cui scrivo è disponibile GCC 3.4.4. Prova a cercare un mirror che abbia disponibile il file completo e NON solo il file diff. Il seguente è solo un *esempio*:
+
+`gcc-3.4.4.tar.bz2          26920 KB    05/19/2005      10:50:00 AM`
+`gcc-ada-3.4.4.tar.bz2      3380 KB     05/19/2005  10:50:00 AM`
+`gcc-core-3.4.4.tar.bz2         12846 KB    05/19/2005  10:52:00 AM`
+`gcc-g++-3.4.4.tar.bz2      2417 KB     05/19/2005  10:50:00 AM`
+`gcc-g77-3.4.4.tar.bz2      882 KB      05/19/2005  10:51:00 AM`
+`gcc-java-3.4.4.tar.bz2         4588 KB     05/19/2005  10:51:00 AM`
+`gcc-objc-3.4.4.tar.bz2     208 KB      05/19/2005  10:51:00 AM`
+`gcc-testsuite-3.4.4.tar.bz2    2575 KB     05/19/2005  10:51:00 AM`
+
+Seleziona solo quei componenti che desideri installare. Ti bisognerà il file gcc-core ed un file per ogni linguaggio extra che usi (ada, g++, etc.) **-OPPURE-** scarica gcc-3.4.4 che conterrà TUTTI i linguaggi sopra indicati. ... Per questo esempio, a me serve solo gcc-core e gcc-g++.
+
+### Sorgenti e Directory
+
+GCC raccomanda di NON fare il *build* nella stessa directory in cui sono presenti i file sorgente. Così basta semplicemente creare una directory separata per il build. Tanto per cominciare, ho scaricato e scompattato il file che ho selezionato, di tipo tar.bz2, da un sito di cui sopra, nella directory: gcc.
+
+`[mirandam@charon gcc]$ pwd`
+`/home/mirandam/gcc`
+`[mirandam@charon gcc]$ bzip2 -cd gcc-core-3.4.4.tar.bz2 | tar xvf -`
+`[mirandam@charon gcc]$ bzip2 -cd gcc-g++-3.4.4.tar.bz2 | tar xvf -`
+
+-OPPURE-
+
+`[mirandam@charon gcc]$ bzip2 -cd gcc-3.4.4.tar.bz2 | tar xvf -`
+
+`[mirandam@charon gcc]$ mkdir build      (questa è la nostra directory per il build)`
+`[mirandam@charon gcc]$ cd build         (passo `**`importante`**`)`
+
+La nostra directory per il build è /home/mirandam/gcc/**build**/. Tutto il nostro codice sorgente per GCC-3.4.4 è presente in /home/mirandam/gcc/**gcc-3.4.4**/.
+
+### Opzioni di configurazione
+
+Una lista dettagliata di opzioni è presente nella pagina [di configurazione di GCC](http://gcc.gnu.org/install/configure.html) disponibile su gnu.org. **E' molto importante che le opzioni siano settate per NON creare conflitti o per NON interferire con il compilatore GCC già installato su Fedora Core.**
+
+Le seguenti opzioni costituiscono delle raccomandazioni e delle osservazioni tratte dalla configurazione di Fedora per GCC.
+
+**prefix** è un'opzione usata per indicare dove GCC sarà installato. La directory tipica è /usr/local, ma io voglio mantenerla completamente separata e per questo scelgo, invece, la directory/opt/gcc34. Se dovessi decidere di rimuoverne l'installazione, mi basterebbe rimuovere semplicemente la directory. I comandi gcc,g++,etc. saranno disponibili in /opt/gcc34/bin/.
+
+**program-suffix** è un'opzione usata per aggiungere dei caratteri extra (o una stringa di caratteri extra) ad ogni applicazione GCC che sarà compilata. Io ho usato 34. Così il mio compilatore sarà definito come gcc34, g++34, etc. Così facendo avrò eliminato ogni possibilità di confusione con il compilatore GCC già installato (o anche con GCC 3.2 in FC4). Puoi anche usare program-prefix invece (ad es.: mygcc).
+**enable-languages** è un'opzione che ti permette di controllare di quale compilatore vuoi fare il processo di build. Se selezioni tutti i linguaggi (c,c++,objc,java,f95,ada) assicurati di avere tutti i linguaggi disponibili, oppure usa il pacchetto che li contiene tutti, cioè gcc tag.bz2. (Nel mio caso occorrono solo c e c++.)
+L'ultimo set di opzioni (più avanti scritte in carattere *italics*) sono assegnate interamente per compatibilità con Fedora.
+
+`[mirandam@charon build]$ pwd`
+`/home/mirandam/gcc/build`
+`[mirandam@charon build]$ /home/mirandam/gcc/gcc-3.4.4/configure \`
+`   --prefix=`**`/opt/gcc34`**` \`
+`   --program-suffix=`**`34`**` \`
+`   --enable-languages=`**`c,c++`**` \`
+`   [i]--enable-shared --enable-threads=posix --disable-checking \`
+`   --with-system-zlib --enable-__cxa_atexit --disable-libunwind-exceptions[/i]`
+
+### Compila ed installa
+
+Una volta che hai configurato il tutto come sopra spiegato, devi compilare ed installare. Compilerai come utente non privilegiato (non root). Assicurati di usare root solo per l'installazione.
+
+`[mirandam@charon build]$ make             (questo comando compilerà, impiega circa 10-30min)`
+
+`[mirandam@charon build]$ `**`su`**`              (fai il log come root, per installare)`
+`Password: `
+`[root@charon build]# pwd`
+`/home/mirandam/gcc/build`
+`[root@charon build]# make install`
+
+Ora **crea** un file di testo chiamato: gcc34.sh e aggiungi in esso quanto segue.
+
+`#!/bin/sh`
+`GCC34_BIN=/opt/gcc34/bin`
+`PATH=$GCC34_BIN:$PATH`
+`export PATH`
+
+Come root, metti il file entro la directory /etc/profile.d/ ed assicurati che abbia il permesso di esecuzione per tutti gli utenti del sistema.
+
+`[root@charon ~]# ls -la /etc/profile.d/gcc34.sh `
+**`-rw-r--r--`**`  1 root root 66 Jun 15 21:38 /etc/profile.d/gcc34.sh`
+`[root@charon ~]# chmod `**`755`**` /etc/profile.d/gcc34.sh`
+`[root@charon ~]# ls -la /etc/profile.d/gcc34.sh`
+**`-rwxr-xr-x`**`  1 root root 66 Jun 15 21:38 /etc/profile.d/gcc34.sh`
+
+Dovresti fare il logout e poi loggarti nuovamente nel sistema, ed aprendo un nuovo terminale (o un xterm) gcc34 dovrebbe lavorare, al prompt.
+
+### Usare il nuovo GCC
+
+Se hai installato il tutto come sopra indicato, gcc34 oppure ogni altra applicazione che hai installato, dovrebbe essere direttamente accessibile. Puoi verificare la cosa con i seguenti passi:
+
+`[mirandam@charon ~]$ which gcc34`
+`/opt/gcc34/bin/gcc34`
+`[mirandam@charon ~]$ which g++34`
+`/opt/gcc34/bin/g++34`
+`[mirandam@charon ~]$ gcc34 -v`
+`Reading specs from /opt/gcc34/lib/gcc/i686-pc-linux-gnu/3.4.4/specs`
+`Configured with: /home/mirandam/gcc/gcc-3.4.4/configure --prefix=/opt/gcc34`
+`--program-suffix=34 --enable-languages=c,c++ --enable-shared --enable-threads=posix`
+`--disable-checking --with-system-zlib --enable-__cxa_atexit`
+`--disable-libunwind-exceptions`
+`Thread model: posix`
+`gcc version 3.4.4`
+
+Ci sono molti modi di usare un compilatore alternativo. I tre metodi che io generalmente uso sono: 1. Variabili di Ambiente, 2. Supporto al Configure, e 3. Supporto al Makefile.
+
+#### Variabili di ambiente
+
+Molti software supportano sia CC che CXX come variabili di ambiente. Per prima cosa le assegno, poi lancio configure e/o make. Ad esempio:
+
+`# export CC=gcc34`
+`# export CXX=g++34`
+`# ./configure`
+
+#### Supporto al Configure
+
+Se il software sta usando lo standard GNU per automake e configure, abbiamo una possibilità che supportino altri compilatori, passando il setting allo script configure. Per prima cosa lancia configure --help per vedere se tutto è menzionato. Il seguente esempio è relativo a MPlayer:
+
+`# ./configure --help`
+`# ./configure --cc=gcc34`
+
+#### Supporto al Makefile
+
+Talvolta il software può essere fornito con un Makefile. Apri il Makefile e guarda dentro di esso se ci sono delle variabili che specificano il compilatore. Puoi sia editare queste variabili che settarle per la compilazione. Per esempio:
+
+`(in Makefile)`
+`   `
+`C_COMPILER = cc`
+`CPLUSPLUS_COMPILER = c++`
+
+Allora usando il Makefile, puoi lanciare:
+
+`# make CPLUSPLUS_COMPILER=g++34`
+
+### Ulteriori informazioni
+
+-   [GCC home page](http://gcc.gnu.org/)
+-   [GCC siti mirror](http://gcc.gnu.org/mirrors.html)
+-   [GNU setup ufficiale di GCC](http://gcc.gnu.org/install/)
+-   [Installare GCC: Configurazione](http://gcc.gnu.org/install/configure.html)
+-   [Linux with Doubts :: Usare un compilatore Alternativo](http://www.mjmwired.net/linux/2005/11/15/using-alternate-compilers/)
+-   [<http://www.krischik.com/Ada/gnat-3_4.html>](http://www.krischik.com/Ada/gnat-3_4.html)
+
+### Commenti
+
+Commenti, suggerimenti, domande o qualunque altro contributo a questa o a una qualunque delle [altre mie pagine](http://www.mjmwired.net/resources.php) sono ben accetti. Per favore usate il seguente [link](http://www.mjmwired.net/contact.php) per contattarmi.
+
+**Disclaimer:** The author makes no claim to the accuracy of the information provided. This information is provided in the hope that it will be useful, but WITHOUT ANY WARRANTY. There is no implied support from referencing this guide. Any help that is provided is at will. Use this information at your own risk. Always make proper backups and use caution when modifying critical system files.
+**PLEASE DO NOT** mirror, translate or duplicate this page *without* contacting me. I have spent countless hours of work personally researching and verifying these steps.
+**[Copyright © 2003-2006](http://www.mjmwired.net/about.php#copyright) by Mauriat Miranda** (mjmwired.net).
+
+<Categoria:Traduzioni>

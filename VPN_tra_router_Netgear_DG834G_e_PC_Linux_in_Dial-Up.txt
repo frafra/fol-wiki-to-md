@@ -1,0 +1,95 @@
+== Introduzione ==
+
+Attraverso questa procedura è possibile creare una VPN tra una rete collegata ad un router NetGear DG834G e un computer remoto dotato di sistema operativo Linux e "Openswan" (ipsec).
+
+== Configurazione del router ==
+
+Configuare come da immagine allegata, variando i valori evidenziati secondo le proprie esigenze.
+[[Image:NetGear.jpg|300px|thumb|center|Le impostazioni del router.]]
+== Configurazione del client ==
+
+=== Installare "openswan" ===
+
+ # yum install openswan
+
+e creare il file ''/etc/ipsec.d/ClientDialUp.conf'':
+<pre>version 2.0     # conforms to version 2.0 and newer
+
+conn ClientDialUp
+    type=tunnel
+    authby=secret
+    keyexchange=ike
+    auto=add
+    pfs=no
+    aggrmode=no
+    ike=3des-sha1-modp1024
+    esp=3des-sha1
+    # LOCAL
+    left=127.0.0.1
+    leftid=@openswan
+    # REMOTE
+    right=router_net_gear@dyndns.org
+    rightsubnet=192.168.1.1/24
+    rightid=@netgear</pre>
+dove:
+
+* '''left''' per ora lasciare 127.0.0.1. Sarà lo script "start_vpn.sh" ad aggiornare tale campo con l'indirizzo pubblico acquisito in dialup
+* '''leftid''' è il nome indicato nel campo "dati" del "tipo di identità remota" sul router (si veda immagine allegata) preceduto dal carattere "@"
+* '''rightid''' è il nome indicato nel campo "dati" del "tipo di identità locale" sul router (si veda immagine allegata) preceduto dal carattere "@"
+* '''right''' è l'indirizzo pubblico del router (o meglio un nome di un servizio di dns dinamico associato al router. si veda il menù "DNS Dinamico" del router)
+
+creare il file ''/etc/ipsec.d/ClientDialUp.secrets'':
+
+ : PSK "mettiamounabellapasswordqui"
+
+sostituendo con la "chiave pre-condivisa" indicata sul router (si veda immagine sopra).<br />
+Dopodiché assegnare i permessi corretti a tale file:
+
+ # chown root:root /etc/ipsec.d/ClientDialUp.secrets
+ # chmod 600 /etc/ipsec.d/ClientDialUp.secrets
+
+Creare quindi lo script ''/root/bin/start_vpn.sh'':
+<pre>#!/bin/bash
+
+# vpn con router netgear dg834g attraverso interfaccia ppp0 (dialup 56k o umts)
+
+# per prima cosa fermo la eth0 (se avviata), visto che potrebbe dare problemi
+# essendo nella stessa classe di indirizzi della lan di casa
+
+ifconfig eth0 | grep "inet addr"
+if [ $? -eq 0 ]
+then
+  ifdown eth0
+fi
+
+# eseguo quindi la connessione dial-up (se non è gia' avviata)
+
+ifconfig ppp0
+if [ $? -ne 0 ]
+then
+    ifup ppp0
+    sleep 2
+fi
+
+# quindi a causa di un problema che ho con openswan a cui non riesco a far 
+# capire la dicitura "left=%defaultroute" riscrivo il file di configurazione
+# con la riga "left=ip_assegnato_dal_provider"
+
+IP_ATTUALE_PPP0=`ifconfig ppp0 | grep "inet addr" | awk -F: ' { print $2 }' | awk  ' { print $1 } '`
+
+sed -i '/left=/c \    left='$IP_ATTUALE_PPP0 /etc/ipsec.d/ClientDialUp.conf
+
+# a questo punto avvio la connessione vpn ipsec
+
+service ipsec restart
+ipsec auto --delete ClientDialUp
+ipsec auto --add ClientDialUp
+ipsec auto --up ClientDialUp</pre>
+
+Se tutto è andato bene, si potrà accedere ai pc della LAN NetGear tramite vpn:
+
+ # ping 192.168.1.1
+ # ssh 192.168.1.22
+ # ecc. ecc. ecc.
+
+[[Categoria:Rete e Server]]

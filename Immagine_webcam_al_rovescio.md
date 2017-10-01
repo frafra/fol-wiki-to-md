@@ -1,0 +1,163 @@
+\_\_TOC\_\_
+
+Introduzione
+------------
+
+Alcuni produttori hanno pensato bene di montare al contrario la webcam in alcuni modelli di portatili per motivi di spazio. Il problema è di facile soluzione quando il modulo di gestione della cam prevede l'opzione "flip" che capovolge l'immagine, ma se il modulo di gestione è uvcvideo, allora si è nei guai, perché questo modulo non prevede il rovesciamento dell'immagine. Fortunatamente potete applicare la seguente procedura , testata e verificata su Fedora 14 kernel 2.6.35.
+
+Installazione dipendenze
+------------------------
+
+Installare come prima cosa i pacchetti sviluppo:
+
+`# yum groupinstall "strumenti di sviluppo"`
+`# yum install kernel-devel`
+
+Modifica dei Sorgenti
+---------------------
+
+Si scarica dal repo git del progetto linuxtv il ramo che ci interessa.
+
+`$ git clone `[`git://linuxtv.org/media_build.git`](git://linuxtv.org/media_build.git)
+`$ cd media_build`
+`$ gedit build`
+
+modificare le linee:
+
+system ("make allyesconfig") == 0 or die "can't select all drivers";
+
+system ("make") == 0 or die "build failed";
+
+in:
+
+`#system ("make allyesconfig") == 0 or die "can't select all drivers";`
+
+`#system ("make") == 0 or die "build failed";`
+
+salvare chiudere, poi:
+
+`$ ./build`
+
+Modificare il sorgente
+----------------------
+
+`$ gedit linux/drivers/media/video/uvc/uvc_video.c`
+
+sosituire questa sezione:
+
+`static void uvc_video_decode_data(struct uvc_streaming *stream,`
+`        struct uvc_buffer *buf, const __u8 *data, int len)`
+`{`
+`    struct uvc_video_queue *queue = &stream->queue;`
+`    unsigned int maxlen, nbytes;`
+`    void *mem;`
+`    if (len <= 0)`
+`        return;`
+`    /* Copy the video data to the buffer. */`
+`    maxlen = buf->buf.length - buf->buf.bytesused;`
+`    mem = queue->mem + buf->buf.m.offset + buf->buf.bytesused;`
+`    nbytes = min((unsigned int)len, maxlen);`
+`    memcpy(mem, data, nbytes);`
+`    buf->buf.bytesused += nbytes;`
+`    /* Complete the current frame if the buffer size was exceeded. */`
+`    if (len > maxlen) {`
+`        uvc_trace(UVC_TRACE_FRAME, "Frame complete (overflow).\n");`
+`        buf->state = UVC_BUF_STATE_READY;`
+`    }`
+`}`
+
+con questa sezione:
+
+`static void uvc_video_decode_data(struct uvc_streaming *stream,`
+`      struct uvc_buffer *buf, const __u8 *data, int len)`
+`{`
+`   struct uvc_video_queue *queue = &stream->queue;`
+`   unsigned int maxlen, nbytes, row_size, to_be_copied, shift_right;`
+`   void *mem;`
+`   if (len <= 0)`
+`      return;`
+`   /* Copy the video data to the buffer. */`
+`   maxlen = buf->buf.length - buf->buf.bytesused;`
+`   mem = queue->mem + buf->buf.m.offset + buf->buf.bytesused;`
+`   nbytes = min((unsigned int)len, maxlen);`
+`   row_size = stream->cur_frame->wWidth *`
+`                 stream->format->bpp / 8;`
+`   /* Each loop "nbytes" is decremented of the number of bytes just copied.`
+`    * So are there any other bytes to be copied?`
+`    */`
+`   while (nbytes > 0) {`
+`      /* As the rows of modified frames have to be fulfilled from`
+`       * bottom-left to top-right, each cycle tries to complete a`
+`       * single row.`
+`       * In this cycle where is it needed to start to store bytes`
+`       * within the selected row? From the beginning or shifted`
+`       * right? Because other bytes could have been already stored in`
+`       * that row without completing it, so it could be needed a right`
+`       * shift.`
+`       */`
+`      shift_right = buf->buf.bytesused % row_size;`
+`      /* In this cycle how many byte can we copy in the selected row?`
+`       */`
+`      if (nbytes > row_size - shift_right)`
+`         to_be_copied = row_size - shift_right ;`
+`      else`
+`         to_be_copied = nbytes;`
+`      /* "queue->mem + buf->buf.m.offset" is the base-address where to`
+`       * start to store the current frame. This address refers to a`
+`       * preallocated area (just for a sigle frame) taking part in a`
+`       * circular buffer, where to store a fixed number of sequent`
+`       * frames.`
+`       */`
+`      memcpy(queue->mem + buf->buf.m.offset`
+`             /* Go to the end of this frame. */`
+`             + row_size * stream->cur_frame->wHeight`
+`             /* Go back for the number of bytes corrisponding to the`
+`              * already fully completed rows.`
+`         */`
+`             - (buf->buf.bytesused - shift_right)`
+`             /* Go back at the starting point of the upper row. */`
+`             - row_size`
+`             /* Shift right on this row if it is needed. */`
+`             + shift_right,`
+`             data,`
+`             to_be_copied );`
+`      /* Update "data", "byteused" and "nbytes" values. */`
+`      data += to_be_copied;`
+`      buf->buf.bytesused += to_be_copied ;`
+`      nbytes -= to_be_copied;`
+`   }`
+`   /* Complete the current frame if the buffer size was exceeded. */`
+`   if (len > maxlen) {`
+`      uvc_trace(UVC_TRACE_FRAME, "Frame complete (overflow).\n");`
+`      buf->state = UVC_BUF_STATE_DONE;`
+`   }`
+`}`
+
+salvare, chiudere.
+
+Compilare ed installare il modulo
+---------------------------------
+
+Sempre da utente procedere con la compilazione:
+
+`$ make`
+
+poi da root :
+
+`$ su`
+`password_di_root`
+`# make install`
+
+Terminare
+---------
+
+A questo punto dare un reboot e godersi la propria cam.
+
+Ringrazio l'utente Fedorista per aver testato la procedura.
+
+Riferimenti
+-----------
+
+-   [Home](http://www.linuxtv.org/) del progetto linuxtv.org, che si occupa di mantenere i driver video di webcam, televisori, ecc, per il kernel linux.
+
+<Categoria:Webcam>

@@ -1,0 +1,31 @@
+Introduzione
+------------
+
+Covergloobus come tanti sapranno non è altro che una piccola (in)Utility che serve a visualizzare, sul proprio Desktop ,la copertina ed il titolo dei brani musicali che si sta ascoltando con il player preferito.
+Supporta la maggior parte dei player musicali per Linux.
+
+Installazione
+-------------
+
+Dato che non esiste il pacchetto *Rpm* bisogna installarlo da terminale.
+
+-   Scaricare il *tar.gz* Covergloobus da [qui (Softpedia)](http://linux.softpedia.com/progDownload/CoverGloobus-Download-47938.html);
+-   Estrarre il *tar.gz* e portarsi nella cartella di destinazione
+
+(in questo caso " /home/ilnanny/Scaricati/covergloobus-1.6 ")
+
+-   Da terminale:
+
+`$ su -`
+`password`
+`# ./autogen.sh && make && make install  `
+
+Se si ottengono errori di compilazione, sarà necessario installare :
+
+`$ su -`
+`password`
+`# yum install @development-tools @development-libs  `
+
+Ora si possono cambiare anche le skin, se non piace quello di default, basta andare su Deviantart e scegliere quello che si preferisce: Un esempio potrebbe essere questo: [Corner nowplaying](http://naf1971.deviantart.com/art/Corner-nowplaying-217140274)
+
+<Categoria:Multimedia>

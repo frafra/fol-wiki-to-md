@@ -1,0 +1,48 @@
+Fedora è installata, ma non si è installato una o più applicazioni indispensabili?<br />
+E' disponibile una rete attiva? Oppure si dispone solo del Dvd/cd di installazione?<br />
+Niente paura, questa procedura simula un ''yum localinstall'' e permetterà di installare quello che occorre.
+
+Per cominciare bisogna diventare root:
+
+ $ su -
+ password di root
+
+dopo di che si danno comandi seguenti:
+
+ # mkdir /root/repo_dvd
+ # mount -r -o loop /dev/sr1 /root/repo_dvd 
+
+dove ''/dev/sr1'' è il dvd, potrebbe anche essere sr0 o altro, controllare ''dmesg'' per esserne sicuri.<br />
+Segue un:
+
+ # mkdir /etc/yum.repos.d/salvati
+ # mv /etc/yum.repos.d/*.repo /etc/yum.repos.d/salvati/ 
+
+per salvare le configurazioni dei repository già esistenti.<br />
+Infine:
+
+ # gedit /etc/yum.repos.d/fedora.repo
+
+Inserire le righe:
+
+ [fedora]
+ name=Fedora 8 - i386
+ baseurl=file:///root/repo_dvd
+ enabled=1
+ gpgcheck=0
+
+Salvare e chiudere.<br />
+Ora si potrà utilizzare yum come si vuole, ad esempio:
+
+ # yum install nome_pacchetto
+
+oppure quant'altro dovesse servire.<br />
+Se si vuole rimettere le cose apposto, tornando al punto di partenza, basterà digitare:
+
+ # umount /dev/sr1
+ # mv /etc/yum.repos.d/salvati/*.repo /etc/yum.repos.d/
+ # rm -rf /root/repo_dvd
+ # rm -rf /etc/yum.repos.d/salvati
+
+[[Categoria:Yum]]
+[[Categoria:Installazione]]

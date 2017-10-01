@@ -1,0 +1,60 @@
+Introduzione
+------------
+
+Questo piccolo articolo potrebbe essere utile a chi ha la necessità di conoscere informazioni dettagliate sul processore installato nel proprio pc o informazioni "live" sul sistema.
+
+Procbench - CpuID
+-----------------
+
+Da terminale si possono avere dettagliate informazioni sul processore in uso nel pc, sia sul modello, che riguardanti piccoli test gestiti dal comando procbench.
+
+### Installazione
+
+Procbench si installa facilmente da yum:
+
+`# yum install cpuid procbench`
+
+### Opzioni di utilizzo: CpuID
+
+Le seguenti informazioni sono disponibili per tutte le moderne cpu:
+
+-   vendor\_id : costruttore
+-   version information : versione
+-   miscellaneous : informazioni varie
+-   feature information : caratteristiche
+
+Per ottenerle basta dare il comando:
+
+`$ cpuid`
+
+Se dovesse essere installato un multiprocessore, il comando sarebbe leggermente diverso:
+
+`# cpuid -1 -k`
+
+Esso fornisce informazioni per il processore primario. Da utilizzare con l'opzione *-k | --kernel*, con la quale si avranno informazioni dal kernel.
+Di default le informazioni sono ottenute direttamente dall'applicazione, in accordo con l'opzione: *-i | --inst*
+
+`$ cpuid -i`
+
+L'opzione *-v | --version* da informazioni sulla versione di cpuid:
+
+`$ cpuid -v`
+
+### Opzioni di utilizzo: Procbench
+
+Il tool procbench permette anche di effettuare dei test di calcolo sulle cpu x86, oltre a fornirne informazioni tecniche attraverso cpuid.
+Il comando:
+
+`$ procbench -c `
+
+mostra informazioni sul processore attraverso *cpuid*.
+
+`$ procbench -m`
+
+permette di effettuare dei test di velocità sulla cpu.
+
+Inoltre è opportuno indicare un ottimo tool con i relativi plugin per il monitoring del sistema:
+
+`# yum install gkrellm gkrellm-aclock.i386 gkrellm-daemon.i386 gkrellm-devel.i386 gkrellm-freq.i386 gkrellm-moon.i386 gkrellm-sun.i386 gkrellm-timestamp.i386 gkrellm-top.i386 gkrellm-volume.i386 gkrellm-weather.i386 gkrellm-wifi.i386`
+
+<Categoria:Sistema>

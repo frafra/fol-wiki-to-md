@@ -1,0 +1,127 @@
+Perché ricompilare il kernel
+----------------------------
+
+Alzi la mano chi non ha sentito mai parlare di ricompilazione del kernel in Linux e non se ne sia lasciato intimorire, soprattutto al pensiero di dovere intervenire direttamente sul cuore del sistema.
+*Kernel panic*: Questa si che è una vera rogna, capace di buttare nello sconforto l'amministratore di sistema più navigato.
+Fedora viene distribuita con un kernel ottimizzato per la generalità dei sistemi e si può vivere tranquillamente senza doverne ricompilare il kernel, in quanto la distro farà sempre il proprio dovere, al meglio. Eppure a volte lo si dovrà fare, partendo dai sorgenti. Ma chi è così temerario da volerlo fare? E perché poi dovrebbe farlo? Senza volerle per questo esaurire, le probabilità che si presentano possono essere così riassunte:
+
+**Sviluppo** - Si viene coinvolti in progetti di sviluppo che richiedono l'implementazione di certe caratteristiche non fornite con il kernel standard.
+
+**Hardware** - Solo ricompilando il kernel si può giovare delle funzionalità particolari di quel componente hardware che non vuole funzionare come dovrebbe.
+
+**Sistema** - Non ci si vuole accontentare del kernel fornito con la propria distribuzione, ritenendolo troppo ingombrante e pieno di "robe" che non si utilizzeranno mai.
+
+**Sicurezza** - Si vuole ricompilare per avere un sistema più sicuro, stabile e con meno bug possibili, soprattutto se la macchina da usare deve fungere da server "mission critical" o da firewall.
+
+**Curiosità** - Semplicemente si è una persona che vuole sempre capire quello che fa e che vuole avere il pieno controllo del sistema.
+
+Esistono centinaia di documenti in rete che parlano di tutto questo e di come fare a ricompilare il proprio kernel. Tuttavia con Fedora il procedimento da seguire è un po' differente. Vediamolo.
+
+Preparare il sistema
+--------------------
+
+La maggior parte delle operazioni vanno svolte da utente, senza dovere ricorrere ai privilegi di root. Si dovrà tuttavia diventare root per lanciare dei comandi specifici; e quando lo si dovrà fare si userà il comando sudo. Si supporrà anche di avere già installata, tramite yum, l'ultima versione del kernel disponibile.
+Ci si sposti nella propria directory utente:
+
+`$ cd ~`
+
+e si passi ad installare il pacchetto di sviluppo del kernel e le yum-utils. Le yum-utils sono dei programmi di utilità per il sistema; serviranno per scaricare l'ultima versione disponibile dei sorgenti del kernel.
+
+`$ sudo yum install kernel-devel`
+`$ sudo yum install yum-utils`
+
+Yumdownloader serve a scaricare direttamente dai repository i vari pacchetti RPM; il comando va utilizzato indicando due opzioni: destdir indica la directory dove bisognerà scaricare l'RPM prescelto; source indica di scaricare un RPM sorgente del pacchetto richiesto:
+
+`$ sudo yumdownloader --destdir /home/nomeutente/ --source kernel`
+
+Per generare l'albero delle directory per la compilazione del kernel, occorrono le rpmdevtools:
+
+`$ sudo yum install rpmdevtools`
+`$ rpmdev-setuptree`
+
+ed il comando rpmdev-setuptree genera l'albero nella directory dell'utente.
+Un altro programma di utilità, *yum-builddep*, che in genere viene usato per installare nel sistema tutti i pacchetti RPM necessari per compilare da sorgente uno specifico pacchetto, scarica ed installa tutti i pacchetti RPM che occorrono per compilare l'RPM del nuovo kernel:
+
+`$ sudo yum-builddep kernel-2.6.21-1.3194.fc7.src.rpm`
+
+A questo punto occorre installare l'RPM dei sorgenti del kernel nell'albero delle directory precedentemente definito:
+
+`$ rpm -Uvh kernel-2.6.21-1.3194.fc7.src.rpm`
+
+Si ignorino pure messaggi del tipo:
+
+`warning: user kojibuilder does not exist - using root `
+`warning: group kojibuilder does not exist - using root`
+
+che compariranno nella shell.
+Adesso si passi alla parte più delicata della preparazione del sistema. Tramite rpmbuild vengono preparati i sorgenti del kernel per la compilazione. Con l'opzione -bp si esegue lo "stage" "%prep" dal file .spec indicato; *--target* prepara i sorgenti per il sistema (chiedendo con uname, tramite l'opzione -m, il tipo di architettura):
+
+`$ cd ~/rpmbuild/SPECS/`
+`` $ rpmbuild -bp --target=`uname -m` kernel-2.6.spec ``
+
+Dopo l'esecuzione di questo comando, compariranno nella directory *~/rpmbuild/BUILD/kernel-2.6.21* due directory:*linux-2.6.21.ARCH* (ARCH è l'architettura del sistema, quella specificata da target) e vanilla. In quest'ultima sono presenti i sorgenti del kernel senza le patch di Fedora. Nel resto della guida sostituite ARCH con il nome della vostra architettura (i686, x86\_64, etc.).
+Adesso si passi a "mettere al sicuro" una copia dell'albero originale delle directory prima della compilazione e quindi si crei un link all'albero .orig per trovare eventualmente rapidamente le differenze tramite il comando diff (se si volesse patchare il sistema - qui non si ce ne occupa):
+
+`$ cp -rv ~/rpmbuild/BUILD/kernel-2.6.21 ~/rpmbuild/kernel-2.6.21.orig`
+`$ cp -alv ~/rpmbuild/kernel-2.6.21.orig ~/rpmbuild/kernel-2.6.21.new`
+
+Si scelga quindi il file config che meglio si adatta al proprio sistema, tra tutti quelli presenti nella directory, e si passi a copiarlo nella directory corretta per poterlo utilizzare adeguatamente (si noti il punto prima del nome: file nascosto).
+
+`$ cd ~/rpmbuild/BUILD/kernel-2.6.21/linux-2.6.21.ARCH/`
+`$ ls configs/`
+`$ cp configs/kernel-2.6.21-ARCH.config .config `
+
+Compilare il nuovo kernel
+-------------------------
+
+Innanzi tutto si passi a scrivere la configurazione corrente nel file .config, per poi apportare tutti i cambiamenti desiderati al proprio kernel. Alla fine si salvi tutto.
+
+`$ make oldconfig`
+`$ make menuconfig`
+
+E' opportuno procedere a raccogliere tutte le informazioni possibili sull'hardware di propria dotazione e sulle caratteristiche esposte nelle varie opzioni. Si consultino i vari "help" presenti. Si tralascia in questo contesto di addentrarsi nelle diatribe "kernel monolitico" contro "kernel modulare" o simili, in quanto il tutto esula da questa breve guida.
+Si copi il file .config nella corretta posizione all'interno dell'albero delle directory.
+
+`$ cp .config ~/rpmbuild/SOURCES/kernel-2.6.21.ARCH.config`
+
+Si editi con vi (o con qualunque altro editor di testo) il file:
+
+`$ vi ~/rpmbuild/SPECS/kernel-2.6.spec`
+
+per apportare alla riga seguente (circa la 66):
+
+`%define release %(R="$Revision: 1.3194 $"; RR="${R##: }";`
+`echo ${RR%%?})%{?dist}%{?buildid}`
+
+il cambiamento indicato in rosso (al posto di miokernel si può scrivere quello che si vuole; va notato il punto, obbligatorio):
+
+`%define release %(R="$Revision: 1.3194 $"; RR="${R##: }"; echo ${RR%%?}`
+`).miokernel%{?dist}%{?buildid}`
+
+Ciò serve per distinguere il kernel ricompilato da quello ufficiale rilasciato dal Fedora Project; la stringa che si andrà ad apporre sarà presente come elemento identificativo del kernel ricompilato. Infine si ricompili il kernel e lo si archivi nella directory *~/rpmbuild/RPMS/ARCH/*.
+
+`$ cd ~/rpmbuild/SPECS/`
+`` $ rpmbuild -ba --target=`uname -m` kernel-2.6.spec ``
+
+L'ultimo comando può impiegare anche parecchie ore per completarsi, in funzione soprattutto del tipo di hardware che si possiede.
+
+Installare il nuovo kernel
+--------------------------
+
+La parte più semplice:
+
+`$ sudo rpm -ivh /home/guido/rpmbuild/RPMS/ARCH/kernel-2.6.21-1.3194.gc.fc7.i686.rpm`
+
+Tuttavia è bene notare che si **DEVE** utilizzare l'opzione *i* del comando rpm e **NON** l'opzione *U*, altrimenti non si avrà la possibilità alcuna di riavviare il sistema se qualcosa dovesse andare storto.
+Al riavvio successivo, ci si troverà con il nuovo kernel come opzione predefinita in grub. Se qualcosa fosse andato storto e la macchina non si dovesse più riavviare, si potrà scegliere, sempre da grub, di riavviare il sistema con il vecchio kernel.
+
+Ulteriori informazioni
+----------------------
+
+Quella presentata non è l'unica maniera di ricompilare il kernel in Fedora. Ovviamente si è liberi di utilizzare anche la maniera più classica descritta nei vari HowTo. Di seguito si riportano dei link che possono senz'altro aiutare ad orientarsi.
+
+-   [Il wiki di Fedora 7](http://fedoraproject.org/wiki/Docs/CustomKernel)
+-   [Fedora 7 Personal Installation Guide di Mauriat Miranda](http://www.fedoraonline.it/modules/smartsection/)
+-   [Appunti di Informatica Libera di Daniele Giacomini](http://a2.pluto.it/a2.htm)
+
+<Categoria:Fedoraserver>

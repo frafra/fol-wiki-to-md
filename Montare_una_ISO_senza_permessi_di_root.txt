@@ -1,0 +1,31 @@
+Rispondere alla domanda: "'''come si può vedere il contenuto dei file .iso?'''" è molto semplice se si è utenti root o se si può accedere in amministrazione alla macchina che si ha a disposizione. Basta semplicemente montare il file con un comando analogo (da utente root ovviamente):
+
+ # mount -o loop file.iso directory_di_mount/
+
+e poi navigare in <code>directory_di_mount/</code>. <br />
+A volte, non serve neppure specificare l'opzione <code>loop</code> se il filesystem dell'immagine è conosciuto da [http://www.kernel.org/pub/linux/utils/util-linux/libblkid-docs/ libblkid]. La pagina di man del comando mount è abbastanza esaustiva in proposito.<br />
+Rispondere alla domanda: "'''come si può montare un file immagine da utente normale senza essere root?'''" è forse un po' più complicato.<br />
+Chi ha installato sul proprio sistema [http://www.midnight-commander.org/ Midnight Commander] dovrebbe riuscire ad aprire il file immagine e visionare il contenuto senza problemi.<br />
+Gli utenti Kde, invece, possono fare una cosa simile utilizzando [http://www.krusader.org/ Krusader], dunque in un ambiente grafico.<br />
+Ma se non si ha Krusader o Midnight Commander come si fa? Niente paura, si può ottenere questa cosa utilizzando [http://sourceforge.net/projects/fuseiso/ FuseISO]. '''FuseISO''' è un modulo per [http://fuse.sourceforge.net/ FUSE] che supporta file del tipo ISO9660 Level 1 e 2, Rock Ridge, Joliet e zisofs, praticamente i file che circolano con queste estensioni .iso, .nrg, .bin, .mdf e .img.<br />
+In Fedora FuseISO è già pacchettizzato e prelevabile dai repository ufficiali. Se non è già installato sulla propria macchina basta installarlo da utente root:
+
+ # yum install fuseiso
+
+Una volta installato gli utenti potranno montare i file immagine senza necessità di avere i privilegi di utente root. Semplicemente basterà:
+
+ $ fuseiso file.iso directory_di_mount/
+
+e si potrà vedere il contenuto di <code>file.iso</code> in <code>directory_di_mount/</code><br />
+Per smontare il dispositivo invece bisognerà dare questo comando:
+ $ fusermount -u directory_di_mount/
+
+Altre informazioni sulle opzioni di fuseiso si possono ottenere lanciandolo con l'opzione -h:
+
+ $ fuseiso -h
+
+==Riferimenti==
+* Articolo pubblicato precedentemente su [http://blog.marionline.it/linux/fedora/montare-alcuni-file-immagine-senza-i-privilegi-di-root/ marionline.it].
+* [http://www.thegeekstuff.com/2009/06/how-to-mount-view-iso-file-as-root-and-non-root-user-in-unix/#more-553 How To Mount and View ISO File as Root and Regular User in Linux] (in Inglese).
+
+[[Categoria:Sistema]]

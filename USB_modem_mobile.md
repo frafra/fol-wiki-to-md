@@ -1,0 +1,315 @@
+Spesso gli usb modem di tipo mobile con connessione internet tramite UMTS oppure EDGE od anche GSM, danno diversi "grattacapi" per la loro installazione.
+Nel nostro Sito ci sono diverse guide su pennette specifiche, guide a firma di diversi ottimi utenti, oltre a innumerevoli discussioni.
+Questa guida vuole fornire i mezzi conoscitivi per mettervi in grado di porre rimedio qualunque sia l'hardware di cui disponete.
+
+Individuare il dispositivo
+--------------------------
+
+Alcuni di questi dispositivi ingannano il sistema, settano, colpevolmente e coscientemente, in maniera errata gli identificativi hardware.
+Si dimostrerà come sia possibile risettare gli identificativi e permettere al kernel un adeguato riconoscimento del dispositivo.
+Si suppone di avere una siffatta pennetta ed alla sua introduzione, il comando:
+
+`# lsusb `
+
+risponde:
+
+`Bus 001 Device 003: ID. `**`19d2:2000`**` Pinco-Pallina Communication S.p.A.`
+
+se non è segnalato il produttore "Pinco-Pallina Communication S.p.A" andare all'[Appendice A](#Appendice_A "wikilink") poi tornare in questo punto.
+Il codice identificativo in in grassetto è di fondamentale importanza, copiarlo da qualche parte e proseguire.
+
+`# dmesg|tail`
+`usb 1-2: new full speed USB device using ohci_hcd and address 6`
+`usb 1-2: New USB device found, idVendor=19d2, idProduct=2000`
+`usb 1-2: New USB device strings: Mfr=2, Product=1, SerialNumber=0`
+`usb 1-2: Product: Pinco-Pallina CDMA Technologies MSM`
+`usb 1-2: Manufacturer: Pinco-Pallina, Incorporated`
+`usb 1-2: configuration #1 chosen from 1 choice`
+`scsi5 : SCSI emulation for USB Mass Storage devices`
+`usb-storage: device found at 6`
+`usb-storage: waiting for device to settle before scanning`
+
+se in particolare si ha un output del genere:
+
+`usb-storage: waiting for device to settle before scanning`
+`usb-storage: device scan complete`
+`scsi 10:0:0:0: CD-ROM USBModem Disk 2.31 PQ: 0 ANSI: 2`
+`sr2: scsi-1 drive`
+`sr 10:0:0:0: Attached scsi CD-ROM sr2`
+
+dare immediatamente un:
+
+`# eject /dev/sr2`
+
+in questa eventualità ricontrollare il dmesg, dopo aver atteso almeno due minuti:
+
+`# dmesg|tail`
+
+se vien fuori qualcosa del genere:
+
+`usb 1-1: GSM modem (1-port) converter now attached to ttyUSB1       `
+`usb 1-1: GSM modem (1-port) converter now attached to ttyUSB2    `
+`usb 1-1: GSM modem (1-port) converter now attached to ttyUSB3`
+
+andare direttamente al paragrafo ["Terminiamo"](#Terminiamo "wikilink")
+
+Cominciamo
+----------
+
+Se si possiede una rete attiva cominciare con installare usb\_modeswitch:
+
+`# yum install usb_modeswitch`
+
+se non si possiede una rete attiva navigare con un altra macchina nei repo e scaricare il pacchetto usb\_modeswitch:
+<http://fedora.mirror.garr.it/mirrors/fedora/linux/releases/>
+trasferirlo sul proprio sistema ed installarlo con:
+
+`# rpm -ivh --nosignature /percorso pacchetto_usb_modeswitch_che_avete_scaricato.rpm`
+
+dare un:
+
+`# updatedb`
+`# locate 19d2:2000`
+
+se il sistema risponderà:
+
+`/etc/usb_modeswitch.d/19d2:2000`
+
+si è a cavallo, (se non lo farà si consiglia di cercare le informazioni che seguono sul sito <http://www.draisberghof.de/usb_modeswitch/> in particolare il file <http://www.draisberghof.de/usb_modeswitch/device_reference.txt.gz> ).
+
+Dare un:
+
+`$ cat /etc/usb_modeswitch.d/19d2:2000`
+
+il sistema risponderà:
+
+`########################################################`
+`# ZTE devices`
+`DefaultVendor=  0x19d2`
+`DefaultProduct= 0x2000`
+`TargetVendor=   0x19d2`
+`TargetProductList="0001,0002,0015,0016,0017,0031,0037,0052,0055,0063,0064,0128"`
+`MessageContent="5553424312345678000000000000061b000000020000000000000000000000"`
+`NeedResponse=1`
+`CheckSuccess=20`
+
+appuntare queste informazioni e dare:
+
+`# usb_modeswitch -v 0x19d2 -p 0x2000 -V 0x19d2 -P 0x0031 -M "5553424312345678000000000000061b000000020000000000000000000000" -n 1 -s 20`
+
+come si può vedere ogni campo corrisponde ad una opzione di usb\_modeswitch, se si trovano dei campi che non si conoscono aiutarsi con:
+
+`$ man usb_modeswitch`
+
+qualunque sia la risposta di usb\_modeswitch ora dare un:
+
+`# lsusb`
+
+la periferica ora dovrebbe avere i codici switchati:
+
+`Bus 001 Device 003: ID `**`19d2:0031`**` Pinco-Pallina Communication S.p.A.`
+
+se così non fosse, entrare nel forum e chiedere lumi.
+
+A questo punto, aspettare qualche secondo ( meglio un minuto ) e dare:
+
+`# modprobe usbserial vendor=0x19d2 product=0x0031`
+
+dove vendor=0x19d2 product=0x0031 sono quelli che presenta il dispositivo.
+Date un:
+
+`$ dmesg|tail`
+
+se nel'output si trova una cosa del genere:
+
+`usb 1-1: GSM modem (1-port) converter now attached to ttyUSB0              `
+`usb 1-1: GSM modem (1-port) converter now attached to ttyUSB1            `
+`usb 1-1: GSM modem (1-port) converter now attached to ttyUSB2      `
+`usb 1-1: GSM modem (1-port) converter now attached to ttyUSB3`
+
+vuol dire che va tutto bene.
+
+Nel caso che la risposta sia negativa procedere alla sostituzione in entrambi i comandi soprariportati ( cioè usb\_modeswitch e modprobe usbserial ) al posto di 0031, alternativamente i codici:
+
+`0001`
+`0002`
+`0015`
+`0016`
+`0017`
+`0037`
+`0052`
+`0055`
+`0063`
+`0064`
+`0128`
+
+cioè tutti quelli elencati nel TargetProductList di /etc/usb\_modeswitch.d/19d2:2000.
+Fermarsi quando nel dmesg compare /dev/ttyUSB0, /dev/ttyUSB1, /dev/ttyUSB2.
+
+Dare poi un:
+
+`# ll /dev/ttyUSB*`
+
+controllare a quale utente e gruppo appartiene il dispositivo.
+Se non convince il proprietario ed il gruppo dare un:
+
+`# chmod 666 /dev/ttyUSB*`
+
+oppure aggiungere il proprio utente al gruppo dialout seguito da un:
+
+`# service NetworkManager restart`
+
+Terminiamo
+----------
+
+Cliccare col destro sulla icona network in alto a destra ( gnome ) e configurate il proprio dispositivo,
+
+-   modifica connessioni --&gt; selezionando la linguetta "banda larga mobile" --&gt; aggiungi
+
+inserire i dati del proprio provider.
+Se NetworkManager non da i risultati sperati andate all'[ Appendice B](#Appendice_B "wikilink").
+
+Rendere automatico il processo di configurazione
+------------------------------------------------
+
+Se si vuole rendere automatica la configurazione della pennetta all'inserimento, consiglio una regola udev, del tipo:
+
+`# gedit /root/regole_modem`
+
+inserire i comandi che hanno permesso la configurazione del dispositivo:
+
+`#!/bin/sh`
+`/usr/sbin/eject sr2`
+`/bin/sleep 30`
+`/usr/sbin/usb_modeswitch -v 0x19d2 -p 0x2000 -V 0x19d2 -P 0x0031 -M `
+`"5553424312345678000000000000061b000000020000000000000000000000" -n 1 -s 20`
+`/bin/sleep 20`
+`/sbin/modprobe usbserial vendor=0x19d2 product=0x0031`
+
+salvare, chiudere, poi rendere il file eseguibile:
+
+`# chmod +x /root/regole_modem`
+
+infine:
+
+`# gedit /etc/udev/rules.d/99-mio_modem.rules`
+
+aggiungere le righe:
+
+`SUBSYSTEM=="usb", ATTR{idProduct}=="2000", ATTR{idVendor}=="19d2", RUN+="/root/regole_modem"`
+
+salvare, chiudere.
+
+La soluzione finale
+-------------------
+
+Se quanto sopra esposto non ha prodotto risultati di rilievo si ha di fronte tre possibilità:
+
+1.  Passare ad un kernel di versione superiore.
+2.  Cambiare scheda scegliendola tra quelle sicuramente riconosciute dal sistema
+3.  Aprire una discussione specifica nel forum, spiegando con chiarezza il problema e cosa, di questa guida, è stato fatto.
+
+Appendice A
+-----------
+
+Se il dispositivo è privo di produttore occorre dare informazioni ad Hal, procedere in questo modo:
+
+`# gedit /usr/share/hal/fdi/information/20thirdparty/10-modem.fdi`
+
+inserire queste linee:
+
+<?xml version="1.0" encoding="UTF-8"?>
+<deviceinfo version="0.2">
+` `<device>
+` `
+`   `<match key="@info.parent:usb.vendor_id" int="0x19d2">
+`     `<match key="@info.parent:usb.product_id" int="0x0031">
+`     `<match key="@info.parent:usb.interface.number" int="1">
+`       `<append key="modem.command_sets" type="strlist">`GSM-07.07`</append>
+`       `<append key="modem.command_sets" type="strlist">`GSM-07.05`</append>
+`       `<append key="info.capabilities" type="strlist">`modem`</append>
+`     `</match>
+`     `</match>
+`   `</match>
+` `</device>
+</deviceinfo>
+
+dove 0x19d2 e 0x0031 sono i codici che devono essere attribuiti al dispositivo e pinco pallina è il produttore.
+
+Appendice B
+-----------
+
+Si utilizzerà per configurare il proprio dispositivo wvdial, installatelo:
+
+`# yum install wvdial`
+
+se non si possiede una rete attiva fare come all'inizio dell'articolo, scaricare il pacchetto con un altra macchina e trasferirlo nel sistema. Dare poi:
+
+`# gedit /etc/wvdial.conf`
+
+inserire le righe:
+
+`[Dialer Defaults]`
+`Modem = /dev/ttyUSB2`
+`ISDN = off`
+`Baud = 460800`
+`Phone = *99#`
+`Carrier Check = off`
+`Init1 = ATZ`
+`Init2 = ATX3`
+`Init3 = AT&F Q0 V1 E1 S0=0 &C1 &D2 +FCLASS=0`
+`Init4 = AT+CGDCONT=1,"IP","xxxxxx"`
+`Dial Command = ATM1L3DT`
+`Dial Attempts = 5`
+`Modem Type = Analog Modem`
+`Auto DNS = on`
+`Username = se richiesta`
+`Password = se richiesta`
+`Stupid Mode = on`
+`Auto Reconnect = off`
+`Check Def Route = off`
+
+dove xxxxxx è il provider apn, ad esempio:
+
+`xxxxxx => web.omnitel.it`
+`xxxxxx => ibox.tim.it`
+`xxxxxx => datacard.tre.it`
+`xxxxxx => fastweb.apn.it`
+`xxxxxx => internet.wind`
+
+poi dare:
+
+`# service NetworkManger stop`
+`# wvdial`
+
+a questo punto osservare l'output. Se il responso finale è positivo, aprire un browser e provare a navigare.
+Se non si riuesce a navigare, dare:
+
+`# gedit /etc/resolv.conf `
+
+ed inserire:
+
+`nameserver 208.67.220.220`
+`nameserver 208.67.222.222`
+
+salvare chiudere, provare ora a navigare.
+
+Se la situazione è comunque negativa, modificare:
+
+`# gedit /etc/wvdial.conf`
+
+la linea:
+
+`Modem = /dev/ttyUSB2`
+
+farla diventare:
+
+`Modem = /dev/ttyUSB1`
+
+oppure
+
+`Modem = /dev/ttyUSB3`
+
+salvare, chiudere e riprovare.
+
+<Categoria:Hardware>

@@ -1,0 +1,213 @@
+Introduzione
+------------
+
+Con la presente guida si vuole solamente aggiornare ed integrare le precedenti redatte sull'uso di yum e sulla configurazione dei repositories per la gestione dei pacchetti rpm in Fedora.
+Yum è l'acronimo di Yellow dog Updater, Modified ed è il sistema di gestione dei pacchetti, ormai standard in Fedora, che si affianca ed integra con l'ottimo rpm. Esso si appoggia a dei repository esterni (mantenuti dal Fedora Project e da terze parti), contenenti i programmi per l'uso del sistema operativo e per le più disparate applicazioni aggiuntive.
+Tenendo presente l'esistenza di interfacce grafiche per l'utilizzo di yum mediante GUI (es. kyum, yumex ecc.), si farà riferimento all'uso del programma da terminale.
+
+Yum
+---
+
+Principalmente yum ha il vantaggio (rispetto ad rpm) di poter risolvere le dipendenze senza intervento da parte dell'utente e, nel caso non riuscisse a soddisfarle con i repository al momento attivi, uscire dal programma con un errore ben leggibile, dichiarando le dipendenze non trovate o i conflitti rilevati, agevolando così le ricerche della soluzione da parte dell'utente.
+
+Non è nelle intenzioni di questa guida fare una mera traduzione delle pagine man del comando yum, alle quali chiunque può accedere semplicemente digitando, da terminale:
+
+**man yum**
+
+Principali comandi
+------------------
+
+E' bene comunque avere ben chiari i principali comandi ed il fine a cui possono essere rivolti, pertanto di seguito si vedrà una breve panoramica.
+
+### Installazione di programmi
+
+Eseguendo il comando:
+
+`# yum install nome_programma`
+
+Yum cercherà nei repository attivati dall'utente, il programma passato come argomento e, se trovato, lo proporrà per l'installazione; basterà digitare "s" o "n" per eseguirla o meno. Esiste anche l'opzione "-y" da passare al comando:
+
+`# yum -y install nome_programma `
+
+che permette di bypassare la richiesta di procedere o meno. Per esperienza, questa opzione è da usare con cautela in quanto non permette, salvo provvedimenti drastici, di intervenire in caso di situazioni anomale.
+
+### Aggiornamento di programmi
+
+Eseguendo il comando:
+
+`# yum update nome_programma `
+
+Yum cercherà nei repository attivati dall'utente, versioni più aggiornate del programma passato come argomento. Anche in questo caso è utilizzabile l'opzione "-y" per la quale si rinnova, anche con più pertinenza, l'avviso precedente sul suo utilizzo.
+E' possibile utilizzare il comando senza argomenti per l'aggiornamento completo del sistema in relazione ai soli programmi installati, ovviamente:
+
+`# yum update`
+
+ed, in questo caso, si sconsiglia vivamente l'utilizzo dell'opzione "-y"; meglio controllare ciò che ci si appresta a fare.
+
+### Rimozione di programmi
+
+Eseguendo il comando:
+
+`# yum remove nome_programma`
+
+Yum rimuoverà il programma definito e le relative dipendenze dirette.
+Yum non è solo quello visto finora, alcuni suoi comandi sono molto utili per potersi districare da laboriose installazioni.
+
+### Ricerca di pacchetti
+
+Per avere un'idea di quanti e quali pacchetti sono stati aggiornati dall'ultimo update eseguito, è necessario solamente digitare:
+
+`# yum check-update`
+
+Verrà proposta una lista degli aggiornamenti per ciascun pacchetto e da quale repository proviene.
+Talvolta non si sa a quale pacchetto occorre riferirsi per la ricerca di una data libreria o di qualsiasi file presente negli rpm; anche in questo caso yum ci soccorre con il comando:
+
+`# yum provides nome_file`
+
+proponendo, in base ai repository attivati dall'utente, i pacchetti all'interno dei quali tale file risulta essere presente. A quel punto basta eseguire l'installazione dell'rpm indicato.
+
+### Gestione gruppi di programmi
+
+Per installare un gruppo di programmi che si sarebbe dovuto/voluto avere, ma che non si è selezionato in fase di prima installazione di Fedora da DVD, si può utilizzare yum per porvi rimedio. Ad esempio, con;
+
+`# yum grouplist`
+
+si potrà vedere a terminale un elenco dei gruppi e delle lingue disponibili e di quelle già installate sul proprio sistema. Per capirci, se si volesse installare GNOME, non avendolo ancora installato, si potrebbe, anziché perdersi nell'installazione di tutti i programmi di GNOME (oltre al DM stesso), semplicemente digitare:
+
+`# yum groupinstall 'Ambiente desktop GNOME'`
+
+prestando attenzione alle virgolette, e tutto il desktop environment verrà proposto per l'installazione. Parimenti il discorso è valido anche per tutti i gruppi risultanti dal "grouplist". Allo stesso modo, i comandi *groupupdate* e *groupremove* agiscono su tali gruppi:
+
+`# yum groupupdate 'Ambiente desktop GNOME'`
+
+aggiorna GNOME e
+
+`# yum groupremove 'Ambiente desktop GNOME'`
+
+lo rimuove.
+
+### Installazione in locale
+
+Il programa yum agisce su tutti gli rpm e, avendo un programma in tale formato sul proprio hard disk e volendolo installare con l'ausilio di yum per la ricerca delle dipendenze mancanti, occorre digitare (posizionandosi nella directory dove è presente l'rpm da installare):
+
+`# yum localinstall nome_programma`
+
+Questa opzione può essere usata anche per installare localmente un rpm proveniente dalla rete: la sintassi è simile alla precedente
+
+`# yum localinstall indirizzo_dove_è_presente_il_file.rpm`
+
+### Plugins per yum
+
+Esistono anche dei plugin per yum, quelli più interessanti sono i seguenti:
+
+-   **yum-presto**: plugin che permette la risoluzione delle dipendenze in locale anzichè in remoto. Questo plugin, appoggiandosi a dei metadati (drpm), permette di scaricare solo le porzioni di pacchetti che differiscono dalla versione installata del programma a quella a cui si sta facendo l'aggiornamento, riducendo quindi la dimensione dei file da scaricare e ovviamente il nostro tempo (questo plugin dovrebbe essere già integrato di base nella nostra installazione, nel caso che non lo fosse basta installarlo tranquillamente da yum o gestore grafico);
+-   **yum-plugin-fastestmirror**: plugin molto utile che prima di iniziare il download effettua una ricerca dei mirror con una migliore velocità di connessione.
+
+Per altri plugin di yum, digitare da terminale: **yum search yum-plugin**
+
+Configurazione dei Repositories
+-------------------------------
+
+Tutto quanto sopra detto, senza un ulteriore intervento, è applicabile per i soli repository installati di default da Fedora. Ma spieghiamo cosa è un repository. Tutti i pacchetti RPM disponibili per Fedora sono raccolti in una specie di grande banca dati, i cosiddetti **repository**. Sono questi server che Fedora, tramite la GUI PackageKit o il nostro yum da terminale, interroga per reperire informazioni su un determinato pacchetto o gruppo di applicazioni, e allo stesso modo verifica se sono disponibili degli aggiornamenti. Fedora ha già a bordo i repository "ufficiali", ma ne esistono molti altri. Il motivo per cui Fedora fornisce solo i suoi repository è facile intuirlo: Fedora è una distribuzione progettata per usare il meno possibile software proprietario o con restrizioni, quindi i repo consigliati dal fedoraproject sono quelli installati di default con Fedora (fedora.repo, fedora-updates.repo, fedora-updates-testing.repo); se si ha bisogno di programmi al di fuori di questi repo basta andare sulla [Pagina dei Repository](http://doc.fedoraonline.it/Categoria:Repository) e le varie guide per ottimizzare Fedora [qui](http://doc.fedoraonline.it/Fedora_-_Missione_possibile#Articoli_consigliati).
+
+Per maggiore chiarezza segue un'analisi del contenuto di un file .repo all'interno di /etc/yum.repos.d. In questo caso aprire il file /etc/yum.repos.d/fedora.repo:
+
+`cat /etc/yum.repos.d/fedora.repo`
+
+ed il contenuto risulta essere:
+
+    [fedora]
+    name=Fedora $releasever - $basearch
+    failovermethod=priority
+    #baseurl=http://download.fedoraproject.org/pub/fedora/linux/releases/$releasever/Everything/$basearch/os/
+    mirrorlist=https://mirrors.fedoraproject.org/metalink?repo=fedora-$releasever&arch=$basearch
+    enabled=1
+    metadata_expire=7d
+    gpgcheck=1
+    gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-$basearch
+
+    [fedora-debuginfo]
+    name=Fedora $releasever - $basearch - Debug
+    failovermethod=priority
+    #baseurl=http://download.fedoraproject.org/pub/fedora/linux/releases/$releasever/Everything/$basearch/debug/
+    mirrorlist=https://mirrors.fedoraproject.org/metalink?repo=fedora-debug-$releasever&arch=$basearch
+    enabled=0
+    metadata_expire=7d
+    gpgcheck=1
+    gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-$basearch
+
+    [fedora-source]
+    name=Fedora $releasever - Source
+    failovermethod=priority
+    #baseurl=http://download.fedoraproject.org/pub/fedora/linux/releases/$releasever/Everything/source/SRPMS/
+    mirrorlist=https://mirrors.fedoraproject.org/metalink?repo=fedora-source-$releasever&arch=$basearch
+    enabled=0
+    metadata_expire=7d
+    gpgcheck=1
+    gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-$basearch
+
+Lasciando perdere la parte *fedora-debuginfo* e *fedora-source* che devono venire utilizzati solo ed esclusivamente in casi speciali, ci si concentra sulla prima configurazione dove:
+
+`[fedora]`
+
+è il nome di riferimento per l'attivazione o disattivazione a linea di comando del repo.
+
+`name=Fedora $releasever - $basearch`
+
+non è altro che la definizione del nome comprendente la versione (risultato della variabile $releasever che può essere il numero 15 per Fedora 15, il numero 16 per Fedora 16, ecc...) e l'architettura del sistema (risultato della variabile $basearch che può essere i386 per i processori a 32 bit, x86\_64 per i processori a 64 bit ecc.)
+
+`failovermethod=priority`
+
+Questa opzione dice a yum (in caso di mirror non disponibile, non corretto o per problemi vari) di usare il mirror seguente nell'ordine ricevuto nel file mirrorlist (vedi sotto); è disponibile eventualmente l'opzione *roundrobin* che seleziona un url a caso dalla lista ed esegue il comando dato a yum nel mirror scelto.
+
+`#baseurl=`[`http://download.fedoraproject.org/pub/fedora/linux/releases/$releasever/Everything/$basearch/os/`](http://download.fedoraproject.org/pub/fedora/linux/releases/$releasever/Everything/$basearch/os/)` `
+
+Questo invece è il link pricipale da cui scaricare i pacchetti. In questo caso è commentato (si noti il **\#** all'inizio della riga), per cui il programma salta la lettura di questa riga, in quanto sono attivi i mirrors che risultano dalla lista data da questo indirizzo:
+
+`mirrorlist=`[`http://mirrors.fedoraproject.org/mirrorlist?repo=fedora-$releasever&arch=$basearch`](http://mirrors.fedoraproject.org/mirrorlist?repo=fedora-$releasever&arch=$basearch)
+
+per cui yum scarica la lista dei mirrors dal link e, al primo trovato disponibile, scarica i pacchetti.
+
+`enabled=1`
+
+questa opzione è molto importante perchè permette, staticamente, di attivare o disattivare un repo, cioè di poterlo comprendere o meno nell'utilizzo di yum. In questo caso il repo è attivo (enabled=1) mentre se si volesse disattivarlo occorrerebbe impostare l'opzione a 0 (enabled=0), come ad esempio è impostato di default nei repo debuginfo e source per evitare problemi di incongruenze con pacchetti installati.
+
+`metadata_expire=7d`
+
+con questa opzione yum mantiene in memoria il metadata contenente l'elenco dei pacchetti per il tempo impostato dall'utente, senza riscaricarlo ad ogni aggiornamento: in questo caso il tempo è 7d ossia 7 giorni. Si possono impostare diversi periodi di tempo, utilizzando **s** (per i secondi), **m** (per i minuti), **h** (per le ore), **d** (per i giorni) oppure si può usare **never**, che significa che il metadata del repository non verrà eliminato.
+
+`gpgcheck=1`
+
+Questa è l'opzione che permette di verificare la validità del pacchetto confrontandone la chiave con quanto riportato nella riga successiva, in questo caso:
+
+`gpgkey=`[`file:///etc/pki/rpm-gpg/RPM-GPG-KEY-fedora`](file:///etc/pki/rpm-gpg/RPM-GPG-KEY-fedora)` `[`file:///etc/pki/rpm-gpg/RPM-GPG-KEY`](file:///etc/pki/rpm-gpg/RPM-GPG-KEY)
+
+che significa che la chiave è all'interno della directory /etc/pki/rpm-gpg/. Per indicare dove è situata la chiave di validità esistono tre metodi.
+
+-   Importazione con il comando rpm --import:
+
+`# rpm --import `[`http://percorso_della_chiave`](http://percorso_della_chiave)
+
+-   Definendo il percorso http direttamente nel repo:
+
+`..`
+`gpgkey=`[`http://percorso_della_chiave`](http://percorso_della_chiave)
+
+-   Posizionando la chiave all'interno della cartella etc/pki/rpm-gpg/
+
+`# cd /etc/pki/rpm-gpg/`
+`# wget `[`http://percorso_della_chiave`](http://percorso_della_chiave)
+
+e indicando il percorso del file all'interno del file repo.
+
+Per una lista più completa e dettagliata di tutte le funzioni e le potenzialità di yum si consiglia una ricerca dettagliata all'interno del manuale di yum e di yum.conf:
+
+`man yum`
+`man yum.conf`
+
+Aggiungere repository
+---------------------
+
+Qualora si ha necessità di aggiungere altri repository al proprio sistema si rimanda alla categoria [Repository](http://doc.fedoraonline.it/Categoria:Repository) seguendo le informazioni ivi riportate.
+
+<Categoria:Yum> <Categoria:Repository>

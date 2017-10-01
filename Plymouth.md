@@ -1,0 +1,60 @@
+\_\_TOC\_\_
+
+Introduzione
+------------
+
+Plymouth è il boot grafico di Fedora in sostituzione di RHGB. Affinché esso svolga il proprio lavoro è necessario attivare il modesetting, di conseguenza passando il parametro "nomodesetting", plymouth non si avvierà.
+
+Temi
+----
+
+E' possibile cambiare i temi del boot grafico (e farsene di nuovi), per conoscere i temi disponibili digitare:
+
+`$ yum search plymouth-theme`
+
+che restituisce un output come questo:
+
+`=========================== Trovato: plymouth-theme ============================`
+`plymouth-theme-charge.i686 : Plymouth "Charge" plugin`
+`plymouth-theme-fade-in.i686 : Plymouth "Fade-In" theme`
+`plymouth-theme-script.i686 : Plymouth "Script" plugin`
+`plymouth-theme-solar.i686 : Plymouth "Solar" theme`
+`plymouth-theme-spinfinity.i686 : Plymouth "Spinfinity" theme`
+
+Per installare altri temi:
+
+`yum install plymouth-theme-* plymouth-plugin-* plymouth-utils`
+
+Mentre, per sapere quale tema si sta utilizzando di default, basterà digitare:
+
+`$ plymouth-set-default-theme `
+
+Se si volesse modificarlo occorrere conoscere il nome con il quale viene richiamato:
+
+`$ plymouth-set-default-theme --list`
+
+per poi lanciare il comando da root (in questo caso per il tema spinfinity):
+
+`# plymouth-set-default-theme spinfinity -R`
+
+Risoluzioni
+-----------
+
+Per impostare la risoluzione desiderata di plymouth durante l'avvio di Fedora basta attenersi alla seguente tabella e aggiungere il parametro al kernel:
+
+`-----| 640x480 800x600 1024x768 1280x1024`
+`----+------------------------------------------------`
+`256 |...0x301......0x303......0x305.......0x307`
+`32k |...0x310......0x313......0x316.......0x319`
+`64k |...0x311......0x314......0x317.......0x31A`
+`16M |...0x312......0x315......0x318.......0x31B `
+
+Esempio: per avviare Fedora con una risoluzione a 1280x1024 con 16M di colori di profondità, la riga del kernel da modificare in /boot/grub/grub.conf dovrà presentarsi così:
+
+`title Fedora (2.6.33.5-112.fc13.i686.PAE)`
+`        root (hd0,0)`
+`        kernel /boot/vmlinuz-2.6.33.5-112.fc13.i686.PAE ro root=UUID=bb061789-157b-`
+`        4cb2-85c8-633026e8df1e rhgb quiet vga=0x31B`
+`        initrd /boot/initrd-2.6.33.5-112.fc13.i686.PAE.img`
+
+<Categoria:Grub>

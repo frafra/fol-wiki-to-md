@@ -1,0 +1,117 @@
+__TOC__
+== Introduzione ==
+
+Al fine di utilizzare correttamente un drive SSD bisogna applicare alcuni accorgimenti particolari dato che allo stato attuale non vengono attuati automaticamente in fase di setup dell'OS. Questi servono ad evitare problemi come la write amplification, migliorare conseguentemente le prestazioni del drive ed allungarne la vita.<br />
+Vedremo di seguito come eseguire il partizionamento del drive e come fare un po di 'fine tuning' una volta installata Fedora.<br />
+{{Warning|La guida tratta settaggi abbastanza delicati che possono comportare la perdita di dati, quindi è consigliata agli utenti avanzati e comunque sempre a loro rischio e pericolo.<br />
+Si da inoltre per scontata una certa dimestichezza con l'ambiente.<br />
+Guadagnare in prestazioni significa anche perdere in affidabilità!}}
+L'intento è quello di preparare un nuovo drive (sda) ad accogliere il nuovo sistema, sarà necessario quindi un sistema preesistente o una ''live''.
+
+== Partizionamento ==
+
+Partizionare un SSD richiede maggior attenzione rispetto ad un HDD tradizionale dato che si usa una tecnologia 'nuova' con degli strumenti 'vecchi'. Infatti ci si trova ancora oggi ad usare lo schema ''CHS'' per creare le partizioni, pur avendo da anni adottato LBA e LBA48 (in linea teorica sarebbe possibile usare GUID Partition Table, così da superare i limiti di capacità, numero di primarie, ecc. ma si rischierebbero problemi di retro-compatibilità con altri sistemi operativi (...), senza contare che non conosco lo stato di sviluppo dei relativi tools).<br />
+Procedendo alla maniera classica, bisogna tener presente alcune costanti nel gioco delle partizioni: un settore è composto da 512 byte, il primo settore contiene l'MBR, numero di testine 1-255, numero di settori 1-63, dimensione erase block, ext4 block size pari a 4096 byte (default).<br />
+Il dato più difficile da ottenere è l'erase block (d'ora in poi EB), tipico per ogni SSD e rintracciabile in rete in funzione di Produttore/modello; nel mio caso sembra essere pari a 128KB.<br />
+L'obiettivo è quello di allineare l'unità minima del drive (pages di 4KB) con le partizioni e quindi con blocchi logici del file system al fine di evitare un overhead di scritture inutili e dannose al drive stesso.<br />
+Il trucco sta nello scegliere la giusta combinazione di heads e sectors, poichè questo comporta una predeterminata dimensione dei cilindri presenti sull'SSD; a sua volta questo fa sì che in fase di creazione della prima partizione, questa risulti automaticamente allineata (ho scelto di procedere in questa direzione poichè i tools di linux operano di default sui cilindri e non ho idea di cosa comporti uscire dagli standard, e nemmeno se sia più o meno giusto).<br />
+Si deve quindi scegliere una combinazione tale che il cilindro che otteniamo sia un multiplo del fattore 128K dell'EB (i valori di default sono 255 testine e 63 settori e non fanno al caso nostro).<br />
+Prendendo 224 testine e 56 settori si ha che la dimensione di un cilindro è:
+
+ 224 * 56 * 512 KB = 6.422.528 byte = 49 * 128KB = 1.568 * 4KB
+
+ed è proprio la quadratura del cerchio, dato che questo valore è anche l'offset con cui verrà creata la prima partizione.<br />
+Nel caso di un EB di 512 KB dare una occhiata a [http://www.ocztechnologyforum.com/forum/showpost.php?p=373224&postcount=97 questo link] per la scelta dei valori; mentre per una veloce verifica dei parametri scelti andare [http://www.techpowerup.com/articles/other/157 qui]. <br />
+Prima di impostare i parametri bisogna effettuare un'altra scelta: quante partizioni creare sul drive per poi verificare l'allineamento anche di queste. In questo caso si creerà /boot da 250MB, / da 25GB e /home nel rimanente spazio. Quindi:
+
+ 250MB = 262.144.000 byte = 41 *  6.422.528 byte
+ 25GB = 26.843.545.600 byte = 4.180 *  6.422.528 byte
+
+perciò  sda1 ha come limiti i cilindri 2 e 41, sda2 i cilindri 42 e 4180 e sda3 va dal cilindro 4181 alla fine (/boot partirebbe automaticamente dal primo cilindro, ma sfalsata di 1 track; non sarebbe un problema dato che contiene pochi dati e che le altre sono comunque allineate, ma è preferibile questa via, anche se si spreca qualche MB).<br />
+Ora:
+
+ # fdisk -H 224 -S 56 /dev/sda
+
+e poi:
+
+ “o” per creare una nuova tabella delle partizioni
+ “n” per creare una nuova partizione
+ 	“p” per primaria
+ 	“1” la prima
+ 	“2” primo cilindro
+ 	“41” ultimo cilindro
+ “t” per impostare il tipo
+ 	“1” scelgo la prima
+ 	“83” linux type!
+ (Similmente per le altre due...)
+ “w” scrittura sul disco
+
+Per chi decidesse di usare LVM si consiglia di leggere [http://thunk.org/tytso/blog/2009/02/20/aligning-filesystems-to-an-ssds-erase-block-size qui] dato che ci sono altri passi da fare per sistemare anche l'header LVM.<br />
+Creazione del filesystem:
+
+ # mkfs.ext4 -E stripe-width=32 -L label /dev/sdax
+
+Qui si usa un parametro aggiuntivo preso dall'ambito RAID che può dare una mano a confinare ogni write entro i limiti di ogni blocco (128/4). Per un EB di 512 KB si usa un valore pari a 128.
+
+== Ottimizzazione ==
+
+Dopo aver formattato e installato il sistema si procede con le ottimizzazioni.<br />
+Per prima cosa si cambia lo scheduler di default del kernel in quanto ottimizzato per hdd tradizionali, questo si può fare semplicemente aggiungendo l'opzione <br />
+ elevator=deadline
+nella riga del kernel in grub.conf. Così facendo però il comando è system-wide e in un sistema ibrido non va bene. Perciò si imposta lo schedulatore per-disk aggiungendo in /etc/rc.local la riga:
+ echo deadline > /sys/block/sda/queue/scheduler
+si può aggiungere anche  
+ echo 1 > /sys/block/sda/queue/iosched/fifo_batch
+che imposta una logica del tipo first-come first-served per una bassa latenza.<br />
+Per la scelta dello schedulatore dare una occhiata [http://www.redhat.com/magazine/008jun05/features/schedulers qui].<br />
+Allo stato attuale non dovrebbe essercene bisogno, ma in caso (controllare con un cat) aggiungere anche:
+ echo 0 > /sys/block/sda/queue/rotational
+così il sistema è maggiormente cosciente dell'hardware con cui lavora.<br />
+Ultima cosa da controllare è la write-cache:
+
+ # hdparm -W /dev/sda
+
+se non è 1 (on) si usa il comando di poco fa con l'opzione ''-W1'' per abilitare il write caching.
+
+Ora, dopo un reboot da chiavetta o in rescue mode, da console eseguire
+
+ # tune2fs -o journal_data_writeback /dev/sda2
+
+poiché sembra che per poter impostare il tipo journaling su root sia necessario.<br />
+Modificare le opzioni di mount andando a modificare fstab e aggiungendo alcune opzioni in esso:
+
+ [...]
+ UUID=5f336171-8bcf-4480-a1d8-0a6178b272ed / ext4 noatime,data=writeback,nobh 1 1
+ UUID=567b43e3-feb2-416a-a283-79cd3a932d93 /home ext4 noatime,data=writeback,nobh 1 2
+ [...]
+
+Qui si usa:
+ data=writeback
+cambia il tipo di journaling dal default ordered a writeback che in pratica fa un metadata journaling
+ nobh
+impedisce l'uso delle buffer heads (opzione possibile solo in combinazione con writeback)
+ noatime
+il filesystem non registra la data di accesso ai files, quindi si risparmia una operazione di scrittura
+
+Alcuni consigliano anche:
+ barrier=0
+di default ext4 abilita le barrier come garanzia di scrittura del journal, togliendole si guadagna in performance. Sconsigliata se non si è protetti da cali di tensione
+ relatime
+altra alternativa al default atime, vedasi [http://thunk.org/tytso/blog/2009/03/01/ssds-journaling-and-noatimerelatime link] 
+ commit=100
+aumenta l'intervallo commit/write (default: 5s).
+ nouser_xattr
+disabilita le Extended User Attributes, potrebbe andar bene per un home pc<br />
+Per info su ext4 leggere [http://www.mjmwired.net/kernel/Documentation/filesystems/ext4.txt qui].
+
+In questo esempio si terrà ''/var'' e ''/tmp'' sul secondo drive di tipo classico, ma è possibile aggiungere anche:
+ [...]
+ tmpfs	/tmp 	tmpfs 	defaults,noatime,mode=1777 	0 0 
+ tmpfs	/var/tmp 	tmpfs 	defaults,noatime,mode=1777 	0 0 
+ tmpfs	/var/log 	tmpfs 	defaults,noatime,mode=0755 	0 0
+ [...]
+così da spostarle su file-system temporanei non residenti sul drive fisico.<br />
+Infine, come ultimo accorgimento, si può spostare la cache dei programmi più usati (tipo firefox, per esempio) così da limitare al massimo i cicli di scrittura.
+
+[[Categoria:Hardware]]
+[[Categoria:Sistema]]

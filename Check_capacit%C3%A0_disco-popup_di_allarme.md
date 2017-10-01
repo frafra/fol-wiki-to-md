@@ -1,0 +1,85 @@
+Questo script è stato realizzato con l'aiuto della comunità di Fol e serve a controllare la percentuale di spazio disco occupato.
+In base a due soglie preimpostate vengono emessi degli allarmi ***warning e critical*** che si presentano all’utente mediante popup window generate con *Xdialog*.
+Lo script va lanciato da *cronjob* di root. Per questo articolo è stata utilizzata la seguente entry nel crontab di root:
+
+`*/10 * * * * DISPLAY=:0.0 /root/bin/check_disk.sh`
+
+Lo script vero e proprio è questo:
+
+    #!/bin/bash
+
+    DATAORA=$(date "+%d-%m-%Y %H:%M")
+    LO="/var/log/check_disk.log"
+
+    # Soglie di allarme Low e High
+    L_TRES="60"
+    H_TRES="70"
+
+    # Path di Xdialog
+    CMD="/usr/bin/Xdialog"
+
+    # Verifica Utente - deve essere root
+    if [ "$UID" != "0" ]; then
+            echo -e "\n\n\tLancia il comando da \"root\"\n\n"
+            exit 1
+    fi
+
+    # grep Filesystem 
+    FS=`df -h| awk '{print $1}'| grep -v Filesystem`
+
+    for i in `echo $FS` ; do
+
+    # Cattura informazione sulla Capacità disco usata
+    DF=$(df -h | grep "$i" | gawk '{print $5}' | gawk -F% '{print $1}')
+
+    # Funzione che lancia la popup window
+    # Il file ybox.rc va sotto la home di root
+    function start_popup {
+        $CMD --rc-file ybox.rc --title "Alarm" --backtitle "$1" --no-close --msgbox "Spazio Disco usato = $DF % " 10 100       
+    }
+
+    # Cattura informazioni su una eventuali popup già aperte
+    POPUP_STATUS_WARNING=$(ps -ef | grep Xdialog | grep WARNING | gawk '{print $14}')
+    POPUP_STATUS_CRITICAL=$(ps -ef | grep Xdialog | grep CRITICAL | gawk '{print $14}')
+
+    # Verifica superamento soglie d'allarme 
+    if [ "$DF" -lt "$L_TRES" ]; then
+        echo -e "$DATAORA Capacità disco OK." >> $LO
+    else
+        # Emissione WARNING
+        if [ "$DF" -lt "$H_TRES" ]; then
+                echo -e "$DATAORA\tWARNING: Capacità disco = $DF %" >> $LO
+            if [ "$POPUP_STATUS_WARNING" != "WARNING" ] ; then
+                echo -e "$DATAORA\tPopup Window issued": WARNING >> $LO
+                start_popup WARNING    
+                OUT="$?"
+                if [ "$OUT" = 0 ] ; then
+                    DATAORA=$(date "+%d-%m-%Y %H:%M")
+                    echo -e "$DATAORA\tUser pressed OK button" >> $LO
+                fi
+            fi
+        # Emissione CRITICAL
+        else
+            echo -e "$DATAORA\tCRITICAL: Capacità disco = $DF %" >> $LO
+            if [ "$POPUP_STATUS_CRITICAL" != "CRITICAL" ] ; then
+                        echo -e "$DATAORA\tPopup Window issued: CRITICAL" >> $LO
+                start_popup CRITICAL
+                OUT="$?"
+                        if [ "$OUT" = 0 ] ; then
+                                DATAORA=$(date "+%d-%m-%Y %H:%M")
+                                echo -e "$DATAORA\tUser pressed OK button" >> $LO
+                        fi
+            fi
+        fi
+    fi
+    done
+
+Infine, il file ybox.rc, va inserito nella home di root:
+
+`style 'tony_style' {`
+`bg[NORMAL] = { 0.9, 0.4, 0.0 }`
+`fg[NORMAL] = { 0.0, 0.0, 0.0 }`
+`}`
+`widget '*' style 'tony_style'`
+
+[Categoria:Programmazione e Sviluppo](Categoria:Programmazione_e_Sviluppo "wikilink")

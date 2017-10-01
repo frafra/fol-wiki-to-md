@@ -1,0 +1,126 @@
+Yum è molto semplice da usare, la cosa più importante è che sia configurato con i repository più usati, poi loggarsi come root e vedere i comandi più frequenti.
+
+`$ su`
+`password`
+
+Per installare un pacchetto non serve nemmeno sapere tutto il nome del pacchetto, ma soltanto il nome del programma da installare:
+Si suppone che si voglia installare il pacchetto acroread.5.0.10-1.1.fc3.i386.rpm. Basterà digitare:
+
+`# yum install acroread`
+
+e Yum installerà Acrobat Reader per Fedora e risolverà anche tutte le dipendenze installando i pacchetti aggiuntivi necessari.
+Per disinstallare un pacchetto con le relative dipendenze digitare:
+
+`# yum remove acroread`
+
+Se si vuole aggiornare un pacchetto preciso digitare:
+
+`# yum update acroread`
+
+Per verificare se esiste un aggiornamento per Acrobat Reader:
+
+`# yum check-update acroread`
+
+Se non si specifica nessun pacchetto, Yum controllerà eventuali aggiornamenti per l'intero sistema (con yum check-update) oppure installerà tutti gli aggiornamenti esistenti per il proprio sistema (yum update).
+Infine se per qualche motivo Fedora chiede una libreria e non si sa con quale pacchetto installare la libreria in questione si può chiedere a Yum di dire quale pacchetto fornisce automaticamente anche la libreria, con:
+
+`# yum provides libreria`
+
+Questi sono i comandi più frequenti per usare Yum.
+
+Altre opzioni
+-------------
+
+Per aggiornare o installare un pacchetto (o più pacchetti) tralasciando gli errori basta fare:
+
+`# yum update -t`
+
+oppure
+
+`# yum install nomepacchetto -t`
+
+Per aggiornare/installare senza aggiornare la cache basta fare:
+
+`# yum update -C`
+
+oppure
+
+`# yum install nomepacchetto -C`
+
+Per specificare un file di aggiornamento differente da quello di default basta fare:
+
+`# yum update -c /path/del/file`
+
+oppure
+
+`# yum install nomepacchetto -c /path/del/file`
+
+Per settare un tempo massimo di attesa in minuti tra un comando e l'altro basta fare (il numero 100 è un esempio!):
+
+`# yum update -R 100`
+
+oppure
+
+`# yum install nomepacchetto -R 100`
+
+Per settare il livello di debug (da 0 a 10) basta fare:
+
+`# yum update -d 1`
+
+oppure
+
+`# yum install nomepacchetto -d 1`
+
+Per settare il livello degli errori (da 0 a 10) da visualizzare basta scrivere:
+
+`# yum update -e 1`
+
+oppure
+
+`# yum install nomepacchetto -e 1`
+
+Per vedere la versine di yum:
+
+`# yum --version`
+
+Per escludere un pacchetto dall'aggiornamento / installazione:
+
+`# yum update --exclude=pacchetto`
+
+Per abilitare una repository:
+
+`# yum --enablerepo=nomerepository update`
+
+oppure
+
+`# yum --enablerepo=nomerepository install nomepacchetto`
+
+Per disabilitare una repository:
+
+`# yum --disablerepo=nomerepository update`
+
+oppure
+
+`# yum --disablerepo=nomerepository install nomepacchetto`
+
+Per scompattare i pacchetti in un'altra cartella per l'installazione:
+
+`# yum --installroot=/path/della/dir update`
+
+oppure
+
+`# yum --installroot=/path/della/dir install nomepacchetto`
+
+Questo comando genera le rss in un determinato file:
+
+`# yum --rss-filenamet=/path/del/file`
+
+Questo file disabilita i plugins di yum:
+
+`# yum update --noplugins`
+
+oppure
+
+`# yum install nomepacchetto --noplugins`
+
+<Categoria:Yum>

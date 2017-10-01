@@ -1,0 +1,53 @@
+__TOC__
+== Introduzione ==
+VirtualBox è un applicativo commerciale proprietario multi-piattaforma per la virtualizzazione di sistemi operativi sviluppato da Oracle. Si possono riscontrare alcuni problemi con il supporto USB: purtroppo ancora non è stata prevista una configurazione totalmente automatica.
+
+== Installazione tramite repository RPMFusion ==
+VirtualBox è disponibile all'interno dei repository [[RPMFusion]]. Per installarlo è sufficiente eseguire da terminale
+ # yum install akmod-VirtualBox VirtualBox
+
+== Installazione tramite repository Oracle ==
+L'installazione di VirtualBox utilizzando i repository ufficiali Oracle è descritta nella guida [[VirtualBox repo]].
+
+{{nota|Differenze d'installazione|A partire dalla versione 4.0, l'installazione di VirtualBox dai repository Oracle e RPMFusion è equivalente, e fornisce una versione base di Virtualbox (rilasciato sotto licenza GPL2) senza estensioni (come spiegato sotto).<br>Le due versioni sono quindi identiche. L'unica differenza si riscontra eventualmente nella velocità di aggiornamento.<br>Per maggiori informazioni attenersi alla [https://www.virtualbox.org/wiki/Editions documentazione ufficiale].}}
+
+== Configurazioni ==
+Di seguito viene illustrato come abilitare alcune funzionalità non presenti nella versione base di VirtualBox, tramite l'installazione degli appositi Extension Pack.
+
+=== Installazione del Extension Pack ===
+L'installazione degli Extension Pack permette di estendere le funzionalità di VirtualBox base aggiungendo le seguenti caratteristiche
+* Supporto per i device virtuali USB 2.0 (EHCI).
+* Supporto per il VirtualBox Remote Desktop Protocol (VRDP)
+* Intel PXE boot ROM con supporto per la scheda di rete E1000
+* Il supporto sperimentale per PCI su host Linux
+
+L'Extension Pack può essere scaricato dalla sezione download del [https://www.virtualbox.org/wiki/Downloads sito ufficiale], facendo attenzione a scegliere la stessa versione di VirtualBox. Per installarlo sarà sufficiente eseguire il pacchetto appena scaricato con un doppio click.
+
+=== Aggiunta utente al gruppo ===
+Per poter abilitare il controller USB 2.0 (EHCI), bisogna aggiungere il proprio utente al gruppo ''vboxusers'' (controllare che non sia già stato fatto in automatico, usando il comando ''groups''), con il seguente comando:
+
+ # gpasswd -a $(logname) vboxusers
+
+Per rendere effettiva la modifica, prima di riutilizzare VirtualBox, occorre riavviare il sistema host.
+
+=== Compattare un disco virtuale VDI di Virtualbox (guest: Windows) ===
+Con un utilizzo regolare di una macchina virtuale il corrispondente file VDI (''Virtual Disk Image'') cresce continuamente di volume, anche qualora si liberasse dello spazio rimuovendo file all'interno del sistema guest, questo perché i file non vengono realmente eliminati nel nulla, ma lo spazio occupato nel file system viene semplicemente indicato come "sovrascrivibile", se necessario, dal sistema.<br>
+La procedura di compattazione del file vdi purtroppo non è banale e richiede una preparazione del sistema ospite. Infatti, per ridurre la dimensione del file vdi, occorre che lo spazio libero disponibile sul sistema guest sia marcazo a zero.<br>
+Per diminuire il peso di un hard disk virtuale di un sistema ospite Windows si procede quindi come segue:
+<ol><li><nowiki>[da guest]</nowiki> Come operazione preliminare è necessario deframmentare il sistema guest con l'apposito tool disponibile su Windows all'interno del ''Pannello di controllo'';</li>
+<li><nowiki>[da guest]</nowiki> Installare il programma [http://technet.microsoft.com/en-us/sysinternals/bb897443 sdelete], un'applicativo creato da Microsoft con delle funzionalità utili;</li>
+<li><nowiki>[da guest]</nowiki> Dalla finestra DOS (richiamabile attraverso Start - Esegui - ''cmd'') settare a zero lo spazio libero con:
+<pre>sdelete -z</pre>
+<li><nowiki>[da host linux]</nowiki> Per concludere compattare lo spazio del disco virtuale con:
+<pre>$ VBoxManage modifyvdi /percorso/a/nomefile.vdi compact</pre>
+</li></ol>
+La compattazione di un disco virtuale può ridurre lo spazio occupato anche di decine di gigabyte.
+
+== Riferimenti ==
+* [https://www.virtualbox.org/ Home] del programma VirtualBox;
+* [http://www.stenoweb.it/node/134 Guida in italiano] su come comprimere spazio di un hard disk virtuale;
+* [http://www.kaibader.de/compact-virtualbox-vdi-images/ Guida in inglese] su come comprimere spazio di un hard disk virtuale;
+* [http://technet.microsoft.com/en-us/sysinternals/bb897443 Pagina] del programma ''sdelete''.
+
+
+[[Categoria:Virtualizzazione]]

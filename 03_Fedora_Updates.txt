@@ -1,0 +1,17 @@
+== Come aggiornare Fedora manualmente ==
+
+# Leggi [[01 Introduzione a Fedora#Premessa|Premessa]]
+# Leggi [[02_Repositories#Come aggiungere dei repositories extra|Come aggiungere dei repositories extra]]
+
+=== Yum ===
+ yum check-update
+ yum update
+
+=== Pup ===
+Un'alternativa è usare pup (Packager Updater)
+
+ pup
+
+{{Link/prec|02_Repositories|02 Repositories}}{{Link/succ|04 Aggiungere Applicazioni|04 Aggiungere Applicazioni}}
+
+[[Categoria:Fedoraserver]]

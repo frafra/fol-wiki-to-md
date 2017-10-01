@@ -1,0 +1,65 @@
+**09 Giugno 2012!** Una data da ricordare, **una prima vera riunione degli utenti Fedora in Italia**. ![ La torta *Fedora 17 Beefy Miracle*](torta_release.jpg "fig: La torta Fedora 17 Beefy Miracle")
+
+Sapevamo sarebbe stata dura, non era facile trovare un posto ove poter riunire più utenti possibile, ma ce l'abbiamo fatta. La prima pietra miliare per costruire una comunità affiatata è stata posta.
+
+Simbolicamente è stata scelta la città di Roma per ovvie ragioni; capitale d'Italia e giusto crocevia delle direttrici tra le varie località, certo chi abita a Roma si è trovato avvantaggiato, ma va bene anche così.
+
+L'impegno che ci hanno messo gli Ambassador che hanno dato disponibilità a partecipare all'evento è stato notevole, ed un grazie particolare a Gianluca Sforna (Giallu) per averci messo cuore ed anima.
+
+Dicevamo che sarebbe stata dura..... ***Ma non così tanto!!!*** ![ L'ingrato Antowen](Antowen.jpg "fig: L'ingrato Antowen") Innanzitutto la nostra testa di ponte a Roma (un losco figuro che si intende di sicurezza.... citazione: "Analisi e test firewall, analisi sicurezza e privacy in rete, testing e configurazione rete tor lato client", eeehhh????) ha provveduto a fare la spola con la pizzeria designata (zona Piazza di Spagna). Antowen ha lavorato molto bene, anche se non si è capito un certo nervosismo solo perchè gli abbiamo chiesto 25/30 modifiche, all'ora, del programma..... Ingrato.
+
+In ogni caso, direi di lasciare perdere il viaggio (fatto con Ergosum, con il quale ho disquisito volentieri per le tre ore di Freccia Rossa da Milano a Roma..... anche se mi sono perso alla sua quinta parola, che mi pareva fosse "cinnamon"), ed arriviamo a Roma, Stazione Termini, dove ci attendeva Robyduck (avrebbe voluto portare la sua inseparabile Mountain Bike, che gli avrei bucato non appena si fosse distratto) ed insieme abbiamo aspettato il nostro amico Virus, che anche stavolta si è presentato con una puntualità sorprendente, nonchè con un pacco piuttosto pesante tra le braccia che, chissà perchè, provocava un immediato allontanamento delle persone che avvicinava.
+
+Di Giallu, al momento, sappiamo solo che ha degli impegni personali che gli impediranno (per fortuna, sua) di arrivare all'appuntamento con Antowen in Piazza di Spagna.
+
+Credo che questi impegni gli abbiano salvato la vita... Pensiamoci bene, Virus ed Antowen in una botta sola...... La vita è un bene, non rischiamola.
+
+E fu così che, quindi, decidemmo di prendere la metrò (dopo che Virus ha litigato per bene con un paio di macchinette automatiche per il biglietto di ritorno e, già che c'era, con l'obliteratrice che non voleva farlo passare), guidati da Robyduck che pareva essere un profondo conoscitore di Roma.
+
+Seguendolo, inabissandoci con le scale, siamo riusciti a vedere le catacombe romane, i musei vaticani, le fondamenta del colosseo, le fogne di Napoli, la città di atlantide (non necessariamente in quest'ordine) fino a quando gli abbiamo chiesto, un po' dubitando della sua competenza: "ma sai dove stiamo andando?". La risposta ci venne fornita da uno scheletro che si è alzato dicendo:"Me sa de no!".
+
+A quel punto Virus ed il suo pacco hanno preso in mano la situazione e ci hanno guidato alla fermata della metro A, dove orde di esseri umani si assiepavano ad attendere quella che, a nostro avviso, doveva evidentemente essere l'unico treno sotterraneo di tutto il mondo.
+
+E' fatta, siamo sul vagone della metropolitana e, stranamente, avevamo anche dello spazio libero attorno, chissà perchè? (Anche Ergosum guardava il pacco con circospezione....). ![ I nostri eroi in Piazza di Spagna](spagna.jpg "fig: I nostri eroi in Piazza di Spagna") Arrivati a Piazza di Spagna ritroviamo Antowen, che viene salutato da tutti noi tranne che da Virus, il quale gli rifila in mano il pacco ormai divenuto insopportabilmente pesante:
+
+"è un regalo, tienilo e non rompere i ..........", dice Virus con quell'accento che Ergosum ha riconosciuto essere dei nobili Torinesi di fine '800.
+
+Non si sa ancora cosa sia..... Tranne per le forze dell'ordine che sono certe si tratti di un attentato. ![ La pizzeria *Zio Ciro*, teatro del nostro evento](ziociro.jpg "fig: La pizzeria Zio Ciro, teatro del nostro evento") Curioso come un cobra tibetano (ma mi sa che il peso del pacco bomba la faceva da padrone), Antowen ci accompagna verso il luogo designato al **Release Party**, una pizzeria che ci aveva riservato una saletta. ![ La bomba contenuta nel pacco](ibm.jpg "fig: La bomba contenuta nel pacco") Il pacco, hanno scoperto gli artificieri, conteneva un misero IBM 380D, anche se al nostro Antowen gli occhi gli si sono velati di lacrime.
+
+Nel breve periodo di scambio di convenevoli, il sottoscritto Mailga e Robyduck, provvedevano a tenere le fila tra i vari partecipanti che dovevano ancora presentarsi, tramite IRC, Fedoraonline, gtalk e messaggi sms.
+
+Pian piano quindi cominciarono a convergere tutti, tranne uno..... **Giallu**!!!!
+
+Si, proprio lui!
+
+Da una serie di sms scambiati con Robyduck, sappiamo che, terminato l'impegno che lo coinvolgeva, è corso fuori, preso la macchina (no, non quella! La tua, Giallu! Se ne prendi un'altra si chiama furto.) e ha cercato di presentarsi alla stazione dove lo aspettava il treno per Roma.
+
+Ehm! No! non lo ha aspettato.......
+
+Riprendi la macchina e vola ad una stazione intermedia, utilizzando una tecnica di guida che è il frutto di sapienza, abilità, anni di rally ecc..... e che è conosciuta con il nome di "guida estrema".
+
+Credo che questo gli sia costato la patente, il reato di omicidio colposo, il reato di omicidio preterintenzionale, il reato di offesa a pubblico ufficiale, il reato di interruzione di servizio pubblico, il reato di vilipendio e, pare, anche il divieto di sosta (che ci vuole sempre....). Malgrado ciò è riuscito a farsi rilasciare un biglietto per il treno dopo aver fatto piangere il capostazione per via del suo racconto sull'alluvione e sulle cavallette che gli hanno sgranocchiato la casa.
+
+Non voglio commentare la caduta del portafoglio con conseguente spargimento di effetti personali, soldi, carte di credito e compagnia cantante mentre i vagoni cominciavano a muoversi sui binari.....
+
+In ogni caso, non si sa come (nemmeno lui) è riuscito a prendere un treno che avrebbe potuto portarlo a Roma (ma non ne era certo).
+
+Nel frattempo, nell'attesa di Giallu, a Roma si consumava la tragedia; i commensali erano arrivati, l'allegria regnava sovrana, il porta olio ed il porta aceto era stato fatto cadere, ma Robyduck non aveva la birra!
+
+Il nervosismo cominciava a dilagare, Virus piangeva, Ergosum centellinava il suo ultimo sorso, Antowen era incantato a guardare il suo IBM, io fumavo nervosamente, Artax cercava di capire chi era il peggiore tra di noi, Caterpillar era l'ombra di se stesso, Aiace e Romulus erano sbigottiti, gli amici di Caterpillar cominciavano a chiedersi "ma 'ndo semo finiti?" e Thunder71 ormai pensava che i Maya avessero ragione, avevano solo sbagliato la data. Nessuno riusciva ad ordinare una birra finchè.... Antowen svegliandosi dallo stato catatonico-simil-IBM è riuscito ad ordinare gli aperitivi.
+
+![ Giallu](giallu.jpg "fig: Giallu") Ecco Giallu! E' arrivato..... Non riusciva a parlare, era in chiaro debito d'ossigeno, aveva bisogno di liquidi ma la sua birra ed il suo aperativo erano stati fatti fuori da un tedesco..... ![ Il pc per il quiz](pc_quiz.jpg "fig: Il pc per il quiz") ![ right| Ergosum ed il quiz....](gruppo3.jpg "fig: right| Ergosum ed il quiz....") Qualche minuto per riprendersi e si poteva cominciare a parlare di Fedora 17, con dimostrazioni, spiegazioni ed anche un quiz per rilevare la conoscenza del nostro sistema operativo da parte degli astanti. Era stato quindi predisposto un tavolo con pc e l'interesse da parte di coloro che non conoscevano, o conoscevano in minima parte Fedora, si è rivelato entusiasmante, per noi che abbiamo potuto toccare con mano quanto possa essere costruttivo creare un evento dove, davanti ad un bicchiere e ad una buona pizza, si possa spiegare come e perchè Fedora possa essere adottata come distribuzione di riferimento e perchè la comunità che la supporta possa essere considerata *speciale*.
+
+La serata quindi ha preso il volo, riuscendo nell'intento di creare una, seppur piccola, comunità di persone che si conoscono e che vogliono condividere la passione per l'open source e per il free software. Fedora, appunto. E alla fine della pizzata... Torta! Per festeggiare ***Fedora 17 Beefy Miracle***.
+
+------------------------------------------------------------------------
+
+Un po' di foto.....
+
+|                                                                                                      |                                                                                               |                                                                                                |                                                         |
+|------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------|---------------------------------------------------------|
+| ![Giallu e Mailga](giallu_mailga.jpg "Giallu e Mailga")                                              | ![Foto con la torta](torta_gruppo.jpg "Foto con la torta")                                    | ![ Foto di gruppo](gruppo1.jpg " Foto di gruppo")                                              | ![Foto di gruppo](gruppo2.jpg "Foto di gruppo")         |
+| ![Mailga,Antowen ed Ergosum](anto_massi_gabri.jpg "Mailga,Antowen ed Ergosum")                       | ![Mailga](mailga.jpg "Mailga")                                                                | ![Giallu](giallu1.jpg "Giallu")                                                                | ![Artax, Cindy e Sara](artax.jpg "Artax, Cindy e Sara") |
+| ![Virus e suoi vizi, compreso peperoncino](virus_vizi.jpg "Virus e suoi vizi, compreso peperoncino") | ![Alla ricerca dell'astronave di virus](astronave.jpg "Alla ricerca dell'astronave di virus") | ![ Andrea senza liquidi nel bicchiere](andrea_birra.jpg " Andrea senza liquidi nel bicchiere") |
+
+<Categoria:FedoraOnline>

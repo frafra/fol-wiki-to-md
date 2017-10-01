@@ -1,0 +1,214 @@
+==Audio assente==
+
+Risolvere il problema "audio assente" in Fedora 9/10.
+
+Visto il congruo numero di utenti che lamentano questo problema, vi propongo la seguente. Questa non è una guida in senso stretto, è un "canovaccio" di comportamenti da tenere per individuare il problema con precisione ed eventualmente proporre strumenti di soluzione, nel malaugurato caso ci trovassimo di fronte ad una macchina "muta" dopo una installazione e/o aggiornamento.
+Indicherò con:
+ $ --> i comandi da eseguire in terminale utente.
+ # --> i comandi da eseguire in terminale root.
+ '''in grassetto''' --> le modifiche da apportare a files.
+
+==Cominciamo==
+
+Tenete a disposizione un file audio da testare, preferibilmente del formato "ogg", formato del quale la riproduzione è sicura senza codecs specifici.<br />
+La prima cosa da fare è verificare che i livelli dei volumi della nostra periferica siano adeguatamente alzati.<br />
+Cliccate col destro sull'icona volume e selezionate "apri regolazione volume", accertatevi che tutti i volumi siano alzati e che nessun canale sia muto.
+
+Se questa manovra non dà risultati sperati, aprite un terminale e date il comando:
+
+ $  amixer -c 0
+
+dove 0 è il numero della scheda, se ne avete una sola è sicuramente 0, altrimenti 1 per la seconda scheda 2. per la terza etc..
+
+Nel lungo output che si presenta, controllate che, ad esempio:
+
+ Simple mixer control 'PCM',0
+   Capabilities: pvolume pswitch pswitch-joined
+   Playback channels: Front Left - Front Right
+   Limits: Playback 0 - 255
+   Mono:
+   Front Left: Playback 255 [100%] [0.00dB] [on]
+   Front Right: Playback 255 [100%] [0.00dB] [on]
+
+i canali siano [on] e il volume sia [100%]
+se non si presentano in questo modo procedete al lancio di:
+
+ $ alsamixer -D hw:0
+
+il valore 0 è sempre il numero della scheda.<br />
+si aprirà il mixer di alsa ( ALSA - Advanced Linux Sound Architecture), con il tasto "tab" andate su "all" cioè:
+
+ View:  Playback  Capture [All]
+
+usate le freccette dx/sx per spostarvi da un canale all'altro e su/giù per alzare ed abbassare il volume.<br />
+Usate il tasto "m" per rendere on il canale.<br />
+Testate l'audio cliccando sul file che avete a disposizione.<br />
+Se non avete risultati, non disperate, andate avanti nella lettura.
+
+==Controlliamo Pulseaudio==
+
+Pulseaudio è un server audio che si inserisce tra l'architettura Alsa e l'utente.<br />
+Per prima cosa date un:
+
+ # ps -Al|grep pulse
+
+nell'output dovreste trovare:
+
+ 1 S   500  2718     1  0  80   0 - 29906 sys_po ?        00:00:02 pulseaudio
+
+ciò vuol dire che il server audio è attivo.<br />
+Provate a resettare le impostazioni di pulse che vengono scritte in una cartella temporanea, in questo modo:
+
+ # rm -rf /tmp/*
+
+fate un restart del sistema e testate l'audio.
+
+Se l'output precedente non segnala nulla, lanciate il comando:
+
+ $ pulseaudio -D
+ 
+testate l'audio.<br />
+Se al comando precedente vi segnala:
+
+ I: main.c: PolicyKit refuses acquire-high-priority privilige.
+ N: main.c: Called SUID root and real-time/high-priority scheduling was requested in the configuration. However, we lack the necessary priviliges:
+ N: main.c: We are not in group 'pulse-rt' and PolicyKit refuse to grant us priviliges. Dropping SUID again.
+ N: main.c: For enabling real-time scheduling please acquire the appropriate PolicyKit priviliges, or become a member of 'pulse-rt', or increase the RLIMIT_NICE/RLIMIT_RTPRIO resource limits for this user.
+ I: main.c: High-priority scheduling enabled in configuration but now allowed by policy. Disabling forcibly.
+ E: main.c: daemon startup failed.
+
+è molto probabile che non siano settati correttamente i permessi di lavoro del server, date
+
+ $ polkit-gnome-authorization 
+
+accertatevi che in pulseaudio, entrambe le voci real-time/high-priority scheduling, abbiano le seguenti autorizzazioni:
+
+ anyone - no
+ console - no
+ active console - yes
+
+fate un restart del sistema e testate l'audio.<br />
+Se il demone pulseaudio continua a non partire e l'audio è ancora assente, procedete nella lettura.
+
+==Controlliamo i moduli==
+Dare un :
+
+ # lspci
+
+l'elenco che verrà fuori individuerà la vostra periferica audio ad esempio:
+
+ 00:14.2 Audio device: ATI Technologies Inc SBx00 Azalia (Intel HDA)
+
+fate attenzione che questa informazione probabilmente potrebbe non essere aderente al vostro problema in quanto individua il costruttore e il dispositivo ma non il chip audio.<br />
+Mi spiego meglio.<br />
+La scheda potrebbe essere stata costruita dalla ditta XXX ma il chip audio, che è la cosa che ci interessa, è prodotto dalla ditta YYY.<br />
+Incrociamo questa informazione con quella che ci vengono fornite dai comandi:
+
+ # aplay -L
+
+il cui output è:
+
+ front:CARD=SB,DEV=0
+ HDA ATI SB, AD198x Analog
+ etc...
+ # cat /proc/asound/card0/codec*|grep Codec
+
+il cui output è:
+
+ Codec: Analog Devices AD1984A
+ Codec: LSI ID 1040
+
+le informazioni fin qui raccolte dicono, che si tratta di una scheda costruita dalla Ati il chip è Azalia ( costruito dalla Realtek) del tipo AD198A, il modulo di gestione è hda-intel.
+
+Se avete dubbi usate il comando:
+
+ # lspci -nn
+
+ 00:14.2 Audio device: ATI Technologies Inc SBx00 Azalia (Intel HDA) [color=CC3300][1102:0007][/color]
+
+per conoscere i codici del produttore e del prodotto, vi aiuteranno per una eventuale ricerca su www.google.it/linux, ed individuare con certezza il dispositivo.
+
+Date il comando :
+
+ # lsmod|grep snd
+
+se a questo comando non ottenete risposta vuol dire che i moduli Alsa non sono stati caricati, in questa eventualità potete:
+# andare alla pagina http://www.alsa-project.org/main/index.php/Matrix:Main e controllare se la vostra scheda è supportata.
+# chiedere aiuto nel forum descrivendo con dovizia di particolari il problema.
+Se invece l'output è:
+
+ '''snd_hda_intel 480160 4'''
+ snd_seq_dummy 11396 0
+ snd_seq_oss 39104 0
+ snd_seq_midi_event 14848 1 snd_seq_oss
+ snd_seq 61968 5 snd_seq_dummy,snd_seq_oss,snd_seq_midi_event
+ snd_seq_device 15380 3 snd_seq_dummy,snd_seq_oss,snd_seq
+ .......
+
+allora il modulo snd_hda_intel è caricato insieme ai moduli di gestione alsa, ma  probabilmente il modulo stesso non è settato correttamente da Hal (Hardware Abstraction Layer).
+
+==Cerchiamo le opzioni corrette==
+
+Apriamo il nostro browser preferito e colleghiamoci alla [http://git.alsa-project.org/?p=alsa-kernel.git;a=blob;f=Documentation/sound/alsa/ALSA-Configuration.txt;h=e0e54a27fc10905a62bd649605ad2dbe8f8bfdbf;hb=HEAD pagina di documentazione]  alsa.
+
+Cerchiamo il nostro modulo hda-intel e il chip AD198A e tra le  innumerevoli opzioni, leggeremo:
+
+ AD1986A
+           '''6stack'''   --->     6-jack, separate surrounds (default)
+           '''3stack'''   --->     3-stack, shared surrounds
+           '''laptop'''    --->    2-channel only (FSC V2060, Samsung M50)
+           '''laptop-eapd''' --->  2-channel with EAPD (Samsung R65, ASUS A6J)
+           '''laptop-automute''' ---> 2-channel with EAPD and HP-automute (Lenovo N100)
+           '''ultra'''       --->     2-channel with EAPD (Samsung Ultra tablet PC)
+
+sulla base della nostra scheda, sul numero di canali, e sul produttore,  scegliamo una opzione ad esempio '''laptop'''
+
+Poi apriamo il file:
+
+ # gedit /etc/modprobe.conf
+
+ed inseriamo la riga:<br />
+'''options snd-hda-intel model=laptop'''<br />
+salvate, chiudete.<br />
+Facciamo un restart del sistema e testiamo l'audio.
+
+Se non va possiamo ripetere l'operazione, eventualmente con le altre opzioni.<br />
+Fate attenzione che alcune opzioni non sono state documentate, oppure sono temporanee, per cui non le troverete nella pagina su riportata.<br />
+Fate una ricerca mediante www.google.it/linux per verificare la presenza di ulteriori  opzioni.
+
+Tenete presente che ci sono altre opzioni che possono essere settate oltre "model", ad esempio:
+
+ Multiple options for each card instance
+
+      model       - force the model name
+      position_fix - Fix DMA pointer (0 = auto, 1 = use LPIB, 2 = POSBUF)
+      probe_mask  - Bitmask to probe codecs (default = -1, meaning all slots)
+      bdl_pos_adj - Specifies the DMA IRQ timing delay in samples.
+                  Passing -1 will make the driver to choose the appropriate
+                  value based on the controller chip.
+  
+      Single (global) options
+      single_cmd  - Use single immediate commands to communicate with
+                  codecs (for debugging only)
+      enable_msi  - Enable Message Signaled Interrupt (MSI) (default = off)
+      power_save  - Automatic power-saving timtout (in second, 0 =
+                  disable)
+      power_save_controller - Reset HD-audio controller in power-saving mode
+                  (default = on)
+
+anche in casi del genere vi invito a fare una ricerca mediante www.google.it/linux e verificare se qualche utente linux ha risolto settando queste opzioni.
+
+==Se finora non abbiamo risolto nulla==
+
+Se tutto è andato storto, potreste scaricare da:<br />
+http://www.alsa-project.org/main/index.php/SourceCodeRepository<br />
+i sorgenti della release candidate dei nuovi moduli alsa e tentare l'installazione di questi ultimi. Questa operazione, però, la consiglio ad utenti sufficientemente esperti, ai quali è inutile dare consigli in merito.
+
+==La Soluzione Finale==
+Se quanto sopra esposto non ha prodotto risultati di rilievo avete di fronte tre possibilità:
+# Cambiate scheda audio scegliendola tra quelle sicuramente riconosciute dal sottosistema alsa
+# Attendete lo sviluppo di una nuova release di alsa che sia in grado di governare la vostra scheda.
+# Aprite una discussione specifica nel forum, spiegando con chiarezza il problema e cosa, di questa guida, avete fatto.
+
+[[Categoria:Multimedia]]
+[[Categoria:Hardware]]

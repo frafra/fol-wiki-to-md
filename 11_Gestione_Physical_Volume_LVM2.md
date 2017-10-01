@@ -1,0 +1,186 @@
+\_\_TOC\_\_
+
+Verificare block device per PV
+------------------------------
+
+Tramite il comando **lvmdiskscan** è possibile verificare tutte le device visibili da LVM2, così da poter verificare dove poter creare un nuovo PV.
+
+    [root@cellopc log]# lvmdiskscan
+      /dev/ram0  [       16.00 MB] 
+      /dev/dm-0  [       43.95 GB] 
+      /dev/ram1  [       16.00 MB] 
+      /dev/sda1  [      500.00 MB] 
+      /dev/dm-1  [        4.88 GB] 
+      /dev/ram2  [       16.00 MB] 
+      /dev/sda2  [       48.83 GB] LVM physical volume
+      /dev/dm-2  [       62.47 GB] 
+      /dev/ram3  [       16.00 MB] 
+      /dev/sda3  [       62.47 GB] LVM physical volume
+      /dev/ram4  [       16.00 MB] 
+      /dev/ram5  [       16.00 MB] 
+      /dev/ram6  [       16.00 MB] 
+      /dev/ram7  [       16.00 MB] 
+      /dev/ram8  [       16.00 MB] 
+      /dev/ram9  [       16.00 MB] 
+      /dev/ram10 [       16.00 MB] 
+      /dev/ram11 [       16.00 MB] 
+      /dev/ram12 [       16.00 MB] 
+      /dev/ram13 [       16.00 MB] 
+      /dev/ram14 [       16.00 MB] 
+      /dev/ram15 [       16.00 MB] 
+      0 disks
+      20 partitions
+      0 LVM physical volume whole disks
+      2 LVM physical volumes
+
+Per verificare solo i PV presenti sul sistema basterà lanciare il comando lvmdiskscan con l'opzione -l:
+
+    [root@cellopc log]# lvmdiskscan -l
+      WARNING: only considering LVM devices
+      /dev/sda2  [       48.83 GB] LVM physical volume
+      /dev/sda3  [       62.47 GB] LVM physical volume
+      0 LVM physical volume whole disks
+      2 LVM physical volumes
+
+Verificare PV attivi
+--------------------
+
+Per avere la lista di tutti i PV presenti sul sistema basterà utilizzare il comando pvs.
+Verrà mostrato il nome della block device dove è stato inizializzato il PV e il nome del VG alla quale appartengono. Verrà riportato anche il formato del PV e la dimensione totale libera.
+
+    [root@cellopc log]# pvs
+      PV         VG      Fmt  Attr PSize  PFree
+      /dev/sda2  vg_root lvm2 a-   48.82G    0 
+      /dev/sda3  vg_data lvm2 a-   62.47G    0 
+
+Per avere informazioni più dettagliate basterà utilizzare il comando pvs con l'opzione -v per aumentare la verbosità:
+
+    [root@cellopc log]# pvs -v
+        Scanning for physical volume names
+      PV         VG      Fmt  Attr PSize  PFree DevSize PV UUID                               
+      /dev/sda2  vg_root lvm2 a-   48.82G    0   48.83G 1HmibA-x9fC-8pLO-HR7k-Da2z-5szk-FviOxy
+      /dev/sda3  vg_data lvm2 a-   62.47G    0   62.47G UGt7S2-jbpv-hBKC-P2fp-F7mb-2GzR-9MGPYA
+
+È possibile anche invocare il comando pvscan per rileggere eventuali PV presenti sul sistema:
+
+    [root@cellopc log]# pvscan
+      PV /dev/sda3   VG vg_data   lvm2 [62.47 GB / 0    free]
+      PV /dev/sda2   VG vg_root   lvm2 [48.82 GB / 0    free]
+      Total: 2 [111.29 GB] / in use: 2 [111.29 GB] / in no VG: 0 [0   ]
+
+Per visualizzare gli UUID associati ad ogni PV basterà lanciare il comando con l'opzione -u:
+
+    [root@cellopc log]# pvscan -u
+      PV /dev/sda3 with UUID UGt7S2-jbpv-hBKC-P2fp-F7mb-2GzR-9MGPYA VG vg_data   lvm2 [62.47 GB / 0    free]
+      PV /dev/sda2 with UUID 1HmibA-x9fC-8pLO-HR7k-Da2z-5szk-FviOxy VG vg_root   lvm2 [48.82 GB / 0    free]
+      Total: 2 [111.29 GB] / in use: 2 [111.29 GB] / in no VG: 0 [0   ]
+
+Verificare le informazioni di un PV
+-----------------------------------
+
+Per leggere le informazioni dettagliate di un PV basterà lanciare il comando pvdisplay e sarà possibile inserire l'opzione -m per visualizzare la mappatura del Logical extents sul PV indicato.
+
+    [root@cellopc log]# pvdisplay -m /dev/sda2
+      --- Physical volume ---
+      PV Name               /dev/sda2
+      VG Name               vg_root
+      PV Size               48.83 GB / not usable 4.00 MB
+      Allocatable           yes (but full)
+      PE Size (KByte)       4096
+      Total PE              12499
+      Free PE               0
+      Allocated PE          12499
+      PV UUID               1HmibA-x9fC-8pLO-HR7k-Da2z-5szk-FviOxy
+       
+      --- Physical Segments ---
+      Physical extent 0 to 11249:
+        Logical volume  /dev/vg_root/lv_root
+        Logical extents 0 to 11249
+      Physical extent 11250 to 12498:
+        Logical volume  /dev/vg_root/lv_swap
+        Logical extents 0 to 1248
+
+Creare un nuovo PV
+------------------
+
+Quandi si è deciso quale disco dovrà essere utilizzato per creare un nuovo PV, bisognerà per prima cosa partizionarlo.
+Se si vuole utilizzare l'intero disco o una parte di esso, ma si vuole rimuovere la vecchia tabella delle partizioni, basterà cancellare il primo settore del disco, dove è contenuta la tabella delle partizioni.
+
+    [root@cellopc log]# dd if=/dev/zero of=/dev/sda bs=512 count=1
+
+Dopo di che eseguire il partizionamento tramite il comando fdisk o parted.
+
+    [root@cellopc log]# fdisk /dev/sda
+
+Dopo di che con il comando pvcreate passare la lista di block device a cui inserire la label di PV.
+È possibile inizializzare più PV contemporanemante tramite il comando pvcreate:
+
+    [root@cellopc log]# pvcreate /dev/sda2 /dev/sda3
+
+Disabilitare/Abilitare l'allocazione di PE di un PV
+---------------------------------------------------
+
+In caso ci siano degli errori su una partizione o disco che ospita un PV è possibile bloccare l'allocazione di PE tramite il comando pvchange.
+Questo comporta che il PV diventi inutilizzabile.
+
+    [root@cellopc log]# pvchange -x n /dev/sda3
+      Physical volume "/dev/sda3" changed
+      1 physical volume changed / 0 physical volumes not changed
+
+Per riabilitare l'allocazione basterà lanciare il comando pvcreate con l'opzione -x ed il parametro y:
+
+    [root@cellopc /]# pvchange -x y /dev/sda3
+      Physical volume "/dev/sda3" changed
+      1 physical volume changed / 0 physical volumes not changed
+
+Generare un nuovo UUID per PV
+-----------------------------
+
+Per generare un nuovo UUID associato ad un PV per prima cosa bisognerà smontare tutti i fileystem creati su LV che utilizzano quel PV e poi disabilitare questi LV manualmente.
+
+    [root@cellopc /]# pvscan -u | grep sda3
+      PV /dev/sda3 with UUID UGt7S2-jbpv-hBKC-P2fp-F7mb-2GzR-9MGPYA VG vg_data   lvm2 [62.47 GB / 0    free]
+    [root@cellopc /]# lvchange -an /dev/vg_data/lv_data 
+
+Ora generare il nuovo UUID tramite il comando pvchange e verificare che sia stato generato un nuovo UUID.
+
+    [root@cellopc /]# pvchange -u /dev/sda3
+      Physical volume "/dev/sda3" changed
+      1 physical volume changed / 0 physical volumes not changed
+    [root@cellopc /]# pvscan -u | grep sda3
+      PV /dev/sda3 with UUID lgI5hP-V87J-OtqD-UraG-JA60-vT4V-Ne7N0l VG vg_data   lvm2 [62.47 GB / 0    free]
+
+Nel caso sia tutto ok, eseguire l'abilitazione dei LV e rimontare i filesystem in precedenza smontati.
+
+    [root@cellopc /]# lvchange -ay /dev/vg_data/lv_data 
+    [root@cellopc /]# mount /data
+
+Rimuovere un PV
+---------------
+
+Per rimuovere un PV per prima cosa bisognerà sganciare il PV dal VG a cui apparteneva per non creare problemi di inconsistenza della struttura. Dopo di che invocare il comando pvremove sul PV da eliminare:
+
+`[root@cellopc /]# pvremote /dev/sda2`
+
+Verificare consistenza metadata di un PV
+----------------------------------------
+
+Tramite il comando pvck è possibile verificare la consistenza dei metadata contenuti sul PV e nel caso di errori, si potrà eseguire il restore dei metadata backuppati.
+
+    [root@cellopc log]# pvck /dev/sda2
+      Found label on /dev/sda2, sector 1, type=LVM2 001�
+      Found text metadata area: offset=4096, size=192512ì
+
+Ridimensionare un PV
+--------------------
+
+Tramite il comando pvresize si potrà eseguire il resize del PV se la dimensione della partizione o il disco che lo ospitano si modificano.
+Il comando pvrezie riconosce automaticamente la nuove dimensione del PV.
+
+`[root@cellopc log]# pvresize /dev/sda3`
+
+Nel caso si voglia eseguire una riduzione mirata si potrà passare l'opzione -setphysicalvolumesize seguita dalla dimensione che si desidera dare al PV.
+
+`[root@cellopc log]# pvresize --setphysicalvolumesize 20G /dev/sda3`
+
+<Categoria:LVM>

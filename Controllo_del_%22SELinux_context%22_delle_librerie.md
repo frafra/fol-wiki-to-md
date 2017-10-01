@@ -1,0 +1,44 @@
+In un sistema con SELinux attivo, tutti i processi e i file sono etichettati e controllati sulla base dei SELinux context; se queste informazioni fossero errate o diversamente indicate, potrebbe essere negato l'accesso a tali file e compromesso l'utizzo di software, con relativo avviso dal setroubleshoot.
+Si nota tale comportamento nel più classico dei casi, cioé quando si installa un nuovo software con un eseguibile .bin (installazione GoogleEarth per esempio) o quando si usa un software standalone già pronto all'uso (versioni beta/alfa di Firefox).
+
+Tutto questo è escluso che succeda se SELinux è in modalità permissiva o disabilitato (comando di verifica: `$` `getenforce''`).
+Ma se SELinux è attivo potremmo avere un avviso del genere:
+
+`SELinux is preventing /usr/local/google-earth/googleearth-bin from loading /usr/local/google-earth/libminizip.so which requires text relocation.`
+
+Di fatto il setroubleshoot tool fornisce già la causa del problema e la via per uscirne:
+
+`If you trust /usr/local/google-earth/libminizip.so to run correctly, you can change the file context to textrel_shlib_t.`
+`"chcon -t textrel_shlib_t '/usr/local/google-earth/libminizip.so'"`
+`You must also change the default file context files on the system in order to preserve them even on a full relabel.`
+`"semanage fcontext -a -t textrel_shlib_t '/usr/local/google-earth/libminizip.so'"`
+
+Cosa significa? E' un problema d*'etichettatura* dei file; nell'esempio la libreria *libminizip.so* non è etichettata come *textrel\_shlib\_t* (quanto appena scritto definisce il tipo di file così come lo vede SELinux).
+
+Come si verifica?
+Con il comando *ls* ne vediamo l'etichettatura e i permessi:
+
+`$ ls Za /usr/local/google-earth/libminizip.so`
+`-rwxr-xr-x. root root system_u:object_r:usr_t:s0 /usr/local/google-earth/libminizip.so`
+
+In queste condizioni SELinux impedisce il caricamento della libreria (identificata come tipo *usr\_t*) poiché non la "tratta" come tale, tutto ciò perché non è previsto dai context contenuti nel selinux-policy rpm installato nel sistema.
+
+Cosa bisogna fare?
+Cambiare l'etichettatura del file così che SELinux lo veda come giusto tipo, ovviamente cambiarla spetta all'amministratore del sistema:
+
+`# chcon -t textrel_shlib_t '/usr/local/google-earth/libminizip.so'`
+
+Verifica:
+
+`$ ls Za /usr/local/google-earth/libminizip.so`
+`-rwxr-xr-x. root root system_u:object_r:textrel_shlib_t:s0 /usr/local/google-earth/libminizip.so`
+
+Questo caso si potrebbe ripetere per tutte le librerie contenute nella medesima directory ed utilizzate dal medesimo software (GoogleEarth).
+Per ulteriori info leggere le pagine man:
+
+`$ man ls`
+`$ man chcon`
+`$ man getenforce`
+`$ man selinux`
+
+<Categoria:Sicurezza>

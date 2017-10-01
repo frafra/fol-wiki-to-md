@@ -1,0 +1,16 @@
+Alcuni portatili di nuova generazione sono forniti di scheda wireless Intel centrino. Il Kernel Linux di Fedora (ma anche di tutte le altre distribuzioni), però, non riconosce correttamente il firmware della scheda wireless in questione.<br>
+Il problema su Fedora deriva dall'uso del pacchetto:
+
+''iwl6000g2a-firmware.noarch''
+
+che viene automanticamente installato alla prima installazione di Fedora. Per attivare la scheda wireless basta rimuovere tale pacchetto ed installare il pacchetto:
+
+''iwl6000g2b-firmware.noarch''
+
+Basteranno i seguenti comandi per farlo:
+
+ $ su -
+ password di root
+ # yum remove iwl6000g2a-firmware.noarch
+ # yum install iwl6000g2b-firmware.noarch
+[[Categoria:Wi-Fi]]

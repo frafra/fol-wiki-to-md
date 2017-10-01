@@ -1,0 +1,303 @@
+{{Autore|LuigiTrezzi}}
+
+La politica di avere molti servizi attivi al lancio del sistema non è da noi condivisa, per alcune ragioni:
+# i servizi impegnano risorse e quindi se non sono necessari le occupano inutilmente.
+# i servizi, in particolare quelli "esposti" al web sono potenziali pericoli di sicurezza se non opportunamente configurati.
+# alcuni servizi possono creare "colli di bottiglia" che rendono il sistema lento e pesante.
+
+Vediamo quale attivazione dei servizi può ritenersi '''minimale''' in un sistema '''desktop''', in maniera tale che sia possibile procedere alla abilitazione del servizio in un secondo momento, controllando la corretta configurazione dello stesso.
+La configurazione qui esposta, con '''Selinux disattivato''', impegna circa '''100 Mb''' di memoria ram allo startup completo del sistema con interfaccia grafica (runlevel 5)
+
+Per la descrizione dei singoli servizi vi rimando alla guida di [[:Services in Fedora 11 di Mauriat Miranda|Miranda]].
+
+Se avete necessità di abilitare o disabilitare servizi potete usare il tool:
+
+ $ system-config-services
+
+oppure per linea di comando:
+
+ # chkconfig --level 35 nomeservizio on | off | reset
+
+in abbinamento con il comando:
+
+ # service nomeservizio start | stop | restart | status
+leggete le pagine man per ulteriori informazioni.  
+
+==Avvertenza==
+Diverse applicazioni hanno la necessità di avere un determinato servizio attivo, ad esempio se abilitate l'applet dei sensori hardware della vostra macchina, sarà necessario attivare il servizio lm-sensor, in una situazione del genere, fatelo,  prima, però,  verificate i file di configurazione del servizio, questo per due motivi:
+# quello prestazionale; i file di configurazione predefiniti configurano il servizio in maniera ampia, a volte, molto oltre ciò che realmente vi occorre.
+# quello di sicurezza; i file di default potrebbero introdurre, nella vostra particolare configurazione, elementi di pericolo per la sicurezza del sistema.
+
+==NetworkManager, network==                 
+è raccomandato tenerli: '''abilitato solo uno dei due'''
+
+Se avete una connessione wireless e/o passate spesso da una rete all'altra il servizio NetworkManager è quello che fa per voi.<br />
+Se invece avete una connessione stabile di altro tipo il servizio network è più indicato.<br />
+Fate attenzione che, sebbene il servizio NetworkManager sia lanciato all'avvio, la connessione viene stabilita solo a desktop completamente "su", quindi se avete qualche applicazione che fa uso delle rete prima che il Desktop Environment sia attivato, essa potrebbe andare in errore.<br />
+In questo caso o utilizzate il servizio network oppure usate questa particolare impostazione di NetworkManager:
+
+ # echo NETWORKWAIT=1 >> /etc/sysconfig/network
+
+Se usate il servizio network esso può essere configurato con:
+
+ $ system-config-network
+
+Fate attenzione che in questo caso "sparirà" l'icona rete sulla barra (è l'icona di NetwokManager), in questa eventualità vi consigliamo di installare:
+
+ # yum install gnome-applet-netspeed gnome-applets
+
+per poter inserire l'icona di controllo rete sulla barra delle applicazioni.
+
+==acpid==                 
+è raccomandato tenerlo: ''' disabilitato '''
+
+Questo servizio è particolarmente utile se la vostra macchina è un portatile, negli altri casi è superfluo.
+
+==anacron, atd, cron==			
+è raccomandato tenerlo: ''' disabilitato  '''
+
+Se non avete necessità di applicazioni che vengano lanciate ad intervalli di tempo regolari, questi servizi sono superflui.
+
+==auditd==					
+è raccomandato tenerlo: ''' disabilitato  '''
+
+Se avete Selinux attivo, questo servizio è utile.
+
+==avahi-daemon==				
+è raccomandato tenerlo: ''' disabilitato  '''
+
+==bluetooth==				
+è raccomandato tenerlo: ''' disabilitato  '''
+
+Se avete periferiche Bluetooth ha senso abilitare questo servizio, però fate attenzione nell'uso dei dispositivi bluetooth, essi sono un pericolo potenziale per la sicurezza, configurate con attenzione il servizio, sopratutto se la vostra macchina è un portatile.
+
+==btseed, bttrack==				
+è raccomandato tenerli: ''' disabilitati  '''
+
+==cpuspeed==					
+è raccomandato tenerlo: ''' disabilitato  '''
+
+Se avete cpu in grado di modificare runtime la propria frequenza e/o possedete un portatile, e vi necessita applicare una politica di gestione delle risorse energetiche, allora ha senso attivare questo servizio.
+
+==cups, cups-config-daemon==			
+è raccomandato tenerlo: '''  disabilitato '''
+
+se avete una stampante allora questo servizio deve essere '''abilitato''', prima di procedere alla sua attivazione date un:
+
+ # cp /etc/cups/cupsd.conf.default /etc/cups/cupsd.conf
+
+seguito da un:
+
+ # service cups start
+
+e/o
+
+ # chkconfig --level 35 cups on
+
+inoltre controllate che il servizio non accetti connessioni remote, a meno che non vi siano indispensabili.<br />
+Il comando per procedere alla installazione di una stampante è:
+
+ $ system-config-printer
+
+oppure aprite un browser e inserite nell'indirizzo:
+
+ http://localhost:631/
+
+per accedere alla pagina di configurazione di cups.<br />
+Anche in questo caso controllate bene le impostazioni, il servizio è critico sotto il profilo della sicurezza.
+
+==cvs==					
+è raccomandato tenerlo: ''' disabilitato  '''
+
+
+==firstboot==				
+è raccomandato tenerlo: ''' disabilitato  '''
+
+
+==gpm==					
+è raccomandato tenerlo: ''' disabilitato  '''
+
+
+==haldaemon==				
+è raccomandato tenerlo: ''' abilitato '''
+
+Hal è un sottosistema critico e fondamentale per il rilevamento e la configurazione del vostro hardware, tenetelo abilitato.
+
+
+==httpd==					
+è raccomandato tenerlo: ''' disabilitato  '''
+
+
+==iptables==					
+è raccomandato tenerlo: ''' abilitato '''
+
+Il servizio gestisce il firewall linux, come impostazione iniziale suggeriamo di lanciare:
+
+ $ system-config-firewall
+
+disabilitare '''tutti''' i permessi di accesso, e controllare la sua abilitazione di lancio al boot.
+Successivamente se vi occorre, potrete "aprire" l'accesso a determinate applicazioni, protocolli e/o porte.
+
+
+==ip6tables==				
+è raccomandato tenerlo: ''' disabilitato  '''
+
+
+==irda==					
+è raccomandato tenerlo: ''' disabilitato  '''
+
+
+==irqbalance==				
+è raccomandato tenerlo: ''' disabilitato  '''
+
+Utile solo su sistemi multiprocessore e/o multicore
+
+
+==isdn==					
+è raccomandato tenerlo: ''' disabilitato  '''
+
+
+==lm_sensors==				
+è raccomandato tenerlo: ''' disabilitato  '''
+
+Questo servizio è critico sotto il profilo della sicurezza, controllate bene le impostazioni se vi occorre.
+
+
+==mdmonitor==				
+è raccomandato tenerlo: ''' disabilitato  '''
+
+
+==messagebus==				
+è raccomandato tenerlo: ''' abilitato '''
+
+Componente critico da tenere necessariamente abilitato.
+
+
+==microcode_ctl==				
+è raccomandato tenerlo: ''' disabilitato  '''
+
+
+==multipathd==				
+è raccomandato tenerlo: ''' disabilitato  '''
+
+
+==mysqld==					
+è raccomandato tenerlo: ''' disabilitato  '''
+
+
+==netconsole==				
+è raccomandato tenerlo: ''' disabilitato  '''
+
+
+==netfs==					
+è raccomandato tenerlo: ''' disabilitato  '''
+
+Questo servizio è un potenziale pericolo sotto il profilo della sicurezza, usatetelo solo se avete una rete locale protetta,  controllate bene le impostazioni di configurazione. Suggeriamo l'uso alternativo di Samba.
+
+==netplugd==					
+è raccomandato tenerlo: ''' disabilitato  '''
+
+
+==network==
+
+Vedi [[#NetworkManager.2C_network|NetworkManager]].
+
+==nfs, nfslock==				
+è raccomandato tenerli: ''' disabilitato  '''
+
+
+==nmb==
+
+Questo servizio è utilizzato da Samba. Vedi [[#smb|smb]].
+
+
+==nscd==					
+è raccomandato tenerlo: ''' disabilitato  '''
+	
+
+==ntpd==					
+è raccomandato tenerlo: ''' disabilitato  '''
+
+Questo servizio è critico sotto il profilo della sicurezza, controllate bene le impostazioni di configurazione se vi occorre.
+
+
+==ntpdate==					
+è raccomandato tenerlo: ''' disabilitato  '''
+	
+Vale quanto detto per ntpd
+
+
+==pcscd==					
+è raccomandato tenerlo: ''' disabilitato  '''
+
+
+==portreserve==				
+è raccomandato tenerlo: ''' disabilitato  '''
+
+
+==restorecond==				
+è raccomandato tenerlo: ''' disabilitato  '''
+	
+Attivate questo servizio se avete Selinux abilitato.
+
+
+==rpcbind==					
+è raccomandato tenerlo: ''' disabilitato  '''
+
+
+==rpcgssd, rpcidmapd, rpcsvcgssd==		
+è raccomandato tenerli: ''' disabilitati  '''
+
+
+==rsyslogd==		
+è raccomandato tenerlo: ''' abilitato  '''
+
+Servizio di registrazione degli eventi e dei log di sistema, da tenere necessariamente abilitato.
+
+
+==sendmail==					
+è raccomandato tenerlo: ''' disabilitato  '''
+
+Questo servizio è critico sotto il profilo della sicurezza, controllate bene le impostazioni se vi occorre.
+
+
+==smartd==					
+è raccomandato tenerlo: ''' disabilitato  '''
+
+
+==smb==					
+è raccomandato tenerlo: ''' disabilitato '''
+
+Il servizio Samba è ottimo per la condivisione di filesystem in una rete.<br />
+Fate attenzione, in caso di attivazione, alle sue impostazioni di sicurezza (password, utenti abilitati, etc).
+
+
+==smolt==					
+è raccomandato tenerlo: ''' disabilitato  '''
+
+
+==sshd==					
+è raccomandato tenerlo: ''' disabilitato '''
+	
+Il servizio ssh è ottimo e tra i più sicuri (forse il più sicuro) dei protocolli per connessioni da remoto, tuttavia esso è un potenziale pericolo di sicurezza.<br />
+Accertatevi se lo volete abilitare che il vostro firewall (iptables) sia ben configurato, che ssh non usi porte standard (la 22) e non permetta la connessione a root, infine che le vostre password siano "robuste".
+
+
+==udev-post==				
+è raccomandato tenerlo: ''' abilitato '''
+
+Componente critico da tenere necessariamente abilitato.
+
+
+==wpa_supplicant==				
+è raccomandato tenerlo: ''' disabilitato '''
+
+
+==ypbind==					
+è raccomandato tenerlo: ''' disabilitato  '''
+
+
+==zvbid==					
+è raccomandato tenerlo: ''' disabilitato  '''
+
+[[Categoria:Sistema]]

@@ -1,0 +1,89 @@
+{{Autore|GermanoMassullo}}
+==Introduzione==
+Nextcloud è un software per la creazione di un sistema cloud personale.<br>
+Di seguito, la guida per l'installazione del software lato server su Fedora.
+
+==Installazione==
+Per installare il software, basta semplicemente uno:
+ # dnf install nextcloud
+
+===Configurazione certificato SSL===
+affinché le comunicazioni tra host e server siano crittografate, occorre generare una chiave ed un certificato
+
+ # dnf install crypto-utils
+
+<!--
+
+
+
+spiegare meglio quell'hostname sottostante. Bisogna indicare il nome di dominio del server su cui ci si interfaccerà, giusto?
+http://docs.fedoraproject.org/en-US/Fedora/15/html/Deployment_Guide/ch-Web_Servers.html#s3-apache-mod_ssl-genkey
+
+
+
+
+-->
+ # genkey ''hostname''
+
+Rispondere no alla domanda "Would you like to send a Certificate Request (CSR) to a Certificate Authority (CA)?" 
+
+Affinché il servizio httpd possa utilizzare SSL, vanno installate le dovute dipendenze
+ # dnf install mod_ssl openssl
+ed apportate le seguenti modifiche a
+ /etc/httpd/conf.d/ssl.conf
+mettendo in fondo
+
+ SSLCertificateFile /etc/pki/tls/certs/hostname.crt
+ SSLCertificateKeyFile /etc/pki/tls/private/hostname.key
+
+Per forzare l'utilizzo di SSL nel server Nextcloud seguire la documentazione Apache sui VirtualHost. Si raccomanda di usare un certificato "Let's Encrypt" piuttosto di un certificato auto generato. Si consiglia anche la lettura della pagina [https://docs.nextcloud.com/server/10/admin_manual/configuration_server/harden_server.html Nextcloud server hardening guide]
+
+
+===Installazione MariaDB/MySQL===
+ # dnf install mariadb-server
+ # systemctl enable --now mariadb
+ $ mysql_secure_installation
+
+quando vi verrà chiesta la password di root premere invio senza scrivere alcunché. Alla richiesta di creare un utente root dire di sì ed immettere una password.
+Ora va creato un utente ed il database per l'utilizzo con Nextcloud
+ $ mysql -u root -p
+ CREATE USER 'username'@'localhost' IDENTIFIED BY 'password';
+ CREATE DATABASE IF NOT EXISTS nextcloud;
+ GRANT ALL PRIVILEGES ON nextcloud.* TO 'username'@'localhost' IDENTIFIED BY 'password';
+ FLUSH PRIVILEGES;
+ quit
+
+avendo cura di rimpiazzare username con un nome utente adatto. Un buon candidato potrebbe essere nextcloud_user. Non dimenticare di inserire i dati tra simboli ''
+In caso di password che contengono simboli, fare attenzione a non inserire caratteri che possano venir interpretati come escape chars (tipo />). In tal caso la procedura sembrerà andare a buon fine, salvo poi ricevere errori di autenticazione al DB da parte di Nextcloud server.
+
+==Inizializzazione Nextcloud server==
+
+ # cd /usr/share/nextcloud/
+ # sudo -u apache php occ maintenance:install --data-dir /var/lib/nextcloud/data/ --database "mysql" --database-name "nextcloud"  --database-user "nextcloud" --database-pass "database_password" --admin-user "nextcloud_admin" --admin-pass "nextcloud_admin_password"
+
+===Configurazione del firewall===
+
+ # firewall-cmd --list-all-zones | grep active
+nel nostro caso
+ public (default, active)
+quindi utilizzeremo la zona public e i seguenti comandi per abilitare l'accesso al servizio http e https
+
+ # firewall-cmd --permanent --zone=public --add-service=http
+ # firewall-cmd --permanent --zone=public --add-service=https
+ # firewall-cmd --reload
+
+===Garantire l'accesso ad host remoti===
+
+Infine affinché Nextcloud possa essere raggiunto anche da host remoti occorre modificare il file
+
+ # /etc/nextcloud/config.php
+
+aggiungendo l'indirizzo IP del server nella sezione 'trusted_domains'. Infine eseguire
+
+ # ln -s /etc/httpd/conf.d/nextcloud-access.conf.avail /etc/httpd/conf.d/z-nextcloud-access.conf
+
+==Bibliografia==
+*[http://docs.fedoraproject.org/en-US/Fedora/15/html/Deployment_Guide/ch-Web_Servers.html#s2-apache-mod_ssl Fedora Deployment_Guide: Setting Up an SSL Server]
+*[https://fedoraproject.org/wiki/Nextcloud#Setup_Nextcloud Fedora Wiki: Setup Nextcloud]
+
+[[Categoria:Rete e Server]]

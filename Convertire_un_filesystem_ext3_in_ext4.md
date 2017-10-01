@@ -1,0 +1,120 @@
+Questa guida spiega in brevi passi come eseguire la conversione da un filesystem ext3 ad un filesystem ext4. Le prove sono state svolte su una fedora 12 rawhide e una fedora 12 stable.
+
+Per prima cosa verificare che il filesystem da convertire sia montato e che sia di tipo ext3. Per vedere il tipo di fs lanciare il comando blkid e verificare il campo TYPE del filesystem da convertire.
+
+`# df -H /mnt`
+`Filesystem             Size   Used  Avail Use% Mounted on`
+`/dev/mapper/vg_test-lv_test   2.2G    37M   2.0G   2% /mnt`
+`# blkid  /dev/mapper/vg_test-lv_test`
+`/dev/mapper/vg_test-lv_test: UUID="202a3efa-bfad-4a7c-ac41-7fd4bf691700" SEC_TYPE="ext2" TYPE="ext3" `
+
+` `
+
+`# umount /mnt`
+
+` `
+
+`# rpm -qa | grep -i e2fsprogs`
+`e2fsprogs-libs-1.41.9-3.fc12.i686`
+`e2fsprogs-1.41.9-3.fc12.i686`
+`# rpm -ql e2fsprogs-1.41.9-3.fc12.i686 | grep ext4`
+`/sbin/fsck.ext4`
+`/sbin/fsck.ext4dev`
+`/sbin/mkfs.ext4`
+`/sbin/mkfs.ext4dev`
+`/usr/share/man/man8/fsck.ext4.8.gz`
+`/usr/share/man/man8/fsck.ext4dev.8.gz`
+`/usr/share/man/man8/mkfs.ext4.8.gz`
+`/usr/share/man/man8/mkfs.ext4dev.8.gz`
+
+` `
+
+`# yum install -y e2fsprogs mkinitrd`
+`` # cp /boot/initrd-`uname -r`.img /boot/initrd-`uname -r`.img.orig ``
+`` # mkinitrd -v -f --with=ext4 /boot/initrd-`uname -r`.img `uname -r` ``
+
+per chi voglia usare la nuova applicazione dracut e la nuova definizione per i ram-disk ( **F12** ), gli ultimi due comandi vanno sostituiti da questi:
+
+`# cp /boot/initramfs-$(uname -r).img /boot/initramfs-$(uname-r).img.orig`
+`# dracut -f -v  /boot/initramfs-$(uname -r).img $(uname -r)`
+
+Verificare tramite il comando tune2fs, la features e grandezza degli extent impostata per il filesystem.
+
+`# tune2fs -l /dev/vg_test/lv_test `
+`tune2fs 1.41.9 (22-Aug-2009)`
+`Filesystem volume name:   `<none>
+`Last mounted on:          `<not available>
+`Filesystem UUID:          202a3efa-bfad-4a7c-ac41-7fd4bf691700`
+`Filesystem magic number:  0xEF53`
+`Filesystem revision #:    1 (dynamic)`
+`Filesystem features:      has_journal ext_attr resize_inode dir_index filetype sparse_super large_file`
+`Filesystem flags:         signed_directory_hash `
+`Default mount options:    user_xattr acl`
+`Filesystem state:         clean`
+`Errors behavior:          Continue`
+`Filesystem OS type:       Linux`
+`Inode count:              130816`
+`Block count:              523264`
+`Reserved block count:     26163`
+`Free blocks:              506075`
+`Free inodes:              130805`
+`First block:              0`
+`Block size:               4096`
+`Fragment size:            4096`
+`Reserved GDT blocks:      127`
+`Blocks per group:         32768`
+`Fragments per group:      32768`
+`Inodes per group:         8176`
+`Inode blocks per group:   511`
+`Filesystem created:       Wed Nov 18 11:02:28 2009`
+`Last mount time:          n/a`
+`Last write time:          Wed Nov 18 11:02:59 2009`
+`Mount count:              0`
+`Maximum mount count:      -1`
+`Last checked:             Wed Nov 18 11:02:28 2009`
+`Check interval:           0 (`<none>`)`
+`Reserved blocks uid:      0 (user root)`
+`Reserved blocks gid:      0 (group root)`
+`First inode:              11`
+`Inode size:              256`
+`Required extra isize:     28`
+`Desired extra isize:      28`
+`Journal inode:            8`
+`Default directory hash:   half_md4`
+`Directory Hash Seed:      68628ffe-9731-45a0-953f-2ff2bc0fdd3a`
+`Journal backup:           inode blocks`
+
+Con il comando tune2fs verrà forzata la grandezza degli inode a 256 e aggiunte le features del nuovo filesystem ext4.
+
+`# tune2fs -I 256 -O has_journal,extents,huge_file,flex_bg,uninit_bg,dir_nlink,extra_isize /dev/vg_test/lv_test `
+`tune2fs 1.41.9 (22-Aug-2009)`
+`The inode size is already 256`
+
+Lanciare un e2fsck per fissare le modifiche al filesystem in questione.
+
+`# e2fsck -pf /dev/vg_test/lv_test`
+`/dev/vg_test/lv_test: 11/130816 files (0.0% non-contiguous), 17189/523264 blocks`
+
+Ora verificare che le nuove features siano state prese per il filesystem.
+
+`# tune2fs -l /dev/vg_test/lv_test | grep extent`
+`Filesystem features:      `
+`has_journal ext_attr resize_inode dir_index filetype extent flex_bg sparse_super`
+`large_file huge_file uninit_bg dir_nlink `
+`extra_isize`
+
+Modificare il file /etc/fstab modificando il tipo di filesystem da ext3 a ext4 (dove presente). Poi rimontare il filesystem in questione e verifica che sia accessibile.
+
+`# vim /etc/fstab `
+`/dev/vg_test/lv_test /mnt  ext4    defaults    1 3`
+`# mount -a`
+`# df -H /mnt`
+`Filesystem             Size   Used  Avail Use% Mounted on`
+`/dev/mapper/vg_test-lv_test   2.2G    37M   2.0G   2% /mnt`
+
+Verificare con il comando blkid che il tipo del filesystem sia modificato.
+
+`# blkid /dev/vg_test/lv_test `
+`/dev/vg_test/lv_test: UUID="202a3efa-bfad-4a7c-ac41-7fd4bf691700" TYPE="ext4"`
+
+<Categoria:Sistema>

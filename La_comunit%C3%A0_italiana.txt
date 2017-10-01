@@ -1,0 +1,38 @@
+== Introduzione==
+La '''comunità italiana di Fedora è formata da vari utenti''' interessati a questa magnifica distribuzione. Questi utenti si incontrano in luoghi differenti, virtuali e non.
+
+== I canali di Fedora Online ==
+
+'''Il primo luogo''' in cui si aggregano una gran numero di utenti Fedora italiani, vecchi e nuovi, esperti o meno, in cui si può avere/richiedere/dare aiuto sull'uso di fedora è sicuramente '''FOL'''. Il portale [http://www.fedoraonline.it fedoraonline.it] è stato riconosciuto ufficialmente, dal [http://fedoracommunity.org fedoracommunity], come sito web della comunità italiana e può essere raggiunto anche da questo indirizzo: http://it.fedoracommunity.org/ <br />
+'''In FOL''' si possono trovare delle risorse molto utili come il [http://forum.fedoraonline.it/ Forum italiano] e la [http://doc.fedoraonline.it/ Documentazione italiana] non ufficiale.<br />
+Anche il '''Fedora Project''' fornisce della '''documentazione ufficiale''' in lingua italiana [http://docs.fedoraproject.org/it-IT/index.html raggiungibile qui].
+
+== Mailing List ==
+
+Alcuni utenti italiani di Fedora preferiscono utilizzare altri metodi di comunicazione rispetto al forum o ai servizi offerti da FOL. Ad esempio la [https://admin.fedoraproject.org/mailman/listinfo/it-users Mailing-list utenti italiani], ufficialmente fornita e supportata dall'infrastruttura del Fedora Project.<br />
+Tale '''mailing-list''' è utilizzata anche dagli [https://fedoraproject.org/wiki/Ambassadors/MembershipService/Verification#Italy_.2818.29 Ambasciatori Italiani di Fedora] per organizzarsi o dare informazioni agli utenti su eventi riguardanti il mondo di Fedora Project.
+
+== Canale IRC ==
+
+Altri utenti, ancora, amano '''incontrarsi su IRC''' e discutere di Fedora in chat. I principali canali di chat Italiani per fedora sono ospitati su freenode e sono:
+* Utenti italiani fedora: ''#fedora-it''
+* Traduttori italiani fedora: ''#fedora-trans-it''
+* Documentazione italiana e wiki: ''#fedora-doc-it''
+
+'''Per capire meglio IRC:'''
+IRC, o Internet Relay Chat, è una forma di comunicazione in tempo reale, basata su testo. Puoi avere conversazioni con più persone in un canale aperto o chattare con qualcuno privatamente uno a uno.
+Per parlare ai partecipanti del Fedora Project, loggati sulla freenode IRC network, attraverso:
+
+# [https://kiwiirc.com/client/irc.freenode.net/#fedora-it Webchat direttamente dal browser]
+# Chat client xchat
+
+ $ su -c 'dnf install xchat'
+
+* Avviare xchat da Applicazioni --> Internet --> IRC
+* Digitare Nickname, Username e nome reale
+* Tra le reti disponibili scegliere FreeNode --> irc.freenode.net
+* Digitare il canale a cui si vuole partecipare (ad es.  ''#fedora-it'')
+
+P.S. Esistono altri client IRC, per Kde per esempio [http://konversation.kde.org/ konversation].
+
+[[Categoria:Progetto Fedora]]

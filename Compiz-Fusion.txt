@@ -1,0 +1,12 @@
+__TOC__
+== Introduzione ==
+
+Compiz-Fusion fa parte dei repository di '''''terze parti'''''. L'installazione è utile per l'installazione e l'aggiornamento degli effetti desktop. Il repo è ancora disponibile, benché il suggerimento è quello di optare per i pacchetti presenti su [[RPMFusion|RPMFusion]].
+{{Warning|L'installazione dei pacchetti provenienti da questo repository '''impone''' la disinstallazione ed il successivo non aggiornamento dei medesimi pacchetti provenienti da RPMFusion a causa della loro incompatibilità!<br />L'installazione di questo repository non è raccomandato.}}
+
+== Installazione ==
+{{Nota|Incompatibilità|E' bene sapere che a partire da Fedora 15 non si può utilizzare contemporaneamente Gnome-shell e Compiz-Fusion}}
+ # yum install --nogpgcheck http://www.lordmorgul.net/pub/compiz/compiz-fusion-release-1-8.noarch.rpm
+
+[[Categoria:Repository]]
+[[Categoria:Yum]]

@@ -1,0 +1,51 @@
+==A chi é rivolta questa guida?==
+Questo semplice documento serve a coloro che necessitano l'accesso a dischi montati in RAID.
+
+==Cosa occorre?==
+* device-mapper
+* dmraid
+* modulo per la gestione del filesystem NTFS
+
+I primi due dovrebbero già essere installati di default. Mentre per il terzo cliccare [http://www.fedoraonline.it/modules/mydownloads/ qui].
+
+==In pratica==
+Una volta individuato tutto il necessario, da root diamo i seguenti comandi:
+
+ # dmraid -l
+
+Comando che elencherà i controller e i livelli di RAID supportati per ognuno di questi. Fra parentesi i vari livelli di RAID (S, 0, 1, 10, 01).
+
+ [root@localhost /]# dmraid -l
+ hpt37x : Highpoint HPT37X (S,0,1,10,01)
+ hpt45x : Highpoint HPT45X (S,0,1)
+ isw    : Intel Software RAID (0,1)
+ lsi    : LSI Logic MegaRAID (0,1,10)
+ nvidia : NVidia RAID (S,0,1,10)
+ pdc    : Promise FastTrack (S,0,1)
+ sil    : Silicon Image(tm) Medley(tm) (0,1,10)
+ via    : VIA Software RAID (S,0,1,10)
+ dos    : DOS partitions on SW RAIDs
+
+NB: Controllate che il proprio controller figuri nella lista.
+
+ # dmraid -ay -v
+
+Questo comando attiverà tutti i controller individuati:
+
+ [root@localhost /]# dmraid -ay -v
+ INFO: Activating GROUP RAID set "isw_cdgiiahhib"
+ INFO: Activating partition RAID set "isw_cdgiiahhib_O.S.1"
+
+NB: Vi sono elencati i gruppi raid, in questo caso soltanto uno (isw_cdgiiahhib) con una sola partizione (isw_cgiiahhib_O.S.1)
+
+Finalmente si può montare il proprio dispositivo, per farlo usare il noto comando mount:<br />
+(ricordarsi di creare il proprio punto di montaggio prima)
+
+ # mount -o ro /dev/mapper/la_partizione_individuata /mnt/tuo_punto_di_montaggio
+
+ [root@localhost ~]# mount -o ro /dev/mapper/isw_cdgiiahhib_O.S.1 /mnt/win
+
+NB: Questo comando va ripetuto per ogni partizione che si vuole montare (naturalmente su punti di montaggio differenti).
+
+[[Categoria:Sistema]]
+[[Categoria:Hardware]]

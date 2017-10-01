@@ -1,0 +1,113 @@
+Introduzione
+------------
+
+Conky è un programma di system monitor per X Window System, capace di monitorare diverse variabili di sistema, come la temperatura di CPU e Hard Disk, lo spazio del disco e della Ram, il traffico, etc. Questo articolo ha come obiettivo la creazione di più monitoraggi conky all'avvio del sistema, utilizzando Gnome oppure Openbox.
+
+Installazione
+-------------
+
+Conky si può facilmente installare tramite yum
+
+`# yum install conky`
+
+Configurazione
+--------------
+
+Per avviare un monitoraggio conky personalizzato bisogna creare nella propria home un file di configurazione chiamato *.conkyrc*.
+Alcuni esempi possono essere trovati su internet. Di seguito ne viene proposto uno che può essere adattato alle proprie esigenze.
+
+`#CONKYRC`
+`#-------------------------------`
+`#avoid flicker`
+`double_buffer yes`
+`#own window to run simultanious 2 or more conkys`
+`own_window yes`
+`own_window_transparent yes`
+`own_window_type normal`
+`own_window_hints undecorate,sticky,skip_taskbar,skip_pager`
+`own_window_argb_visual yes  `
+`#borders`
+`draw_borders no`
+`#shades`
+`draw_shades no`
+`#position`
+`gap_x 17`
+`gap_y 120`
+`alignment top_right`
+`#behaviour`
+`update_interval 1`
+`#colour`
+`default_color FFFFFF`
+`#font`
+`use_xft yes`
+`xftfont Fixed:pixelsize=10`
+`uppercase no`
+`#to prevent window from moving`
+`use_spacer none`
+`minimum_size 200`
+`TEXT`
+`${alignc}${nodename}`
+`${hr 2}`
+`Date: ${time %H:%M - %d.%m.%Y} ${alignr}Uptime: ${uptime_short} up`
+`${sysname} ${kernel} ${machine} ${alignr}conky ${conky_version}`
+`${hr 2}`
+`Name${alignc}PID${alignr}CPU`
+`${top name 1} ${alignc}${top pid 1} ${alignr}${top cpu 1}%`
+`${top name 2} ${alignc}${top pid 2} ${alignr}${top cpu 2}%`
+`${top name 3} ${alignc}${top pid 3} ${alignr}${top cpu 3}%`
+`${top name 4} ${alignc}${top pid 4} ${alignr}${top cpu 4}%`
+`${top name 5} ${alignc}${top pid 5} ${alignr}${top cpu 5}%`
+`${top name 6} ${alignc}${top pid 6} ${alignr}${top cpu 6}%`
+`Processes: $processes ${alignr}Running: $running_processes`
+`${hr 2}`
+`Down: ${downspeed wlp3s0} ${offset 95}Up: ${upspeed wlp3s0}`
+`${downspeedgraph wlp3s0 32,150} ${upspeedgraph wlp3s0 32,150}`
+`wlp3s0 IP: ${addr wlp3s0} ${alignr} em1 IP: ${addr em1}`
+`ESSID: ${wireless_essid wlp3s0} ${alignr} Bitrate: ${wireless_bitrate  wlp3s0}`
+`Wi-Fi: ${wireless_link_qual_perc wlp3s0}% ${wireless_link_bar wlp3s0}`
+`${hr 2}`
+`/root : ${fs_used_perc /}% ${fs_bar 7 /}`
+`Used: ${fs_used /} ${alignc} Free: ${fs_free /}`
+`/home : ${fs_used_perc /home}% ${fs_bar 7 /home}`
+`Used: ${fs_used /home} ${alignc} Free: ${fs_free /home}`
+`${hr 2}`
+`RAM: ${mem}/${memmax} - ${memperc}% ${membar 7}`
+`SWAP: ${swap}/${swapmax} - ${swapperc}% ${swapbar 7}`
+`CPU: ${cpu}% ${cpubar 7}`
+`CPU: ${freq}MHz ${offset 87} HD: ${diskio}`
+`${cpugraph 32,150} ${diskiograph 32,150}`
+
+Per visualizzare il conky, digitare nel terminale:
+
+`$ conky`
+
+oppure
+
+`$ conky -c /PERCORSO/.conkyrc `
+
+### Configurare più conky contemporaneamente
+
+Si segnala che la posizione del conky può essere cambiata modificando i valori di *gap\_x*, *gap\_y* e *alignment*. Qualora si volessero aggiungere più conky, è sufficiente creare più file di configurazione (ad esempio *.conckyrc1*, il terzo *.conkyrc2*, ... ) e inizializzarli da terminale:
+
+`$ conky -c /percorso/.conkyrc &`
+`$ conky -c /percorso/.conkyrc1 &`
+`$ conky -c /percorso/.conkyrc2 &`
+`...`
+
+<img src="Conky.png" title="Esempio di Conky ottenuto con il file di configurazione suggerito con Gnome 3.8 come DE." alt="Esempio di Conky ottenuto con il file di configurazione suggerito con Gnome 3.8 come DE." width="500" />
+
+Conky su Openbox
+----------------
+
+Se si utilizza Openbox et similia basta modificare il proprio /xtc/xdg/openbox/autostart.sh, inserendo tutti processi che si vogliono far partire all'avvio, per esempio:
+
+`xset -dpms &`
+`xcompmgr_openbox --startstop &`
+`tint2 &`
+`` eval `cat ~/.fehbg` & ``
+`conky -c /home/nome_utente/.conkyrc &`
+`conky -c /home/nome_utente/.conkyrc1 &`
+`conky -c /home/nome_utente/.conkyrc2 &`
+`xscreensaver -no-splash &`
+
+[Categoria:Ambiente Desktop](Categoria:Ambiente_Desktop "wikilink")

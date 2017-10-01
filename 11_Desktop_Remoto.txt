@@ -1,0 +1,103 @@
+==  Come configurare un desktop remoto (non sicuro) ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+''Attenzione! Desktop Remoto funzionerà solo se è già avvenuta una sessione di login in GNOME.''<br />
+''Non è sicuro lasciare il computer incustodito con una sessione aperta di GNOME.''<br />
+''Blocca la sessione e spegni il monitor quando il computer è lasciato incustodito''<br />
+<li>Desktop -> Preferenze -> Desktop remoto</li>
+<li>Preferenze del Desktop remoto</li>
+
+ Condivisione ->
+ Consentire agli altri utenti di visualizzare il proprio desktop (da spuntare)
+ Consentire agli altri utenti di controllare il proprio desktop (da spuntare)
+
+ Sicurezza ->
+ Richiedere conferma (non spuntato)
+ Richiedere all'utente di inserire la password: (da spuntare)
+ Password: Specifica la password
+</ol>
+
+==  Come connettersi da remoto ad un desktop Fedora ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+''Assumiamo che la macchina remota abbia configurato un Desktop remoto.''<br />
+''Leggi [[#Come configurare un desktop remoto (non sicuro)|Come configurare un desktop remoto (non sicuro).]]''<br />
+''Assumiamo che la macchina remota abbia IP: 192.168.0.1''<br />
+
+ vncviewer -fullscreen 192.168.0.1:0
+
+<li>Stoppiamo vncviewer</li>
+
+ Premi 'F8' -> Quit viewer
+</ol>
+
+==  Script per la connessione remota, by fedorajim ==
+<ol>
+<li>Apri un terminale e diventa root</li>
+
+ gedit /usr/local/bin/remote2someone
+
+<li>Aggiungi le seguenti righe al file</li>
+
+ #!/bin/bash 
+ # Written by fedorajim 
+ # enter the IP address of the remote PC 
+ IPADDRESS="$(zenity --entry --title "Enter IP Address" --text "Enter the IP Address of the remore PC:")"
+ echo $IPADDRESS
+ #Enter the username you aregoing to login with 
+ UserName="$(zenity --entry --title "Enter User  Name" --text "Enter the User Name to connect with:")"
+ echo $UserName
+ # opens a new terminal window and connects to remote PC
+ function ssh_Remote_PC
+ {
+ gnome-terminal -x ssh -L 5911:$IPADDRESS:5901 $UserName@$IPADDRESS
+ }
+ function View_Remote_PC
+ {
+ gnome-terminal -x vncviewer localhost:11
+ }
+ #################################################
+ selection=
+ until [ "$selection" = "0" ]; do
+ echo ""
+ echo "######################"
+ echo "1 - Make Remote Connection"
+ echo "2 - display Remote Desktop"
+ echo "0 - exit program"
+ echo ""
+ echo -n "Enter selection: "
+ Leggi selection
+ echo ""
+ #####################
+ # Commands executed #
+ #####################
+ case $selection in
+ 1 ) $(ssh_Remote_PC) ;;
+ 2 ) $(View_Remote_PC) ;;
+ 0 ) exit ;;
+ * ) echo "Please enter 1, 2  or 0"
+ esac
+ done
+
+Salva e chiudi gedit. Clicca con il pulsante destro sul desktop e scegli: Crea -> Collegamento ad un'applicazione; aggiungi la seguente applicazione:
+<li>Nome: remote2someone</li>
+<li>Commento: connessione remota ssh</li>
+<li>Comando: /usr/local/bin/remote2someone</li>
+<li>Tipo: applicazione</li>
+<li>Esegui in un terminale: segno di spunta</li>
+<li>Icona: clicca sul bottone e scegli un'icona</li>
+<li>Salva.</li>
+</ol>
+
+==  Come connettersi da remoto ad un desktop Fedora da una macchina Windows ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+''Assumiamo che la macchina remota abbia configurato un Desktop remoto.''<br />
+''Leggi [[#Come configurare un desktop remoto (non sicuro)|Come configurare un desktop remoto (non sicuro)]].''<br />
+''Assumiamo che la macchina remota abbia IP: 192.168.0.1 ''<br />
+<li>Scarica VNC Viewer</li>
+</ol>
+
+{{Link/prec|10 Funzionalità di rete|10 Funzionalità di rete}}{{Link/succ|12 Windows|12 Windows}}
+
+[[Categoria:Fedoraserver]]

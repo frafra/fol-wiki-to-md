@@ -1,0 +1,51 @@
+__TOC__
+{{Obsoleto}}
+I servizi offerti da Konqueror sono semplici file con estensione .desktop e vanno posizionati nella cartella ''/usr/share/apps/konqueror/servicemenus'' se si vuole che il servizio sia acessibile a tutti gli utenti, oppure in ''/home/nomeutente/.kde/share/apps/konqueror/servicemenus'' se si vuole che il servizio sia accessibile ad un solo utente.<br />
+I servizi che si andranno a creare sono:
+* [[#Copia sul floppy|Copia sul floppy]]
+* [[#Edita come root|Edita come root]]
+* [[#Apri come root|Apri cartella come root]].
+
+==Copia sul floppy==
+Spostarsi nella cartella desiderata (se si sceglie ''/usr/share/apps/konqueror/servicemenus'' bisogna essere root) modificare il file ''copiafloppy.desktop'' e inserire:
+
+ [Desktop Entry]
+ Comment=Invio della risorsa al floppy
+ Encoding=UTF-8
+ ServiceTypes=all/all
+ Actions=InviaFloppy
+ [Desktop Action InviaFloppy]
+ Name[it]=Copia sul floppy da 3,5"
+ Icon=3floppy_unmount.png
+ Exec=kfmclient copy %U floppy:/a
+
+Il testo è abbastanza comprensibile, si potrebbe aggiungere:
+
+ Name[en]=Copy to floppy 3 1/2
+
+==Apri come root==
+
+ Comment=Apre una cartella come utente root
+ Encoding=UTF-8
+ ServiceTypes=inode/directory, inode/directory-locked
+ Actions=apriroot
+ [Desktop Action apriroot]
+ Name[it]=Apri come utente root
+ Name[en]=Open directory as root
+ Icon=kcmsystem
+ Exec=kdesu "konqueror --profile filemanagement &U"
+
+==Edita come root==
+
+ Comment=Edita un file come utente root
+ Encoding=UTF-8
+ ServiceTypes=text/*, application/x-desktop
+ Actions=editroot
+ [Desktop Action editroot]
+ Name[it]=Edita il file come utente root
+ Name[en]=Edita file as root
+ Icon=kedit
+ Exec=kdesu "kedit" "%U"
+
+[[Categoria:Internet]]
+[[Categoria:Ambiente Desktop]]

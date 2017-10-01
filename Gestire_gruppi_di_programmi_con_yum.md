@@ -1,0 +1,42 @@
+Tutti conoscono yum o quasi...ma non tutti sanno che con yum si possono installare e rimuovere interi gruppi di programmi!
+
+    yum grouplist
+    *
+    Setting up Group Process
+    Setting up repositories
+    Installed Groups:
+    *****
+    *****
+    Available Groups:
+    Authoring and Publishing
+    Compatibility Arch Development Support
+    Development Tools
+    Eclipse
+    FTP Server
+    GNOME Desktop Environment
+    GNOME Software Development
+    Games and Entertainment
+    Java Development
+    Language Support
+    Legacy Network Server
+    Legacy Software Development
+    MySQL Database
+    News Server
+    XFCE
+    XFCE Software Development
+    Done
+    *************
+
+E quindi, per installare:
+
+`# yum groupinstall "Nome Gruppo"`
+
+Per Rimuovere:
+
+`# yum groupremove "Nome Gruppo"`
+
+Per Aggiornare:
+
+`# yum groupupdate "Nome Gruppo"`
+
+<Categoria:Fedoraserver>

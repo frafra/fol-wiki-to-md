@@ -1,0 +1,296 @@
+{{nota|Traduzione dall'originale di Mauriat Miranda|pubblicato l'8 giugno 2009 reperibile qui: [http://www.mjmwired.net/resources/mjm-services-f11.html Fedora 11 - Services and Daemons in Fedora 11]}}
+
+Si invita prima di tutto alla lettura della guida sulla [http://www.mjmwired.net/resources/mjm-fedora-manage-services.html gestione dei servizi].<br />
+Quest'ultima include spiegazioni sui servizi e sui demoni, sui runlevel e sulle utility che posso gestire i servizi stessi.<br />
+Per controllarli, si possono usare i comandi:
+
+ chkconfig
+
+oppure
+
+ ntsysv
+
+mentre l'utility grafica di gestione è system-config-service, gli utenti Gnome possono trovare quest'ultima nel menù:<br />
+Sistema --> amministrazione --> servizi<br />
+La breve spiegazione che segue, specifica l'utilizzo e le raccomandazioni per le abilitazioni dei servizi installati su Fedora 11.<br /> 
+Questo non è un elenco esaustivo di tutti i servizi disponibili.<br />
+Inutile sottolineare che occorre procedere con cautela e '''non''' disabilitare servizi se non si è sicuri di questa necessità, o se non si comprende, o non si sa, ciò che i servizi stessi eseguono.
+
+'''E' caldamente raccomandato non disabilitare i seguenti servizi: haldaemon, messagebus, klogd, rsyslogd'''<br />
+a meno che non si è sicuri di ciò che si sta facendo.
+
+Accertatesi di applicare i cambiamenti ai runlevel 3 e 5
+
+==NetworkManager, network==
+è raccomandato tenerlo: ''' abilitato '''
+
+NetworkManager è un servizio ( con utility aggiuntive ) che è in grado di gestire i dispositivi di rete e le rispettive connessioni. Molti utenti di portatili troveranno utile questo servizio che permette il rapido passaggio da una connessione wifi ad un altra e/o a connessioni via cavo Ethernet. In Fedora questo servizio è abilitato in maniera predefinita.<br />
+Se la propria connessione funziona bene, si può lasciare l'impostazione predefinita.
+Tuttavia se si presentano problemi, oppure si preferisce il precedente servizio di rete, si può disabilitare NetworkManager ed abilitare il servizio network.
+Verificare che i parametri di rete siano corretti mediante system-config-network se si usa il servizio network oppure nm-connection-editor se si usa il servizio NetworkManager.
+Per macchine server o/e desktop che fanno uso di IP statici è preferibile l'uso del servizio network.<br />
+Maggiori informazioni possono essere reperite [http://www.mjmwired.net/resources/mjm-fedora-f11.html#network qui]
+
+==acpid==
+è raccomandato tenerlo: ''' abilitato solo se necessario '''
+
+Il demone Advanced Configuration Power Interface controlla e permette la gestione delle risorse energetiche e di alcuni dispositivi di input. E' raccomandato abilitare questo servizio solo se necessario. Se si utilizzano gli attuali Desktop Environment allora molte funzioni ACPI devono essere rese disponibili mediante il demone acpid.
+Provare a disabilitare questo servizio e se si presentano problemi nella gestione dell'energia ( quali la sospensione, il risveglio ) allora sarà necessario tenerlo abilitato.
+Se non si fa uso dell'interfaccia grafica ( ad esempio il sistema è lanciato in runlevel 3 ) questo servizio potrebbe essere comunque necessario per alcune funzioni ACPI.
+
+==anacron, atd, cron==			
+è raccomandato tenerlo: ''' abilitato  '''
+	
+Questi sono demoni di pianificazione aventi ognuno uno scopo diverso. Si consiglia di mantenere lo scheduler cron abilitato, in particolare se si mantiene il proprio computer in esecuzione per lunghi periodi di tempo. Se si utilizza un server questi servizi saranno necessari. Molto probabilmente atd e anacron potrebbero essere disattivati per i desktop / laptop. Però notare che l'esecuzione di alcuni azioni pianificate, come la pulizia delle directory /tmp o /var richiederebbero l'abilitazione del servizio.
+
+==auditd==					
+è raccomandato tenerlo: ''' abilitato  '''
+
+Questo servizio consente di salvare gli audit generati dal kernel. Queste informazioni possono essere utilizzate in modi diversi. SELinux utilizza il demone di audit per registrare gli eventi. Mentre se ci sono altri servizi di autenticazione si consiglia di lasciare questo abilitato (in particolare per gli utenti che utilizzano SELinux ). Alcune informazioni su come utilizzare audit può essere trovato su [http://www.redhatmagazine.com/2007/03/26/how-can-i-use-audit-to-see-who-changed-a-file-in-red-hat-enterprise-linux-5/ RH Magazine].
+
+==avahi-daemon==				
+è raccomandato tenerlo: ''' disabilitato  '''
+
+Avahi è una implementazione di zeroconf ed è utile per individuare dispositivi e servizi su rete locale senza un server DNS. Questo servizio è simile a mDNS. La maggior parte degli utenti tiene questo servizio disabilitato. Si fa notare che, per utilizzare le funzionalità di rete di Pulseaudio sarà necessario avere Avahi abilitato.
+
+==bluetooth==				
+è raccomandato tenerlo: ''' abilitato solo se neccessario  '''
+
+Bluetooth è un servizio per l'utilizzo di dispositivi wireless (non wifi - protocollo 802.11). Alcuni computer portatili sono dotati di supporto per il Bluetooth. Ci sono mouse, cuffie e accessori per cellulari che usano il Bluetooth . La maggior parte degli utenti non hanno il supporto bluetooth oppure non hanno dispositivi che lo usano, in questo caso il servizio è tenuto disabilitato. Molti nuovi Laptop sono, però, dotati di supporto per il bluetooth.
+
+==btseed, bttrack==				
+è raccomandato tenerli: ''' disabilitati  '''
+
+Questi servizi sono di supporto automatico al "seeding" e al "tracking" per i torrent usati dal  sistema di collegamento in rete BitTorrent peer-to-peer. Questi servizi dovrebbero essere tenuti disattivati a meno che non si preferisce fare il "seeding" e il "tracking" dei torrent. Con il termine "seeding" si intende essenzialmente la condivisione dei contenuti dei torrent con altri utenti e con "tracking" si intende il coordinamento di altri client BitTorrent. Maggiori informazioni si possono reperire qui: [http://dessent.net/btfaq/#terms BitTorrent FAQ]. Tenere presente che questi servizi richiedono una larghezza di banda ed una configurazione di rete adeguata.
+
+==cpuspeed==					
+è raccomandato tenerlo: ''' abilitato solo se necessario  '''
+
+Questo servizio permette di modificare la frequenza della CPU per risparmiare energia. Molte CPU di moderni laptop supportano questa funzione come anche la maggior parte dei nuovi desktop. Questo servizio andrebbe abilitato solo per gli utenti di hardware in cui sono presenti CPU del tipo Pentium-M, Centrino, AMD PowerNow, Transmetta, Intel SpeedStep, Athlon-64,-Athlon X2, Intel Core 2. Per gli utenti di portatili è fortemente raccomandato tenere questo servizio abilitato. Tenerlo disabilitato se invece si vuole che la propria CPU lavori a frequenza fissa.
+
+==cron==
+
+Vedi anacron.
+
+==cups, cups-config-daemon==			
+è raccomandato tenerlo: ''' abilitato  '''
+
+Questo servizio è usato per la gestione di stampanti e dei processi di stampa. Dovrebbe essere attivato solo se si dispone di stampanti, locali e/o di rete, compatibili con CUPS.
+
+==cvs==					
+è raccomandato tenerlo: ''' disabilitato  '''
+
+Questo servizio è usato per lo sviluppo del codice sorgente tramite cvs, tenerlo disabilitato a meno che non interessi sviluppare applicazioni.
+
+==firstboot==				
+è raccomandato tenerlo: ''' disabilitato  '''
+
+Questo servizio è specifico nel processo di installazione di Fedora, esso svolge alcuni compiti che vengono eseguiti solo una volta dopo il primo avvio successivo all'installazione. Una volta che è stato verificato che è stato lanciato ( basta controllare /etc/sysconfig/firstboot) allora esso può essere tenuto disabilitato.
+
+==gpm==					
+è raccomandato tenerlo: ''' abilitato  '''
+
+Questa è la console del puntatore del mouse (interfaccia testuale). Se non si utilizza la console di testo (CTRL-ALT-F1, F2, ..), si può tenere disattivato. Tuttavia è buona pratica tenere questo abilitato per il runlevel 3 (senza interfaccia grafica) e disabilitato per il runlevel 5 (con interfaccia grafica).
+
+==haldaemon==				
+è raccomandato tenerlo: ''' abilitato  '''
+
+HAL è l'acronimo di Hardware Abstraction Layer. Questo è un servizio critico di raccolta e di gestione delle informazioni sull'hardware. Fedora richiede attivo questo servizio, quindi occorre lasciarlo necessariamente abilitato. Si può leggere  [http://www.redhat.com/magazine/003jan05/features/hal/  una panoramica di HAL]
+
+==httpd==					
+è raccomandato tenerlo: ''' disabilitato  '''
+
+Questo è il servizio di gestione del Server Web Http Apache. Se si è installato e/o si vuole fare sviluppo web tenerlo abilitato. Tuttavia gli utenti di sistemi desktop e/o non sviluppatori possono lasciare questo servizio disabilitato.
+
+==iptables==					
+è raccomandato tenerlo: ''' abilitato  '''
+
+Questo è il servizio di gestione del firewall software standard di Linux. E' altamente raccomandato tenerlo abilitato se il sistema è direttamente connesso a Internet (via cavo, DSL, T1). Non è necessario se si utilizza un firewall hardware (D-Link, Netgear, Linksys, ecc), ma è comunque suggerito tenerlo abilitato.
+
+==ip6tables==				
+è raccomandato tenerlo: ''' disabilitato  '''
+
+Questo servizio gestisce il firewall  per le comunicazione con protocollo IPv6. Se non si utilizza l'IPv6 (ciò accade per la maggior parte degli utenti), è possibile disabilitarlo.
+
+==irda==					
+è raccomandato tenerlo: ''' disabilitato  '''
+
+Questo è il servizio di gestione della comunicazione mediante infrarossi (IrDA) tra dispositivi (computer portatili, PDA, telefoni cellulari, calcolatrici, etc.) La maggior parte degli utenti dovrebbe tenere questo servizio disabilitato.
+
+==irqbalance==				
+è raccomandato tenerlo: ''' abilitato solo se necessario  '''
+
+Questo servizio incrementa le prestazioni dei processori su un sistema multiprocessore. Per gli utenti che non dispongono  di più processori e/o multi-core questo dovrebbe essere disattivato. Tuttavia gli attuali computer con processori multi-core  (Intel Core 2 Duo, AMD X2) dovrebbero tenerlo attivo. Lasciare questo servizio abilitato non avrà effetti  prestazionali su sistemi a singola CPU / single-core.
+
+==isdn==					
+è raccomandato tenerlo: ''' disabilitato  '''
+
+Questo servizio è un'altra modalità di connessione a Internet. Se non si dispone di un modem ISDN, disabilitarlo.
+
+==lm_sensors==				
+è raccomandato tenerlo: ''' disabilitato  '''
+
+lm_sensors si occupa del monitoraggio dei valori dei sensori della scheda madre o di hardware specifico (comunemente usato per i laptop o server high-end). È molto utile tenere sotto osservazione  i valori dei sensori del PC in tempo reale. Questo servizio è assai diffuso tra gli utenti di gkrellm. Si consiglia di tenerlo disabilitato a meno che non abbiate bisogno.
+
+==mdmonitor==				
+è raccomandato tenerlo: ''' disabilitato  '''
+
+È un servizio utile per il monitoraggio del RAID-software o informazioni sul LVM. Il servizio non è critico e può essere disattivato. 
+
+==messagebus==				
+è raccomandato tenerlo: ''' abilitato  '''
+
+Questo è un servizio di IPC (InterProcess Comunication) per Linux. In particolare questo servizio comunica con D-BUS, un componente assai critico. Si consiglia vivamente lasciarlo abilitato.
+
+==microcode_ctl==				
+è raccomandato tenerlo: ''' abilitato solo se necessario  '''
+	
+Si tratta di un servizio che permette specifici aggiornamenti di microcodice per le CPU Intel (Pentium Pro, PII, Celeron, PIII, Xeon, Pentium 4, ecc.) Questi aggiornamenti vengono implementati ad ogni avvio. Questo servizio dovrebbe essere attivo solo se si dispone di una CPU Intel.
+
+==multipathd==				
+è raccomandato tenerlo: ''' disabilitato  '''
+
+Questo servizio è utilizzato per il controllo di dispositivi multi-Path, essi sono dispositivi di archiviazione il cui accesso può avvenire attraverso più controller o più metodi. Questo servizio dovrebbe essere disabilitato.
+
+==mysqld==					
+è raccomandato tenerlo: ''' disabilitato  '''
+	
+Questo è il Database MySQL Server. Se lo si è installato e si vuole avere un servizio database e/o fare sviluppo web tenerlo abilitato. Tuttavia gli utenti di sistemi desktop e/o non sviluppatori possono lasciare questo servizio disabilitato.
+
+==netconsole==				
+è raccomandato tenerlo: ''' disabilitato  '''
+
+Questo servizio inizializza l'autenticazione della console di rete. Può essere lasciato al suo stato disabilitato predefinito.
+
+==netfs==					
+è raccomandato tenerlo: ''' abilitato solo se necessario  '''
+
+Questo servizio è utilizzato per il montaggio automatico al boot di qualsiasi condivisione di rete del tipo NFS, Samba, etc. Esso è utile se ci si connette a un altro server o a condivisioni di file sulla rete locale. La maggior parte degli utenti desktop / laptop utenti dovrebbero averlo disabilitato.
+
+==netplugd==					
+è raccomandato tenerlo: ''' disabilitato  '''
+
+Netplugd può controllare le interfacce di rete ed eseguire comandi quando il loro stato cambia. Questo servizio può essere lasciato disabilitato.
+
+==network==
+
+Vedi [[#NetworkManager|NetworkManager]].
+
+==nfs, nfslock==				
+è raccomandato tenerli: ''' abilitati solo se necessario  '''
+
+Questo è lo standard di condivisione di file per sistemi operativi Unix / Linux / BSD. A meno che non si richiede questa modalità di condivisione dei dati, il servizio può essere disattivato.
+
+==nmbd==
+
+Questo servizio è utilizzato da Samba. Vedi smb
+
+==nscd==					
+è raccomandato tenerlo: ''' disabilitato  '''
+	
+Questo demone gestisce le password e le protezioni per i servizi di autenticazione, come NIS, NIS +, LDAP o Hesiod. Questo servizio dovrebbe essere tenuto disabilitato.
+
+==ntpd==					
+è raccomandato tenerlo: ''' abilitato  '''
+
+Questo servizio aggiorna automaticamente l'ora del sistema da Internet. Il suo uso è proposto nella procedura di installazione. Se si dispone di una connessione internet sempre attiva ( "always-on"), si raccomanda di abilitarlo, ma non è obbligatorio.
+
+==ntpdate==					
+è raccomandato tenerlo: ''' disabilitato  '''
+	
+Questo servizio imposta l'ora del sistema in base al NTP. Dovrebbe essere tenuto disattivato in quanto già il servizio ntpd fornisce questa funzionalità.
+
+==pcscd==					
+è raccomandato tenerlo: ''' abilitato solo se necessario  '''
+
+Questo servizio fornisce il supporto per le smart cards e per i lettori di Smart Card. Queste sono piccoli dispositivi che sono incorporati in alcune carte di credito, carte di identità, etc. Se non si possiede questo tipo di lettore, il servizio può essere disattivato.
+
+==portreserve==				
+è raccomandato tenerlo: ''' abilitato  '''
+
+Questo servizio evita che altri servizi (come portmap) occupino una porta reale mediante l'occupazione della porta stessa, fino a quando il servizio reale dichiari di aver resa libera la porta. Ulteriori informazioni possono essere trovate nella pagina man di portreserve. A meno che si sappia di non aver bisogno di questo servizio, allora è meglio tenerlo abilitato. Tuttavia, nella configurazione del mio sistema, /etc/portreserve ha una solo una voce per cups che non è necessaria, quindi l'ho disattivato.
+
+==restorecond==				
+è raccomandato tenerlo: ''' abilitato solo se necessario  '''
+	
+È utilizzato per controllare e ripristinare file di contesto  SELinux. Questo servizio di solito non è richiesto, ma è altamente raccomandato abilitarlo se si usa SELinux.
+
+==rpcbind==					
+è raccomandato tenerlo: ''' disabilitato  '''
+
+Questa chiamata di procedura da remoto gestisce il supporto per altri servizi (come NFS o NSI). Questo servizio è simile a 'portmap'. Può essere disabilitato se non si dispone di altri servizi che dipendono da esso.
+
+==rpcgssd, rpcidmapd, rpcsvcgssd==		
+è raccomandato tenerli: ''' disabilitati  '''
+
+Questi servizi sono utilizzati per NFS v4. A meno che non vi occorrono oppure usiate NFS v4, questi servizi dovrebbero essere disattivati.
+
+==sendmail==					
+è raccomandato tenerlo: ''' disabilitato  '''
+	
+A meno che non si ha un server oppure si preferite trasferire o supportare a livello locale servizi quali POP3 o IMAP, la maggior parte degli utenti non hanno bisogno di un agente di trasporto posta (MTA) quale sendmail. Se si controlla la propria posta sul web (hotmail / yahoo / gmail) oppure si utilizza un programma di posta elettronica come Thunderbird, Kmail, Evolution, etc allora probabilmente si dovrebbe disattivare questo servizio. Fare attenzione però, se serve che pianificatori di lavori quali cron ed altri pianificatori vi informino delle attività tramite mail, allora bisogna tenere sendmail attivo.
+
+==smartd==					
+è raccomandato tenerlo: ''' abilitato  '''
+
+Il demone SMART Disk Monitoring può essere utilizzato per monitorare e prevedere guasti o problemi al disco rigido se quest'ultimo  supporta questa funzionalità. Alla maggior parte degli utenti desktop può non essere necessario questo  servizio a meno che non ci siano problemi, tuttavia si consiglia di tenerlo abilitato (in particolare per i server). Si fa notare che alcuni dischi rigidi non sono in grado di fornire le eventuali informazioni utili a Smart.
+
+==smb==					
+è raccomandato tenerlo: ''' abilitato solo se necessario '''
+
+Il demone SAMBA è necessario per la condivisione di file da Linux a Windows. Questo dovrebbe essere abilitato solo se si dispongono di computer con sistema operativo Windows che richiedono l'accesso ai file di Linux. Qui si troveranno informazioni su come configurare [http://www.mjmwired.net/resources/mjm-fedora-f10.html#samba Samba per Fedora 11]
+
+==smolt==					
+è raccomandato tenerlo: ''' disabilitato  '''
+
+Questo demone fornisce informazioni mensili per Smolt, esso è  progetto di raccolta di statistiche e informazioni per aiutare gli sviluppatori di Fedora. Le statistiche sono disponibili a tutti. Gli utenti che desiderano aiutare e condividere le informazioni dovrebbero abilitare questo servizio, altrimenti, si può tenerlo disabilitato.
+
+==sshd==					
+è raccomandato tenerlo: ''' abilitato solo se necessario '''
+	
+SSH consente ad altri utenti di accedere od eseguire applicazioni sul proprio computer da un altro computer della propria rete oppure da remoto. Questo fatto può essere un potenziale problema di sicurezza se si utilizzano password deboli, etc. Se non si dispone di altri computer o non è necessario l'accesso da una postazione remota (lavoro, scuola, ecc.), allora esso non è necessario. Molto probabilmente questo servizio dovrebbe essere tenuto disattivato.
+
+==udev-post==				
+è raccomandato tenerlo: ''' abilitato  '''
+
+Il sistema di gestione dei dispositivi è 'udev'. Per impostazione predefinita 'udev' gestisce molte regole, autorizzazioni e  comportamenti di dispositivi fisici. Questo servizio consente di applicare regole da parte dell'utente. Si consiglia vivamente di tenerlo abilitato.
+
+==wpa_supplicant==				
+è raccomandato tenerlo: ''' abilitato solo se necessario '''
+
+Questo servizio è necessario se si utilizza una scheda wireless, che utilizza la crittografia basata sul WPA per connettersi a un Access Point, VPN o server RADIUS. La maggior parte degli utenti può tenerlo disabilitato.
+
+==ypbind==					
+è raccomandato tenerlo: ''' disabilitato  '''
+
+Questo servizio viene utilizzato per l'autenticazione di rete NIS. Se non si utilizza NIS allora può essere disattivato.
+
+==zvbid==					
+è raccomandato tenerlo: ''' disabilitato  '''
+
+Questo è un servizio che permette la condivisione di periferiche v4l e v4l2  tra più applicazioni. Dato che ho una scheda di acquisizione Hauppauge, posso usufruire di questo servizio, tuttavia l'ho disabilitato.
+
+
+== [http://www.mjmwired.net/resources/mjm-fedora-f9.html#moreinfo Ulteriori informazioni] ==
+
+* [http://www.mjmwired.net/resources/mjm-services-f11.html Fedora 11 - Services and Daemons in Fedora 11]
+* [http://www.mjmwired.net/linux/category/fedora/f11/ Fedora 11 Blog Entries]
+* [http://www.mjmwired.net/resources/mjm-fedora-nvidia.html Fedora Nvidia Driver Install Guide]
+* [http://www.mjmwired.net/resources/mjm-fedora-f10.html Fedora 10 Personal Installation Guide]
+* [http://www.mjmwired.net/resources/mjm-fedora-dell-d810.html Fedora Core 5 on Dell D810 Latitude Laptop]
+* [http://www.mjmwired.net/resources/mjm-fedora-manage-services.html Managing Services in Fedora]
+* [http://www.mjmwired.net/resources/mjm-fedora-help.html Fedora Help Forum Posts and Threads]
+
+
+== Commenti... ==
+Commenti, suggerimenti, domande o qualunque altro contributo a questa o a una qualunque delle [http://www.mjmwired.net/resources.php altre mie pagine] sono ben accetti. Per favore usate il seguente [http://www.mjmwired.net/contact.php link] per contattarmi.
+
+Aiutatemi: se avete trovato questa guida o ogni altra risorsa collegata utile, per favore considerate di aiutare il mio sito raccomandando questa pagina ad altri o linkandola. Io apprezzo tutto il supporto che posso ricevere. Grazie in anticipo.
+
+Potete anche scegliere di donare qualcosa per supportare l'hosting per il mio sito.
+'''Disclaimer:''' The author makes no claim to the accuracy of the information provided. This information is provided in the hope that it will be useful, but WITHOUT ANY WARRANTY. There is no implied support from referencing this guide. Any help that is provided is at will. Use this information at your own risk. Always make proper backups and use caution when modifying critical system files.
+'''PER FAVORE NON''' fate copie in mirror, traducete o copiate questa pagina '''senza''' contattarmi. Io ho speso diverse ore di lavoro personalmente per ricercare e verificare quanto è qui riportato.
+
+'''[http://www.mjmwired.net/about.php#copyright Copyright © 2003-2009] by Mauriat Miranda''' (mjmwired.net).
+
+[[Categoria:Traduzioni]]

@@ -1,0 +1,110 @@
+In questo articolo si vuole porre l'attenzione sul backup; come tutti sanno, nel mondo dell'informatica la parola backup è fondamentale, ma cosa fare se si vuole un backup in tempo reale?
+
+Nell'esempio si hanno tre macchine, si utilizzerà [Linux VServer](http://linux-vserver.org/Welcome_to_Linux-VServer.org) e davanti alla seguente situazione iniziale:
+
+`---------------------------------------------------`
+`macchina_1:10.0.0.1 fa da master (server)`
+`macchina_2:10.0.0.2 fa da slave (client1)`
+`macchina_3:10.0.0.3 fa da slave (client2)`
+`---------------------------------------------------`
+
+Ora su ogni macchina si darà:
+
+`# yum install mysql-server`
+`# yum install mysql-client`
+
+Adesso su ogni macchina impostare la password di root per mysql:
+
+`# mysqladmin -u root password 'qui_metti_la_tua_password'`
+
+Dopo questa operazione su ogni macchina andare sul master e quindi su macchina\_1:
+
+`# vim /etc/mysql/my.cnf`
+
+e commentare
+
+`#bind-address           = 127.0.0.1`
+
+in modo che mysql possa accettare connessioni non solo da localhost.
+Adesso bisogna accertare di avere queste righe nel proprio file di configurazione:
+
+`server-id               = 1`
+`expire_logs_days        = 10`
+`max_binlog_size         = 100M`
+`binlog_do_db            = dev  ###il db che vogliamo backupare`
+`/etc/init.d/mysqld restart/`
+
+Ora entrare in mysql "mysql -u root -p"
+Dalla shell di mysql
+
+`create database dev;`
+`GRANT REPLICATION SLAVE ON *.* TO 'slaveuser'@'%' IDENTIFIED BY 'la_tua_password';`
+`FLUSH PRIVILEGES;`
+`quit;`
+
+Andare a configurare il server slave, ossia i client:
+
+`macchina_2:`
+`server-id               = 2`
+`master-host=10.0.0.1`
+`master-user=slave_user`
+`master-password=la_tua_password`
+`master-connect-retry=60`
+`replicate-do-db=dev`
+`log_bin                 = /var/log/mysql/mysql-bin.log`
+`expire_logs_days        = 10`
+`max_binlog_size         = 100M`
+`binlog_do_db            = dev`
+`macchina_3:`
+`server-id               = 3`
+`master-host=10.0.0.1`
+`master-user=slave_user`
+`master-password=la_tua_password`
+`master-connect-retry=60`
+`replicate-do-db=dev`
+`log_bin                 = /var/log/mysql/mysql-bin.log`
+`expire_logs_days        = 10`
+`max_binlog_size         = 100M`
+`binlog_do_db            = dev`
+
+Prima di tutto bisogna entrare in ogni macchina che fa da server slave, ossia macchina\_2 e macchina\_3, e dare un "mysql -u root -p":
+
+`create dev; `
+
+cosi si creerà il database. Ora si può fare il restart dei server slave.
+
+Per provare se tutto e andato a buon fine basta entrare dentro un server slave e scrivere nella shell di mysql:
+
+`"show processlist\G"`
+`"show master status\G"`
+
+Quindi bisogna vedere qualcosa di questo genere
+
+`mysql> show master status;`
+`+------------------+----------+-----------------+------------------+`
+`| File             | Position | Binlog_Do_DB    | Binlog_Ignore_DB |`
+`+------------------+----------+-----------------+------------------+`
+`| mysql-bin.000077 |       98 | dev|                  | `
+`+------------------+----------+-----------------+------------------+`
+`1 row in set (0.00 sec)`
+
+Controllare che tutto funzioni:
+Andare sul master:
+
+`mysql -u root -p`
+`use dev;`
+`create table system(int not null auto_increment,type char (10)not null,name varchar(20)not null,primary key(id));`
+`insert into system(type,name) values('gnu/linux','fedora');`
+`insert into system(type,name) values('gnu/linux','debian');`
+`insert into system(type,name) values('unix','openbsd');`
+
+Entrare su uno slave server e dare:
+
+`mysql -u root -p`
+`use dev;`
+`select * from system;`
+
+Se tutto è andato a posto si vedrà la stessa sullo slave.
+Inoltre ricordo che questa procedura è molto ben documentata in rete.
+
+[Categoria:Rete e Server](Categoria:Rete_e_Server "wikilink")

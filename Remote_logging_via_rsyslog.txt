@@ -1,0 +1,83 @@
+Nelle ultime versioni di Fedora non viene più utilizzato syslog ma rsyslog per gestire il logging degli eventi di sistema. Il demone rsyslog permette una più dinamica gestione dei logging implementando regole di filtering e controllo dei messaggi.
+In questo esempio verrà abilitato il logging remoto dal client "lvmtest" (IP 192.168.1.10) al server "cellopc-mini (IP 192.168.1.10).
+__TOC__ 
+==Server==
+Per prima cosa verificare che il demone rsyslog sia attivo sul proprio sistema.
+ [root@cellopc-mini etc]# service rsyslog status
+ rsyslogd (pid  10015) is running...
+Ora eseguire un backup del file di configurazione /etc/rsyslog.conf per eventuali rollback.
+ [root@cellopc-mini etc]# cp /etc/rsyslog.conf /etc/rsyslog.conf.orig
+E' possibile mettere in ascolto il demone rsyslog per gli inoltri dei client tramite protocollo TCP o UDP sulla porta 514. In questo esempio verrà utilizzato il protocollo UDP. Per prima cosa scommentare la direttiva "$ModLoad" del modulo "imdup.so" e poi la direttiva "UDPServerRun" per la porta 514.
+ [root@cellopc-mini etc]# diff -ub rsyslog.conf.orig rsyslog.conf
+ --- rsyslog.conf.orig    2011-05-04 14:06:03.915173003 +0200
+ +++ rsyslog.conf    2011-05-04 15:08:14.692173002 +0200
+ @@ -10,14 +10,15 @@
+ -#$ModLoad imudp.so
+ -#$UDPServerRun 514
+ +$ModLoad imudp.so
+ +$UDPServerRun 514
+E' possibile anche specificare l'indirizzo IP dove rimarrà in ascolto il servizio rsyslog per restringere il bind della porta sul sistema tramite la direttiva "UDPServerAddress" specificando l'indirizzo IP.
+ [root@cellopc-mini etc]# diff -ub rsyslog.conf.orig rsyslog.conf
+ --- rsyslog.conf.orig    2011-05-04 14:06:03.915173003 +0200
+ +++ rsyslog.conf    2011-05-04 15:08:14.692173002 +0200
+ @@ -10,14 +10,15 @@
+ -#$ModLoad imudp.so
+ -#$UDPServerRun 514
+ +$ModLoad imudp.so
+ +$UDPServerRun 514
+ +$UDPServerAddress 192.168.1.1
+Inoltre è possibile ridurre le subnet (o IP singoli) che possono inviare dei messaggi al proprio server rsyslog tramite la direttiva "AllowedSender" specificando il protocollo e la subnet di origine.
+ [root@cellopc-mini etc]# diff -ub rsyslog.conf.orig rsyslog.conf
+ --- rsyslog.conf.orig    2011-05-04 14:06:03.915173003 +0200
+ +++ rsyslog.conf    2011-05-04 15:08:14.692173002 +0200
+ @@ -10,14 +10,15 @@
+ -#$ModLoad imudp.so
+ -#$UDPServerRun 514
+ +$ModLoad imudp.so
+ +$UDPServerRun 514
+ +$UDPServerAddress 192.168.1.1
+ +$AllowedSender UDP, 192.168.1.0/24
+Al termine delle modifiche eseguire il riavvio del servizio rsyslog e poi verificare che la porta 514 sia in LISTEN sul proprio server.
+ [root@cellopc-mini etc]# service rsyslog restart
+
+ [root@cellopc-mini etc]# netstat -anup | grep 514
+ udp        0      0 0.0.0.0:514                 0.0.0.0:*                               10015/rsyslogd
+Si dovrà ora aggiungere la regola per redirigere tutti i messaggi di un determinato host in un file specifico. Per questo si potrà aggiungere la direttiva "+" seguita dal nome host ed automatica se verrà intercattato il nome dell'host indicato verrano eseguite le direttive sotto riportate. In questo esempio verrà rediretto tutto nel log "/var/log/lvmtest.log" 
+ [root@cellopc-mini etc]# diff -ub rsyslog.conf.orig rsyslog.conf
+ --- rsyslog.conf.orig    2011-05-04 14:06:03.915173003 +0200
+ +++ rsyslog.conf    2011-05-04 15:08:14.692173002 +0200
+ @@ -30,13 +31,16 @@
+ ++lvmtest
+ +*.*     /var/log/lvmtest.log
+Si dovrà poi aggiungere un esclusione nella regola per il file /var/log/messages in modo da non avere i messaggi duplicati all'interno del file messages ma solo nel file in precedenza impostato. Basterà aggiungere le voci "<nomehost>.none".
+ [root@cellopc-mini etc]# diff -ub rsyslog.conf.orig rsyslog.conf
+ --- rsyslog.conf.orig    2011-05-04 14:06:03.915173003 +0200
+ +++ rsyslog.conf    2011-05-04 15:08:14.692173002 +0200
+ -*.info;mail.none;authpriv.none;cron.none                /var/log/messages
+ +*.info;mail.none;authpriv.none;cron.none;lvmtest.none                /var/log/messages
+Al termine delle modifiche eseguire il riavvio del servizio rsyslog.
+ [root@cellopc-mini etc]# service rsyslog restart
+==Client==
+Per prima cosa verificare che il demone rsyslog sia attivo sul proprio sistema.
+ [root@lvmtest ~]# service rsyslog status
+ rsyslogd (pid  1057) is running...
+Ora eseguire un backup del file di configurazione /etc/rsyslog.conf per eventuali rollback.
+ [root@lvmtest ~]#  cp /etc/rsyslog.conf /etc/rsyslog.conf.orig
+Nel file di configurazione basterà decidere quali facility inviare al server remoto e poi l'indirizzo del server. In questo esempio verranno girate tutte le facility verso il server remoto.
+ [root@lvmtest ~]# diff -ub /etc/rsyslog.conf.orig /etc/rsyslog.conf
+ --- /etc/rsyslog.conf.orig    2011-05-04 12:41:42.491661001 +0200
+ +++ /etc/rsyslog.conf    2011-05-04 12:42:46.236661001 +0200
+ @@ -57,6 +57,8 @@
+ +*.*        @192.168.1.1
+Al termine delle modifiche eseguire il riavvio del servizio rsyslog.
+ [root@lvmtest ~]# service rsyslog restart
+==Test==
+Sul client si potrà sfruttare il comando logger per poter inviare un messaggio a rsyslog con una certa facility. La facility si potrà specificare con l'opzione "-p".
+ [root@lvmtest ~]# logger -p "local0.error" "test rsyslog"
+Stando in tail sui log /var/log/messages e /var/log/lvmtest.log del server si noterà che il messaggio perverrà solo nel file associato al proprio host remoto.
+ [root@cellopc-mini etc]# tail -f /var/log/messages /var/log/lvmtest.log 
+ ==> /var/log/messages <==
+ ==> /var/log/lvmtest.log <==
+ May  4 14:21:18 lvmtest root: test rsyslog
+
+[[Categoria:Rete_e_Server]]

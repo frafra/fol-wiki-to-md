@@ -1,0 +1,202 @@
+Prefazione
+----------
+
+Lo scopo di questo paragrafo è quello di installare e configurare un server FTP (File Transfer Protocol) in due modalità: tradizionale e secure FTP (SFTP. L'FTP è un protocollo basato su TCP in architettura client/server. Uno dei punti di forza dell'FTP è la sua semplicità di configurazione (come vedremo qui sotto), mentre sul piano della sicurezza lascia a desiderare in quanto il traffico e le credenziali vengono trasmesse in chiaro. Esistono ovviamente protocolli per far transitare in maniera sicura e cifrata credenziali e traffico, esempio [\#SFTP](#SFTP "wikilink") o WebDav. Lascio al lettore trarre le conclusioni circa l'implementazione di un server FTP o di sistemi alternativi.
+
+Prove e test sono stati eseguiti con una **Fedora Server 22**, ma sono confidente che funzionino anche con altre release ed altre verticalizzazioni.
+
+FTP
+---
+
+Da consolle digitare il comando:
+
+`  # dnf install vsftpd`
+
+Una volta terminata l’installazione andiamo a farci un backup del file originale:
+
+`  # cp /etc/vsftpd/vsftpd.conf /etc/vsftpd/vsftpd.conf.orig`
+
+Successivamente andiamo ad editare il file di configurazione del nostro FTP
+
+`  # vi /etc/vsftpd/vsftpd.conf`
+
+Modifichiamo le righe del file:
+
+`  anonymous_enable=NO                  # Disabilitiamo l’accesso anonimo al nostro FTP`
+`  local_enable=YES                 # Abilitiamo l’accesso ai nostri utenti locali di macchina all’accesso FTP`
+`  write_enable=YES                 # Abilitiamo gli utenti locali a porter scrivere dentro le loro home directory`
+`  chroot_local_user=YES                        # Forziamo gli utenti locali (chroot jailed) a non potersi spostare al di fuori della propria home direcotry`
+`  xferlog_file=/var/log/vsftpd.log             # Path dove vengono salvati i log di attività dell’FTP`
+`  ftpd_banner=Welcome to TEST FTP service          # Banner al login FTP`
+`  allow_writeable_chroot=YES               # Permette agli utenti di poter scrivere nella loro home`
+
+A questo punto dobbiamo andare ad abilitare il demone che parta all’avvio del nostro server
+
+`  # systemct enable vsftpd`
+
+E successivamente a farlo eseguire:
+
+`  # systemct start vsftpd`
+
+Andiamo ad aggiungere la regola al firewall la quale permetterà il traffico verso la porta 21/tcp
+
+`  # firewall-cmd --permanent --add-service=ftp`
+
+E in un ultima battuta andiamo a ricaricare il piano delle regole di firewalling:
+
+`  # firewall-cmd --reload`
+
+### Sicurezza informatica
+
+Arrivati a questo punto qualsiasi utente di macchina può collegarsi all’FTP. Questo si traduce nel fatto che, se il server espone la porta SSH sulla LAN, allora qualsiasi utente di macchina può accedere alla sua shell sul server remoto.
+
+Lascio al lettore giudicare se questo comportamento può essere tollerato ma, se volessimo fare in modo che l’utente “user\_ftp” possa accedere solo alla propria home mediante protocollo FTP e non alla sua home shell dei comandi allora:
+
+Creiamo l’utente user\_ftp
+
+`  # useradd user_ftp`
+
+Cambiamo password di accesso
+
+`  # passwd user_ftp`
+
+L’opzione -s indica la shell di login dell’utente. Con /sbin/nologin ovviamente l’utente non si collega
+
+`  # usermod -s /sbin/nologin user_ftp`
+
+**TEST**
+
+`  $ ftp 172.20.103.20                              # Connessione!`
+`  Connected to 172.20.103.20 (172.20.103.20).`
+`  220 Welcome to TEST FTP service.`
+`  Name (172.20.103.20:L6Echo): user_ftp                    # Inseriamo l’utente`
+`  331 Please specify the password.`
+`  Password:                                # Inseriamo la password`
+`  230 Login successful.`
+`  Remote system type is UNIX.`
+`  Using binary mode to transfer files.`
+`  ftp> ls                              # [1] facciamo un list della directory`
+`  227 Entering Passive Mode (172,20,103,20,66,76).`
+`  150 Here comes the directory listing.`
+`  226 Directory send OK.                       # al momento la directory è vuota`
+`  ftp> cd ..                               # [2] proviamo a scendere da /home/user_ftp a /home/`
+`  250 Directory successfully changed.`
+`  ftp> ls                              # facciamo un altro list della directory`
+`  227 Entering Passive Mode (172,20,103,20,181,109).`
+`  150 Here comes the directory listing.`
+`  226 Directory send OK.                       # [3] Opla! Non possiamo! Siamo segregati dentro ls nostra home`
+`  ftp> put CPU_Apache.png                      # Carichiamo un file'''`
+`  local: CPU_Apache.png remote: CPU_Apache.png`
+`  227 Entering Passive Mode (172,20,103,20,124,124).`
+`  150 Ok to send data.`
+`  226 Transfer complete.`
+`  55116 bytes sent in 0,00017 secs (324211,78 Kbytes/sec)`
+`  ftp> ls                              # Ennesimo list della directory`
+`  227 Entering Passive Mode (172,20,103,20,235,6).`
+`  150 Here comes the directory listing.`
+`  -rw-r--r--    1 1002     50          55116 Oct 30 09:14 CPU_Apache.png   # Ecco il nostro file caricato!`
+`  226 Directory send OK.`
+`  ftp> exit`
+
+1.  A questo punto siamo posizionati su file system su /home/user\_ftp ma, per il servizio FTP così configurato, siamo a livello root /
+2.  Qua tentiamo logicamente di scendere da /home/user\_ftp a /home. Il messaggio che ci ritorna è fuorviante (250 Directory successfully changed): effettivamente sembra che siamo riusciti a scendere di directory **ma non è così**!
+3.  Infatti, se tentiamo nuovamente un list della directory vediamo che è ancora vuota. Se così non fosse dovremmo vedere la directory user\_ftp
+
+Ora proviamo a collegarci via SSH al nostro server:
+
+`  $ ssh user_ftp@172.20.103.20`
+`  user_ftp@192.168.122.117's password: `
+`  This account is currently not available.`
+`  Connection to 172.20.103.20 closed.`
+
+Nessun accesso!
+
+SFTP
+----
+
+Per realizzare un server SFTP, i prerequisiti sono:
+
+1.  Aver già installato e configurato il server FTP (vedi paragrafo [\#FTP](#FTP "wikilink"))
+2.  Generare un certificato
+3.  Modificare il file /etc/vsftpd/vsftpd.conf con le direttive necessarie
+
+### Generazione certificato
+
+Apriamo una shell sul nostro server e creiamo la directory "private" dentro /etc/ssl
+
+`  # mkdir /etc/ssl/private`
+
+Ora è il momento di creare il certificato vero e proprio, da shell quindi
+
+`  # openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/vsftpd.pem -out /etc/ssl/private/vsftpd.pem`
+
+Una volta dato l'INVIO il comando ci chiederà talune informazioni le quali verranno inoculate all'interno del certificato
+
+`  Generating a 2048 bit RSA private key`
+`  ....................................+++`
+`  .............+++`
+`  writing new private key to '/etc/ssl/private/vsftpd.pem'`
+`  -----`
+`  You are about to be asked to enter information that will be incorporated`
+`  into your certificate request.`
+`  What you are about to enter is what is called a Distinguished Name or a DN.`
+`  There are quite a few fields but you can leave some blank`
+`  For some fields there will be a default value,`
+`  If you enter '.', the field will be left blank.`
+`  -----`
+`  Country Name (2 letter code) [XX]:`**`IT`**`                                              # Codice stato`
+`  State or Province Name (full name) []:`**`Italia`**`                                      # Stato per intero`
+`  Locality Name (eg, city) [Default City]:`**`Modena`**`                                    # Città`
+`  Organization Name (eg, company) [Default Company Ltd]:`**`Fedora` `On` `Line` `TEST`**`         # Società proprietaria del certificato `
+`  Organizational Unit Name (eg, section) []:`**`IT` `Dpt.`**`                                 # Dipartimento proprietario`
+`  Common Name (eg, your name or your server's hostname) []:`**`F22SRV`**`                   # nome dell'host o altro nome identificativo`
+`  Email Address []:`**`email@dominio.it`**`                                                 # email di riferimento per contatti   `
+
+### Modificare il file di configurazione
+
+Arrivati a questo punto andiamo ad editare il file /etc/vsftpd/vsftpd.conf con il vostro editor preferito, nel mio caso userò vi
+
+`  # vi /etc/vsftpd/vsftpd.conf`
+
+Ci posizioniamo in fondo al file e andiamo ad aggiungere le seguenti righe
+
+`  rsa_cert_file=/etc/ssl/private/vsftpd.pem                         # Andiamo a indicare la posizione del file certificato e la chiave privata che`
+`  rsa_private_key_file=/etc/ssl/private/vsftpd.pem                  # nel nostro caso coincidono`
+`  `
+`  ssl_enable=YES                                                    # In prima battuta diciamo che la crittografia è obbligatoria e`
+`  allow_anon_ssl=NO                                                 # che gli utenti anonimi non sono accettati.`
+`  force_local_data_ssl=YES                                          # Forziamo tutto il traffico dati ad essere cifrato`
+`  force_local_logins_ssl=YES                                        # Forziamo il passaggio delle credenziali ad essere cifrato   `
+`  ssl_tlsv1=YES                                                     # Aumentiamo la sicurezza di un altro gradino accettando solo connessioni TLS`
+`  ssl_sslv2=NO                                                      # e andiamo ad escludere il più vecchio ed insicuro SSL`
+`  ssl_sslv3=NO                                                      # (entrambe le versioni)`
+`  require_ssl_reuse=NO                                              # Disabilita il riutilizzo della sessione SSL (questa direttiva è obbligatoria con WinSCP)`
+`  ssl_ciphers=HIGH                                                  # Elenco di protocolli di cifratura vsftpd mette a disposizione al client (questa direttiva è obbligatoria con FileZilla)`
+`                                                                    # Di default (se la direttiva non è presente) sono DES-CBC3-SHA. `
+
+Salviamo il file e riavviamo il servizio vsftpd con
+
+`  # systemctl restart vsftpd`
+
+**TEST** Per questo test ho usato FileZilla, ovviamente sentitevi liberi di usere il client FTP che preferite quindi scegliamo "Gestore siti" dal menu "File". Si aprirà una finestra come questa, andiamo a compilare i campi quali Host, Criptazione e Utente e clicchiamo su "Connetti".
+
+![](Loginftp.png "Loginftp.png")
+
+Alla richiesta di prompt digitare la password
+
+![](Passwd.png "Passwd.png")
+
+Ed ecco il nostro certificato! Dare, l'OK alla finestra per procedere.
+
+![](Certificato.png "Certificato.png")
+
+Ed ecco i log FileZilla: la connessione è andata a buon fine!
+
+`  Stato:   Connessione a 172.20.103.20:21...`
+`  Stato:   Connessione stabilita, in attesa del messaggio di benvenuto...`
+`  `**`Stato:` `Inizializzazione` `TLS` `in` `corso...`**
+`  `**`Stato:` `Verifica` `del` `certificato` `in` `corso...`**
+`  `**`Stato:` `Connessione` `TLS` `stabilita.`**
+`  Stato:   Connesso`
+
+<Categoria:Rete_e_Server> <Categoria:Sicurezza>

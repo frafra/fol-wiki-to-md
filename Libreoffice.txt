@@ -1,0 +1,86 @@
+__TOC__
+== Introduzione ==
+LibreOffice, dalla release di Fedora 15, è incluso nei [[:Categoria:Repository|repository]], come specificato nella [http://fedoraproject.org/wiki/Features/LibreOffice/it documentazione] del fedoraproject.<br/>
+Questa guida prevede l'installazione da sorgenti su rilasci di fedora precedenti alla 15 o in caso di particolari bisogni.
+{{Suggerimento|Se possibile è sempre consigliata l'installazione tramite '''Yum''', che assicura non solo un'installazione corretta ma è in grado di gestire anche l'eventuale rimozione.}}
+
+{{Scrittura|Nel corso di questa guida verranno usati i termini '''VERSIONE''' e '''ARCHITETTURA''' per indicare le caratteristiche del sistema su cui andrà installato libreoffice.<br/>Tutte le volte che si troverà scritto VERSIONE o ARCHITETTURA bisognerà sostituirle con il valore appropriato. Per VERSIONE si intende il numero di versione che si desidera installare e per ARCHITETTURA una tra x86 (per il 32bit) e x86_64 (per il 64bit), a seconda del sistema su cui si andrà a installare.<br/>Per uniformare la procedura in questa guida verrà usato ''wget'' o, in mancanza, si può usare ''curl''.}}
+
+{{nota|Nota|La guida è stata testata con la versione '''4.1.0''' di LibreOffice, ma con le dovute attenzioni è possibile utilizzarla per versioni diverse.}}
+
+== Recupero dei pacchetti necessari ==
+
+Si possono scaricare i pacchetti dal [http://it.libreoffice.org/download/ sito ufficiale] anche con il proprio browser.<br/>
+Per effettuare un download avendo la certezza di scaricare un file non corrotto utilizzare il download via torrent.
+
+* archivio del programma, che avrà un nome simile a questo '''LibreOffice_VERSIONE_Linux_ARCHITETTURA_rpm.tar.gz''';
+* language pack italiano, con un nome simile a questo '''LibreOffice_VERSIONE_Linux_ARCHITETTURA_rpm_langpack_it.tar.gz'''.
+<br/>
+
+Per versioni precedenti la 4.0.0 i pacchetti hanno invece questa sintassi: ''LibO_VERSIONE_Linux_ARCHITETTURA_install-rpm_en-US.tar.gz'' e ''LibO_VERSIONE_Linux_ARCHITETTURA_langpack-rpm_it.tar.gz''.<br/>
+
+Per scaricare i vari pacchetti si crea una directory di comodo nella quale salvare i file:
+ $ mkdir ~/Libreoffice
+si entra nella directory appena creata:
+ $ cd ~/Libreoffice
+ora si passa a scaricare i file necessari; i comandi utilizzabili sono wget o, in mancanza, curl, così:
+
+ $ wget <nowiki>http://download.documentfoundation.org/libreoffice/stable/VERSIONE/rpm/ARCHITETTURA/LibreOffice_VERSIONE_Linux_ARCHITETTURA_rpm.tar.gz http://download.documentfoundation.org/libreoffice/stable/VERSIONE/rpm/ARCHITETTURA/LibreOffice_VERSIONE_Linux_ARCHITETTURA_rpm_langpack_it.tar.gz</nowiki>
+
+<!--da scrivere meglio! -->
+{{nota|Percorso differente per 64bit|Per qualche motivo gli sviluppatori di libreoffice hanno salvato i vari file dell'architettura a 64bit modificando x86_64 in ''x86-64'', ma solo nel nome del file rpm e non nell'intero percorso. Per scaricare il file bisognerà perciò seguire questi percorsi:<br/>
+ http://download.documentfoundation.org/libreoffice/stable/VERSIONE/rpm/x86_64/LibreOffice_VERSIONE_Linux_x86-64_rpm.tar.gz
+ http://download.documentfoundation.org/libreoffice/stable/VERSIONE/rpm/x86_64/LibreOffice_VERSIONE_Linux_x86-64_rpm_langpack_it.tar.gz}} 
+<!--da scrivere meglio! -->
+
+== Installazione di LibreOffice ==
+Una volta scaricati i pacchetti si estraggono i file con il seguente comando (utilizzare il tasto tab per il completamento automatico):
+
+ $ tar -xzvf LibreOffice_VERSIONE_Linux_ARCHITETTURA_rpm.tar.gz
+
+Per l'installazione vera e propria degli rpm bisogna acquisire i diritti di root:
+ $ su
+quindi inserire la password di root del sistema; ora tramite yum si procede all'installazione di tutti gli rpm:
+ # yum install --nogpgcheck LibreOffice_VERSIONE_Linux_ARCHITETTURA_rpm/RPMS/*.rpm
+
+A conclusione dell'operazione si avrà LibreOffice installato su Fedora; per avviare le singole suite, basterà lanciare da terminale da utente:
+
+ $ /opt/libreoffice4.0/program/swriter
+ $ /opt/libreoffice4.0/program/sdraw
+ $ /opt/libreoffice4.0/program/sbase
+ $ /opt/libreoffice4.0/program/simpress
+ $ /opt/libreoffice4.0/program/scalc
+ $ /opt/libreoffice4.0/program/smath
+
+==Integrazione con il menù di sistema==
+
+Libreoffice si può integrare nel menù di sistema, ossia avere la possibilità di poterlo lanciare graficamente dai menù dei vari DE. Se si sono seguite le istruzioni precedenti riguardo all'installazione degli eseguibili veri e propri, da terminale dare:
+ $ cd ~/Libreoffice
+ $ su
+ # yum install --nogpgcheck LibreOffice_VERSIONE_Linux_ARCHITETTURA_rpm/RPMS/desktop-integration/libreoffice4.0-freedesktop-menus-_VERSIONE_.noarch.rpm
+
+==Installazione lingua italiana==
+
+Per installare la lingua italiana estrarre dall'archivio scaricato all'inizio il Language Pack. Posizionarsi nella cartella RPMS e ridare lo stesso comando di prima.<br/>Seguire queste istruzioni:
+ $ wget <nowiki>http://download.documentfoundation.org/libreoffice/stable/VERSIONE/rpm/ARCHITETTURA/LibreOffice_VERSIONE_Linux_ARCHITETTURA_rpm_langpack_it.tar.gz</nowiki>
+ $ tar -xzvf LibreOffice_VERSIONE_Linux_ARCHITETTURA_rpm_langpack_it.tar.gz
+ $ cd LibreOffice_VERSIONE_Linux_ARCHITETTURA_rpm_langpack_it/RPMS/
+ $ su
+ # yum install --nogpgcheck *.rpm
+
+Fatto questo sarà attiva anche la lingua italiana nei vari programmi.
+
+==Risoluzione di problemi vari==
+
+* In caso il bordo delle finestre abbia un gusto "retrò" da Windows95, come riportato da qualche utente sul [http://forums.fedoraforum.org/showpost.php?p=1634609&postcount=5 forum del fedoraproject.org] può essere necessario installare:
+ # yum install pangox-compat
+
+* Come detto dalla documentazione stessa di LibreOffice, può essere necessario installare java per far funzionare alcuni componenti:<br/>
+''Per alcune caratteristiche del software - ma non tutte - è richiesto Java. Java è necessario per Base.''
+
+== Riferimenti ==
+* [http://www.documentfoundation.org/ Home della Document Foundation], di cui LibreOffice fa parte.
+* [http://it.libreoffice.org/download/ Pagina di download di LibreOffice.]
+* [http://www.libreoffice.org/get-help/installation/linux/ Documentazione ufficiale.]
+ 
+[[Categoria:Ufficio]]

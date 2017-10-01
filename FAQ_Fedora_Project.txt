@@ -1,0 +1,27 @@
+== Perchè dovrei dare il mio aiuto al Fedora Project? ==
+Primo, perchè contribuendo a Fedora potresti vedere il tuo nome incluso nella distribuzione. Eh beh, quel che è giusto, è giusto.<br>
+Secondo, se sei un contributore di Fedora, non ti serve un curriculum vitae particolare; puoi semplicemente dire ai tuoi potenziali datori di lavoro di cercare su 'Google' il tuo nome.<br>
+Terzo, i migliori contributori di Fedora possono ricevere rimborsi spesa per partecipare alle "Fedora Users and Developers Conference" più vicine a loro. Avrai l'opportunità di incontrare di persona alcuni dei più importanti personaggi del movimento dell'open source, come loro pari.
+
+E infine, starai comunque prendendo parte a questo mondo. Impiegare il tuo tempo facendo cose che ti divertono e che altri useranno. Quale migliore incentivo ti serve? Vieni tra noi.
+
+== Il Fedora Project è indipendente da Red Hat, Inc.? ==
+Il Fedora Project è un progetto comunitario, separato da Red Hat, ma Red Hat lo sponsorizza fornendo una importante capacità di management e altre risorse. Red Hat usa i materiali che il Fedora Project produce per sviluppare le proprie offerte di piattaforme di classe enterprise. Red Hat ha grande interesse in Fedora, e il successo del Fedora Project è dovuto ai notevoli contributi di Red Hat.
+
+== Il Fedora Project assegna compiti ai contributori, o sono i contributori a decidere cosa fare? ==
+I volontari interessati a contribuire sono incoraggiati a prendere in carico i compiti che più desiderano. Puoi evitare di intraprendere compiti ridondanti comunicando con la mailing list pertinente al progetto e coordinandoti con altri membri della comunità interessati. Se non sei sicuro su come vuoi contribuire, visita la pagina [https://fedoraproject.org/wiki/It_IT/Join| Partecipa] per conoscere le differenti aree che necessitano del tuo aiuto. Il progetto [https://fedoraproject.org/wiki/Mentors| Fedora Mentors] può darti ulteriori indicazioni su come procedere.
+
+== Come è organizzato e amministrato il Fedora Project? ==
+Il Fedora Project è gestito da una board di membri della comunità e impiegati Red Hat, con Red Hat che fornisce i fondi e altri servizi come la banda di rete e l'hosting, la direzione generale del progetto, l'ingegnerizzazione e il marketing.<br>
+Il Fedora Project è un insieme di molti progetti più piccoli, che collaborano insieme per produrre la piattaforma e costruire la comunità che la supporta. Questi diversi sottoprogetti sono indipendenti l'uno dall'altro, ma lavorano per ottenere obiettivi comuni coordinando i propri sforzi.<br>
+Ognuno dei sottoprogetti ha dei leader o un comitato per organizzare e guidare lo sviluppo di quel progetto. Il Fedora Project opera come una meritocrazia, dove responsabilità e potere sono conferiti sulla base di abilità e impegno. Le persone che guidano Fedora sono state selezionate perchè hanno dato prova di voler guidare il progetto e di sapere come farlo.
+
+== Perchè Fedora è un progetto e non un prodotto? ==
+Un comitato globale in Red Hat ha determinato che Red Hat Linux soffriva dei troppi compromessi necessari per un prodotto retail, e che la compagnia doveva redirigere i propri sforzi verso la creazione di un progetto guidato dalla comunità. Piuttosto che dover sottostare a calendari di fornitura prodotto, Fedora viene rilasciata secondo un calendario determinato da un processo decisionale aperto e influenzato dalla comunità.<br>
+Convertire il prodotto in un progetto:<br>
+*Garantisce che gli utenti possanno ottenere gli aggiornamenti più recenti il prima possibile.
+*Crea nuove opportunità per sviluppatori e utenti nel partecipare al Fedora Project, rendendo aperto l'intero processo di sviluppo alla vista di tutti, e alla collaborazione di chiunque sia interessato.
+*Permette di usare il The Fedora Project per sviluppare e rendere stabili le più recenti e importanti tecnologie.
+*Velocizza il processo di sviluppo, avvantaggiandosi dei punti di forza intrinseci del modello open source.
+
+[[Categoria:FAQ]]

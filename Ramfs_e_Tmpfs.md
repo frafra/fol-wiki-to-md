@@ -1,0 +1,79 @@
+\_\_TOC\_\_
+
+Introduzione
+------------
+
+Le due tipologie di filesystem sotto descritte permettono di sfruttare la memoria volatile per avere un I/O molto più performante di alcune block device, su delle strutture dati o cache con dimensioni ridotte e temporanee. La differenza sostanziale sta nel fatto che RAMFS utilizza solo la RAM mentre TMPFS usa sia la ram che la swap (quindi se si finisce sulla swap le prestazioni calano).
+Inoltre in caso di occupazione totale dello spazio RAMFS si rischia di compromettere lo stato del sistema mentre con TMPFS no. Per salvaguardare i dati si dovrà eseguire uno script che copia i dati su una block device fisica, e, nel caso venga riavviato, il sistema ricopi i dati, dopo che ramfs o tmpfs sia stato montato come in precedenza.
+
+Ramfs
+-----
+
+Il ramfs permette di creare una block device che sfrutta lo spazio sulla memoria RAM. Questo permette di avere un disco che ha le prestazioni in lettura e scrittura della memoria RAM, che possono essere utilizzati ad esempio per delle cache temporanee o per dei dati criptati che possono risultare volatiti per migliorare la sicurezza.
+Il contro di questo utilizzo è che se il sistema si riavvia, si perde tutto il contenuto della block device creata.
+Per prima cosa bisogna eseguire il mount manuale del ramfs specificando la dimensione desiderata (la dimensione dovrà tenere conto della memoria totale e del suo attuale utilizzo).
+
+`[root@cellopc-mini ~]# mkdir /mnt/tempfs`
+`[root@cellopc-mini ~]# mount -t ramfs -o size=200m ramfs /mnt/tempfs`
+`[root@cellopc-mini ~]# mount | grep ramfs`
+`ramfs on /mnt/tempfs type ramfs (rw,size=200m)`
+
+Provando ad eseguire la scrittura di un file da 100 MB su disco interno e sulla nuova block device si nota che la velocità è doppia, quindi le prestazioni sono notevoli.
+
+`[root@cellopc-mini ~]# dd if=/dev/zero of=/home/cello/test.img bs=1024 count=100000`
+`100000+0 records in`
+`100000+0 records out`
+`102400000 bytes (102 MB) copied, 3.06969 s, 33.4 MB/s`
+`[root@cellopc-mini ~]# dd if=/dev/zero of=/mnt/tempfs/test.img bs=1024 count=100000`
+`100000+0 records in`
+`100000+0 records out`
+`102400000 bytes (102 MB) copied, 1.63215 s, 62.7 MB/s`
+
+Bisogna porre attenzione all'occupazione della device, perchè se va in filesystem "full" si rischia di compromettere l'operatività del sistema. Creando un file più grande della dimensione non viene restituito alcun errore ed il sistema va in hang.
+
+Tmpfs
+-----
+
+Il ramfs permette di creare un filesystem che sfrutta lo spazio sulla memoria RAM + sulla swap. Questo permette di avere un disco che ha le prestazioni in lettura e scrittura della memoria RAM, che possono essere utilizzati ad esempio per delle cache temporanee o per dei dati criptati che possono risultare volatiti per migliorare la sicurezza.
+Il contro di questo utilizzo è che se il sistema si riavvia, si perde tutto il contenuto del fileystsem.
+Per prima cosa bisogna eseguire il mount manuale del tmpfs specificando la dimensione desiderata (la dimensione dovrà tenere conto della memoria totale e del suo attuale utilizzo con l'aggiunta delle swap).
+
+`[root@cellopc-mini ~]# mkdir /mnt/testfs`
+`[root@cellopc-mini ~]# mount -t tmpfs -o size=200m tmpfs /mnt/testfs`
+`[root@cellopc-mini ~]# df -k  /mnt/testfs`
+`Filesystem           1K-blocks      Used Available Use% Mounted on`
+`tmpfs                   204800         0    204800   0% /mnt/testfs`
+
+Provando ad eseguire la scrittura di un file da 100 MB su disco interno e sulla nuova block device si nota che la velocità è doppia, quindi le prestazioni sono notevoli.
+
+`[root@cellopc-mini ~]# dd if=/dev/zero of=/home/cello/test.img bs=1024 count=100000`
+`100000+0 records in`
+`100000+0 records out`
+`102400000 bytes (102 MB) copied, 3.06969 s, 33.4 MB/s`
+`[root@cellopc-mini ~]# dd if=/dev/zero of=/mnt/testfs/test.img bs=1024 count=100000`
+`100000+0 records in`
+`100000+0 records out`
+`102400000 bytes (102 MB) copied, 0.974094 s, 105 MB/s`
+
+Se l'occupazione del filesystem viene superata completamente, la scrittura viene bloccata e viene riportato un messaggio di errore!
+
+`[root@cellopc-mini ~]# dd if=/dev/zero of=/mnt/testfs/test.img bs=1024 count=250000`
+`` dd: writing `/mnt/testfs/test.img': No space left on device ``
+`204597+0 records in`
+`204596+0 records out`
+`209506304 bytes (210 MB) copied, 2.40989 s, 86.9 MB/s`
+`[root@cellopc-mini ~]# df -k /mnt/testfs`
+`Filesystem           1K-blocks      Used Available Use% Mounted on`
+`tmpfs                   204800    204800         0 100% /mnt/testfs`
+
+E' possibile allargare il filesystem a caldo, aumentando lo spazio a disposizione di tmpfs.
+
+`[root@cellopc-mini ~]# df -k /mnt/testfs`
+`Filesystem           1K-blocks      Used Available Use% Mounted on`
+`tmpfs                   204800    204800         0 100% /mnt/testfs`
+`root@cellopc-mini ~]# mount -t tmpfs -o remount,size=400m tmpfs /mnt/testfs/`
+`[root@cellopc-mini testfs]# df -k /mnt/testfs`
+`Filesystem           1K-blocks      Used Available Use% Mounted on`
+`tmpfs                   409600    204800    204800  50% /mnt/testfs`
+
+<Categoria:Sistema>

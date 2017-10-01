@@ -1,0 +1,32 @@
+==  Come installare MYSQL Database Server ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+<li>Leggi [[02_Repositories#Come aggiungere dei repositories extra|Come aggiungere dei repositories extra]]</li>
+<li>Usa Desktop -> Impostazioni di Sistema -> Aggiungere/Rimuovere Applicazioni</li>
+''oppure''
+
+ yum -y install mysql
+ yum -y install mysql-server
+ yum -y install php-mysql
+ yum -y install MySQL-python
+ yum -y install libdbi-dbd-mysql
+ yum -y install mysql-devel
+ 
+ mysqladmin -u root password new_db_user_password
+ /etc/init.d/mysqld start
+</ol>
+
+==  Come installare MYSQL Control Center ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+<li>Leggi [[02_Repositories#Come aggiungere dei repositories extra|Come aggiungere dei repositories extra]]</li>
+<li>Leggi [[#Come installare MYSQL Database Server|Come installare MYSQL Database Server]]</li>
+
+ yum -y install mysql-administrator
+
+<li>Applicazioni -> Strumenti di Sistema -> MySQL Administrator</li>
+</ol>
+
+{{Link/prec|17 SSH|17 SSH}}{{Link/succ|19 Web Server|19 Web Server}}
+
+[[Categoria:Fedoraserver]]

@@ -1,0 +1,148 @@
+== Introduzione ==
+Questo documento tratta dei principali repository di terze parti di fedora, '''RPMFusion'''.<br />
+
+RPMFusion distingue tra programmi free e nonfree (nel senso di software "non libero", non nel senso di "non gratuito"), ciascuno con una locazione propria. 
+
+Il repo RPMFusion-free non dipende da nessun altro repository (se non quelli predefiniti e ufficiali di Fedora) e quindi può essere utilizzato senza RPMFusion-nonfree. Al contrario, RPMFusion-nonfree dipende anche da RPMFusion-free.
+
+La guida espone due metodi differenti per l'installazione di tali repository.
+
+== Installazione tramite pacchetto rpm ==
+Per i free di Fedora 22 per esempio, il pacchetto da scaricare è [http://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-22.noarch.rpm questo], mentre per i nonfree è [http://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-22.noarch.rpm questo]. Si possono poi installare tramite installatore grafico semplicemente tramite doppio clic su tali files.
+Per altre versioni di Fedora fare riferimento alla [http://rpmfusion.org/Configuration pagina ufficiale].
+
+In caso di problemi in quest'ultimo passaggio, se non si volesse installare in locale entrambi i repo, è possibile farlo attingendo ai link sfruttando le potenzialità di dnf:
+
+ # dnf install <nowiki>http://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm http://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm</nowiki>
+<!-- {{Warning|Il comando va digitato su una unica riga}} -->
+{{suggerimento|Può capitare che durante l'installazione non si aggiorni in automatico la chiave GPG.<br/>In questo caso basta aggiornare i repo da terminale; questa operazione si porterà dietro anche la chiave più aggiornata:
+ # dnf --nogpgcheck update \*release\*}}
+
+== Installazione manuale ==
+È, ovviamente, possibile inserire a mano i repo creando dei files di testo da inserire all'interno della directory ''/etc/yum.repos.d/'', che è esattamente cioè che fa il pacchetto rpm in automatico.
+
+=== RPMFusion-free ===
+Usando nano (o qualsiasi editor si preferisca):
+
+ # nano /etc/yum.repos.d/rpmfusion-free.repo
+Si apre il documento vuoto che deve essere così popolato:
+
+ [rpmfusion-free]
+ name=RPM Fusion for Fedora $releasever - Free
+ #baseurl=<nowiki>http://download1.rpmfusion.org/free/fedora/releases/$releasever/Everything/$basearch/os/</nowiki>
+ mirrorlist=<nowiki>http://mirrors.rpmfusion.org/mirrorlist?repo=free-fedora-$releasever&arch=$basearch</nowiki>
+ enabled=1
+ gpgcheck=1
+ gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-rpmfusion-free-fedora-$releasever
+ 
+ [rpmfusion-free-debuginfo]
+ name=RPM Fusion for Fedora $releasever - Free - Debug
+ #baseurl=<nowiki>http://download1.rpmfusion.org/free/fedora/releases/$releasever/Everything/$basearch/debug/</nowiki>
+ mirrorlist=<nowiki>http://mirrors.rpmfusion.org/mirrorlist?repo=free-fedora-debug-$releasever&arch=$basearch</nowiki>
+ enabled=0
+ gpgcheck=1
+ gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-rpmfusion-free-fedora-$releasever
+ 
+ [rpmfusion-free-source]
+ name=RPM Fusion for Fedora $releasever - Free - Source
+ #baseurl=<nowiki>http://download1.rpmfusion.org/free/fedora/releases/$releasever/Everything/source/SRPMS/</nowiki>
+ mirrorlist=<nowiki>http://mirrors.rpmfusion.org/mirrorlist?repo=free-fedora-source-$releasever&arch=$basearch</nowiki>
+ enabled=0
+ gpgcheck=1
+ gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-rpmfusion-free-fedora-$releasever<br />
+dopodichè si provvederà a creare il repo free-updates:
+ # nano /etc/yum.repos.d/rpmfusion-free-updates.repo
+da popolare così:
+
+ [rpmfusion-free-updates]
+ name=RPM Fusion for Fedora $releasever - Free - Updates
+ #baseurl=<nowiki>http://download1.rpmfusion.org/free/fedora/updates/$releasever/$basearch/</nowiki>
+ mirrorlist=<nowiki>http://mirrors.rpmfusion.org/mirrorlist?repo=free-fedora-updates-released-$releasever&arch=$basearch</nowiki>
+ enabled=1
+ gpgcheck=1
+ gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-rpmfusion-free-fedora-$releasever
+ 
+ [rpmfusion-free-updates-debuginfo]
+ name=RPM Fusion for Fedora $releasever - Free - Updates Debug
+ #baseurl=<nowiki>http://download1.rpmfusion.org/free/fedora/updates/$releasever/$basearch/debug/</nowiki>
+ mirrorlist=<nowiki>http://mirrors.rpmfusion.org/mirrorlist?repo=free-fedora-updates-released-debug-$releasever&arch=$basearch</nowiki>
+ enabled=0
+ gpgcheck=1
+ gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-rpmfusion-free-fedora-$releasever 
+ 
+ [rpmfusion-free-updates-source]
+ name=RPM Fusion for Fedora $releasever - Free - Updates Source
+ #baseurl=<nowiki>http://download1.rpmfusion.org/free/fedora/updates/$releasever/SRPMS/</nowiki>
+ mirrorlist=<nowiki>http://mirrors.rpmfusion.org/mirrorlist?repo=free-fedora-updates-released-source-$releasever&arch=$basearch</nowiki>
+ enabled=0
+ gpgcheck=1
+ gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-rpmfusion-free-fedora-$releasever<br />
+
+=== RPMFusion-nonfree ===
+I repositori nonfree e nonfree-updates, rispettivamente devono essere creati così (al pari dei precedenti):
+
+ # nano /etc/yum.repos.d/rpmfusion-nonfree.repo
+le cui istruzioni da inserire sono:
+
+ [rpmfusion-nonfree]
+ name=RPM Fusion for Fedora $releasever - Nonfree
+ #baseurl=<nowiki>http://download1.rpmfusion.org/nonfree/fedora/releases/$releasever/Everything/$basearch/os/</nowiki>
+ mirrorlist=<nowiki>http://mirrors.rpmfusion.org/mirrorlist?repo=nonfree-fedora-$releasever&arch=$basearch</nowiki>
+ enabled=1
+ gpgcheck=1
+ gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-rpmfusion-nonfree-fedora-$releasever 
+ 
+ [rpmfusion-nonfree-debuginfo]
+ name=RPM Fusion for Fedora $releasever - Nonfree - Debug
+ #baseurl=<nowiki>http://download1.rpmfusion.org/nonfree/fedora/releases/$releasever/Everything/$basearch/debug/</nowiki>
+ mirrorlist=<nowiki>http://mirrors.rpmfusion.org/mirrorlist?repo=nonfree-fedora-debug-$releasever&arch=$basearch</nowiki>
+ enabled=0
+ gpgcheck=1
+ gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-rpmfusion-nonfree-fedora-$releasever
+ 
+ [rpmfusion-nonfree-source]
+ name=RPM Fusion for Fedora $releasever - Nonfree - Source
+ #baseurl=<nowiki>http://download1.rpmfusion.org/nonfree/fedora/releases/$releasever/Everything/source/SRPMS/</nowiki>
+ mirrorlist=<nowiki>http://mirrors.rpmfusion.org/mirrorlist?repo=nonfree-fedora-source-$releasever&arch=$basearch</nowiki>
+ enabled=0
+ gpgcheck=1
+ gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-rpmfusion-nonfree-fedora-$releasever<br />
+ed il repositorio nonfree-updates:
+ 
+ # nano /etc/yum.repos.d/rpmfusion-nonfree-updates.repo
+con le seguenti istruzioni:
+
+ [rpmfusion-nonfree-updates]
+ name=RPM Fusion for Fedora $releasever - Nonfree - Updates
+ #baseurl=<nowiki>http://download1.rpmfusion.org/nonfree/fedora/updates/$releasever/$basearch/</nowiki>
+ mirrorlist=<nowiki>http://mirrors.rpmfusion.org/mirrorlist?repo=nonfree-fedora-updates-released-$releasever&arch=$basearch</nowiki>
+ enabled=1
+ gpgcheck=1
+ gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-rpmfusion-nonfree-fedora-$releasever
+ 
+ [rpmfusion-nonfree-updates-debuginfo]
+ name=RPM Fusion for Fedora $releasever - Nonfree - Updates Debug
+ #baseurl=<nowiki>http://download1.rpmfusion.org/nonfree/fedora/updates/$releasever/$basearch/debug/</nowiki>
+ mirrorlist=<nowiki>http://mirrors.rpmfusion.org/mirrorlist?repo=nonfree-fedora-updates-released-debug-$releasever&arch=$basearch</nowiki>
+ enabled=0
+ gpgcheck=1
+ gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-rpmfusion-nonfree-fedora-$releasever
+ 
+ [rpmfusion-nonfree-updates-source]
+ name=RPM Fusion for Fedora $releasever - Nonfree - Updates Source
+ #baseurl=<nowiki>http://download1.rpmfusion.org/nonfree/fedora/updates/$releasever/SRPMS/</nowiki>
+ mirrorlist=<nowiki>http://mirrors.rpmfusion.org/mirrorlist?repo=nonfree-fedora-updates-released-source-$releasever&arch=$basearch</nowiki>
+ enabled=0
+ gpgcheck=1
+ gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-rpmfusion-nonfree-fedora-$releasever<br />
+
+==Conclusione==
+Seguite queste istruzioni si potranno installare molti più software non presenti nei normali repo di fedora, ad esempio i [[Multimedia_Player_e_codecs|codec]] per la riproduzione di flussi dati, alcune [[Estensioni_di_Gnome-Shell|estensioni per gnome-shell]] e molti altri programmi.<br/>
+Per una lista completa di tutti i programmi disponibili da tutti i repo rpmfusion (che devono però già essere installati sul computer) si può fare così:
+ $ dnf list available --disablerepo=* --enablerepo=rpmfusion-{free,free-updates,nonfree,nonfree-updates} |more
+
+== Riferimenti ==
+* http://www.rpmfusion.org/
+ 
+[[Categoria:Repository]]
+[[Categoria:Dnf]]

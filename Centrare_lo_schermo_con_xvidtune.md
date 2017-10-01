@@ -1,0 +1,48 @@
+Può capitare che, nonostante i driver della scheda video siano installati correttamente, l'immagine sullo schermo risulti decentrata lasciando bordi neri e finestre 'tagliate'. Per risolvere il problema sono necessari il programma xvidtune, installato di default con l'x-server (Xorg), e poche semplici operazioni.
+
+1.  Iniziamo col lanciare il programma xvidtune semplicemente digitando da terminale:
+
+xvidtune
+
+A questo punto si aprono due finestre. La prima contiene le avvertenze sull'uso del programma. Leggete e premete OK. La seconda permette di posizionare l'immagine sullo schermo. Per questo si devono usare i pulsanti Left Right (a sinistra) e Up e Down (a destra). Per vedere il risultato delle regolazioni è necessario premere Apply. Le modifiche ora apportate sono però temporanee!
+
+<li>
+Premere quindi il pulsante Show. Sul teminale dovrebbe apparire una riga simile a questa:
+
+</li>
+`"1024x768"     65.00   1024 1056 1192 1344    768  771  777  806 -hsync -vsync`
+
+Questa è una modeline cioè, un insieme di parametri per pilotare il convertitore D/A della scheda video (in sostanza dicono alla scheda video come formare l'immagine). Il primo di questi parametri, fra apici doppi, in realtà è solo il nome che identifica la modeline e può essere cambiato a piacere; es "mia\_conf".
+
+<li>
+Ora da root editate il file /etc/X11/xorg.conf dove è contenuta la configurazione dell' x-server.
+
+</li>
+<li>
+Nella sezione "Monitor" aggiungere la modeline di prima nel seguente modo:
+
+</li>
+`Section "Monitor" `
+`Modeline   "mia_conf"    65.00   1024 1056 1192 1344    768  771  777  806 -hsync -vsync  `
+`... `
+`EndSection `
+
+e nella sottosezione "Display":
+
+`Section "Screen" `
+`...        `
+`  SubSection "Display" `
+`       Viewport   0 0 `
+`       Depth     24 `
+`       Modes     "mia_conf" "1024x768" "1600x1200" "800x600" "640x480"  `
+`  EndSubSection `
+`EndSection `
+
+in relatà le altre risoluzioni di *Modes* sono anch'esse nomi di modeline.
+
+<li>
+Salvare, chiudete e riavviare il server X.
+
+</li>
+</ol>
+<Categoria:Hardware>

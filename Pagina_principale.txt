@@ -1,0 +1,138 @@
+== Benvenuto nella documentazione di Fedora Online ==
+<div style="width:100%; float:left">
+
+<div style="margin-bottom:8px; border:2px solid #dfdfdf; padding: 1em; background-color:#bacef8; -moz-border-radius:15px;-webkit-border-radius:15px;min-height:80px;">
+
+Il wiki di Fedora Online contiene una serie di guide e tutorial utili per un corretto utilizzo di Fedora.<br />
+Tuttavia ogni wiki è realizzato e può esistere solo se i suoi utenti vi partecipano attivamente, per cui anche il tuo contributo è benvenuto. Segui le [[Contribuisci| '''linee guida per contribuire al nostro wiki''']] per aiutare, tramite la tua esperienza, altri utenti nell'uso quotidiano di Fedora.
+</div>
+
+</div>
+<!-- ------------------------------------------------- -->
+
+<div style="width:32.5%; float:left;margin-right:1%">
+
+<div style="margin-bottom:8px; border:2px solid #dfdfdf; padding:1em; background-color:#dfdfdf; -moz-border-radius:15px; -webkit-border-radius:15px;min-height:130px;">
+
+[[Image:Mappa.png|left]]
+<big>'''Sei nuovo da queste parti?'''</big>
+
+
+Benvenuto, leggi come [[Contribuisci|'''contribuire''']] e scopri le nostre regole, in sostituzione di una wikiquette.
+</div>
+
+</div>
+<!-- ------------------------------------------------- -->
+
+<div style="width:32.5%; float:left;margin-right:1%">
+
+<div class="metadata plainlinks" style="margin-bottom:8px; border: 2px solid #dfdfdf; padding: 1em; background-color:#d7c5e2; -moz-border-radius:15px;-webkit-border-radius:15px;min-height:130px;">
+[[File:Lente.png|left]]
+<big>'''Dove trovo le informazioni?'''</big>
+
+Puoi fare una [{{SERVER}}{{localurl:Speciale:Ricerca|search=&ns0=1&ns=0&fulltext=Ricerca}} '''Ricerca'''] per parole-chiave, consultare le varie categorie che vedi in prima pagina oppure utilizzare l'indice delle pagine
+</div>
+
+</div>
+<!-- ------------------------------------------------- -->
+
+<div style="width:32.5%; float:left;">
+
+<div style="margin-bottom:8px; border: 2px solid #dfdfdf; padding: 1em; background-color:#f5f4ab; -moz-border-radius:15px;-webkit-border-radius:15px;min-height:130px;">
+[[Image:Salvagente.png|left]]
+<big>'''Cosa devo fare per inviare o modificare una guida: ?''' </big>
+
+[[Contribuisci|'''Registrati''']] e scopri la nostra Mailing List. Puoi anche imparare le [[Convenzioni_di_scrittura|'''Convenzioni di scrittura''']].</div>
+
+</div>
+<!-- ------------------------------------------------- -->
+
+<div style="width:49%;float:left;margin-top:8px;margin-right:2%">
+
+<div style="margin-bottom:20px; border:2px solid #dfdfdf; padding: 1em; -moz-border-radius:15px;-webkit-border-radius:15px;box-shadow:#3C6EB4 1px 1px 13px;-moz-box-shadow:#3C6EB4 1px 1px 13px;-webkit-box-shadow:#3C6EB4 1px 1px 13px;min-height:200px;">
+[[Image:Primipassi_icona.png|left]]
+<div style="text-align:center"><big>'''Primi passi su Fedora''' </big><br>
+[[:Categoria:Sistema | Sistema]] | [[:Categoria:Installazione | Installazione]] | [[:Categoria:Repository|Repository]] | [[:Categoria:Ambiente_Desktop|Desktop]]</div>
+<br />
+<div class="principale">'''Le più gettonate...'''
+* [[Installazione Fedora | Come installare Fedora]]
+* [[Gnome-Shell e le sue estensioni | Gnome Shell]]
+* [[Fedora - Missione possibile| Fedora: primi passi]]
+* [[Yum - i comandi principali | Yum - i comandi principali]]
+* [[Aggiornamento Fedora con system-upgrade | Upgrade di Fedora tramite system-upgrade]]
+</div></div>
+
+<div style="margin-bottom:20px; border:2px solid #dfdfdf; padding: 1em; -moz-border-radius:15px;-webkit-border-radius:15px;box-shadow:#3C6EB4 1px 1px 13px;-moz-box-shadow:#3C6EB4 1px 1px 13px;-webkit-box-shadow:#3C6EB4 1px 1px 13px;min-height:200px;">
+[[Image:Programmi_icon.png|left]]
+<div style="text-align:center"><big>'''Software''' </big><br>
+[[:Categoria:Grafica | Grafica]] | [[:Categoria:Ufficio | Ufficio]] | [[:Categoria:Multimedia | Multimedia]] | [[:Categoria:Giochi | Giochi]] | [[:Categoria:Internet | Internet]]</div>
+<br />
+<div class="principale">'''Le più gettonate...'''
+* [[Flash plugin | Flash plugin]]
+* [[Ekiga | Ekiga]]
+* [[Multimedia Player e codecs | Multimedia Player e codecs]]
+* [[Google Earth: Installazione RPM a 64bit | Google Earth a 64bit]]
+* [[Ascoltare file ape | Ascoltare file ape]]
+</div></div>
+
+<div style="margin-bottom:20px; border:2px solid #dfdfdf; padding: 1em; -moz-border-radius:15px;-webkit-border-radius:15px;box-shadow:#3C6EB4 1px 1px 13px;-moz-box-shadow:#3C6EB4 1px 1px 13px;-webkit-box-shadow:#3C6EB4 1px 1px 13px;min-height:200px;">
+[[Image:Altradoc_icon.png|left]]
+<div style="text-align:center"><big>'''Altra documentazione''' </big><br>
+[[:Categoria:Fedoraserver | Fedoraserver]] | [[:Categoria:Fedora Legacy | Fedora Legacy]] | [[:Categoria:Traduzioni | Traduzioni]]</div>
+<br />
+<div class="principale">'''Le più gettonate...'''
+* [[Personal Fedora 19 Installation Guide di Mauriat Miranda | Personal Fedora 19 Installation Guide]]
+* [[Installare un Compilatore GCC alternativo su Fedora, di Mauriat Miranda | Compilatore GCC alternativo su Fedora]]
+* [[Un centralino con Asterisk e Fedora | Un centralino con Asterisk e Fedora]]
+* [[Un server di posta con Postfix (e altre cosette...) v. 0.1 | Un server di posta con Postfix]]
+* [[Come compilare il kernel di Fedora partendo dai sorgenti | Compilare il kernel di Fedora partendo dai sorgenti]]
+</div></div>
+
+</div>
+<!-- ------------------------------------------------- -->
+
+<div style="width:49%; float:left;margin-top:8px">
+
+<div style="margin-bottom:20px; border:2px solid #dfdfdf; padding: 1em; -moz-border-radius:15px;-webkit-border-radius:15px;box-shadow:#3C6EB4 1px 1px 13px;-moz-box-shadow:#3C6EB4 1px 1px 13px;-webkit-box-shadow:#3C6EB4 1px 1px 13px;min-height:200px;">
+[[Image:Configurazione_icona.png|left]]
+<div style="text-align:center"><big>'''Configurazione Hardware''' </big><br>
+[[:Categoria:Hardware | Hardware]]</div>
+<br />
+<div class="principale">'''Le più gettonate...'''
+* [[Installazione Driver NVidia | Installazione Driver NVidia]]
+* [[Installazione Driver ATI | Installazione Driver ATI]]
+* [[Configurazione di una rete wifi | Configurazione di una rete wifi]]
+* [[Workaround per webcam con modulo uvcvideo | Webcam con modulo uvcvideo]]
+* [[Stampante in rete con Samba | Stampante in rete con Samba]]
+</div></div>
+
+<div style="margin-bottom:20px; border:2px solid #dfdfdf; padding: 1em; -moz-border-radius:15px;-webkit-border-radius:15px;box-shadow:#3C6EB4 1px 1px 13px;-moz-box-shadow:#3C6EB4 1px 1px 13px;-webkit-box-shadow:#3C6EB4 1px 1px 13px;min-height:200px;">
+[[Image:Avanzati_icona.png|left]]
+<div style="text-align:center"><big>'''Per utenti avanzati''' </big><br>
+[[:Categoria:Rete e Server | Rete e Server]] | [[:Categoria:Programmazione e Sviluppo | Prog. e Sviluppo]] | [[:Categoria:Sicurezza | Sicurezza]]</div>
+<br />
+<div class="principale">'''Le più gettonate...'''
+* [[Samba: condivisione tra Fedora e Windows | Samba: condivisione tra Fedora e Windows]]
+* [[LAMP | LAMP]]
+* [[Vademecum sicurezza | Vademecum sicurezza]]
+* [[Configurazione VNC | Configurazione VNC]]
+* [[Vim Ide per PHP | Vim Ide per PHP]]
+</div></div>
+
+<div style="margin-bottom:20px; border:2px solid #dfdfdf; padding: 1em; -moz-border-radius:15px;-webkit-border-radius:15px;box-shadow:#3C6EB4 1px 1px 13px;-moz-box-shadow:#3C6EB4 1px 1px 13px;-webkit-box-shadow:#3C6EB4 1px 1px 13px;min-height:200px;">
+[[Image:infinity.jpg|left]]
+<div style="text-align:center"><big>'''Il mondo Fol e il Fedora Project''' </big><br>
+[[:Categoria:FAQ | FAQ]] | [[:Categoria:FedoraOnline | Fedora Online]] | [[:Categoria:Progetto Fedora | Progetto Fedora]]</div>
+<br />
+<div class="principale">'''Le più gettonate...'''
+* [[FAQ Fol | FAQ Fol]]
+* [[Release Party F17 - Roma | Release Party F17 e Pizzata - Roma]]
+* [[La comunità italiana | La comunità italiana]]
+* [[Partecipare al Fedora Project | Partecipare al Fedora Project]]
+* [[Folio | Folio]]
+</div></div>
+
+</div>
+<!-- ------------------------------------------------- -->
+
+<br/><br/><br/>

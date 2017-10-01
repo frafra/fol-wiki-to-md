@@ -1,0 +1,11 @@
+Per poter ridurre un filesystem di root su un sistema Fedora, è necessario non aver montato il filesystem, quindi si dovrà eseguire l'attività tramite la modalità "linux rescue" oppure mediante live. Per eseguire la prima effettuare il reboot del sistema inserendo un dvd di installazione di Fedora e non appena viene restituito il prompt digitare "linux rescue", in modo da far partire il sistema in modalità di ripristino.
+Selezionare la lingua della tastiera e attivare la rete se necessario. Non appena verrà richiesto di montare il filesystem sotto il mount point "/mnt/sysimage", selezionare "Skip", in modo da non rendere in uso il LV da ridurre.
+Verrà attivato il sistema con un set minimale di comandi, e verificando dal comando "df", non si noterà fs di root montati sulla macchina.
+Se invece avete usato una Live accertatevi che il filesystem root da ridurre non sia montato, in caso contrario smontatelo.
+
+Per poter utilizzare i comandi di LVM per verificare o attivare i vari LV, si dovrà mettere il prefisso "lvm" davanti ad ogni comandi in modo che il sistema riconosca che si trattano di comandi lvm e li eseguirà (provando a lanciarli senza il prefisso verrà restituito l'errore "command not found"). Verificando i LV associati al VG di default saranno disabilitati.
+Attivare i LV tramite il comando "vgchange" in modo da poter invocare i comandi successivi sul LV che ospita il filesystem di root.
+Eseguire un fsck sul filesystem di root in modo da verificarne la consistenza e lo stato prima di svolgere le operazioni successive.
+Se il check del filesystem è andato a buon fine, si potrà eseguire lo shrink tramite il comando resize2fs, specificando la dimensione che dovrà avere il nuovo filesystem (non bisogna confondersi con lo spazio pari alla dimensione da deallocare).
+Ora si dovrà eseguire lo shrink del LV associato al filesystem di root, tramite il comando "lvreduce", specificando la dimensione che dovrà avere il nuovo filesystem (non bisogna confondersi con lo spazio pari alla dimensione da deallocare). Al termine delle attività eseguire il reboot del sistema e verificare che da df -k, la dimensione del filesystem sia modificata. Verificando da LVM, il VG avrà dello spazio disponibile nella voce "VFree".
+<Categoria:LVM>

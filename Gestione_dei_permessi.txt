@@ -1,0 +1,77 @@
+Una caratteristica di Linux è la possibilità di gestire i permessi di ciascun file e di tutte le singole directory, in modo da poter garantire una maggiore sicurezza del proprio sistema. Con qualche esempio si vedrà come è possibile modificarli e che attributi dare ai propri file.<br />
+Per la gestione dei permessi si useranno i comandi CHMOD, CHOWN e CHGRP. Con CHMOD si modificano gli attributi, con CHOWN si cambia il proprietario del file e con CHGRP si può modificare il gruppo del file.<br />
+Infatti i permessi (in lettura, scrittura e esecuzione) sono divisi in 3 categorie, ovvero nell'ordine il proprietario, il gruppo e altri utenti. Il proprietario del file lo si modifica semplicemente digitando:
+
+ # chown gigi file
+
+Con un ls -l si può verificare che il permesso è stato modificato, probabilmente si vorrà anche cambiare il suo gruppo, quindi semplicemente:
+
+ # chgrp scuola file
+
+Sempre digitando ls -l si vedranno i proprietari, ovvero l'utente ora è "gigi" e il gruppo "scuola".<br />
+Lo stesso risultato si poteva raggiungere con un comando solo, ovvero:
+
+ # chown gigi:scuola file
+
+Si passa ora alla gestione vera e propria dei permessi.<br />
+Come detto prima i permessi per ogni categoria sono 3:<br />
+* Lettura (read=r)
+* Scrittura (write=w)
+* Esecuzione (execute=x)
+
+Provare a vedere i permessi di un file e digitando:
+
+ # ls -l
+ -rw-r--r--  1 root root     0 27 gen 15:02 file.txt
+
+Come si può vedere il file.txt appartiene a root del gruppo root e ha i seguenti permessi:
+* Il proprietario può leggere e scrivere il file (rw-)
+* Il gruppo può solo leggere il file (r--)
+* Altri utenti possono solo leggere il file (r--)
+Ora si vuole modificare i permessi, in modo che il gruppo possa fare qualsiasi operazione. Per indicare le categorie si useranno le opzioni: 
+ -a (all=tutti)
+ -u (user=utente)
+ -g (group=gruppo)
+ -o (other=altri)
+mentre per aggiungere e togliere permessi si usa il + e il -.<br />
+Il comando sarà quindi:
+
+ # chmod g+wx file.txt
+ # ls -l
+ -rw-rwxr--  1 root root     0 27 gen 15:02 file.txt
+
+Come si vede i permessi del gruppo ora sono rwx, ovvero lettura scrittura e esecuzione del file.
+
+Un altro metodo, e forse quello più usato, è la gestione tramite codifica ottale, ovvero con l'assegnazione di cifre al posto delle lettere. Sicuramente sarà già sentito parlare di permessi a 777 o 755 ecc..<br />
+Invece di assegnare lettere alla lettura, scrittura e esecuzione quindi si hanno dei numeri:
+* Lettura 4
+* Scrittura 2
+* Esecuzione 1
+Le categorie sono sempre tre e per identificare i permessi si fanno semplicemente le somme dei permessi. Il codice 777 quindi vuol dire che tutti gli utenti hanno il permesso di lettura,scrittura e esecuzione, equivale quindi a un rwxrwxrwx.<br />
+E' più comodo gestire i permessi in questo modo perché si può farlo con un comando solo, ad esempio si vuole modificare i permessi del file di prima, dando tutti i permessi al proprietario, togliendo il permesso di scrittura al gruppo e aggiungendo il permesso di esecuzione agli altri utenti. Facendo il calcoli le somme saranno:
+ -utente 7 (4+2+1)
+ -gruppo 5 (4+1)
+ -altri 5 (4+1)
+Quindi digitare:
+
+ # chmod 755 file.txt
+ # ls -l
+ -rwxr-xr-x  1 root root     0 27 gen 15:02 file.txt
+
+Come si vede si è ottenuto il risultato sperato.
+
+Oltre a questo è possibile aggiungere un'altra cifra (che precede le tre usuali) per dare dei permessi speciali:
+ 4: imposta il UserID per l'esecuzione (x nel modo simbolico)
+ 2: imposta il GroupID (s nel modo simbolico)
+ 1: imposta lo sticky bit (t nel modo simbolico)
+Il GrouID e UserID impostano il file in modo da essere eseguito con i permessi di root (utile solo in alcuni casi particolari).<br />
+Lo sticky bit serve per impedire a un utente, che ha il permesso di scrittura su una intera directory, di cancellare il file in questione nella directory dove lui ha permesso di scrittura.<br />
+Un esempio per completezza:
+
+ #chmod 1755 file.txt
+ # ls -l
+ -rwxr-xr-t  1 root root     0 27 gen 15:02 file.txt
+
+Si è aggiunto lo sticky bit al file.txt.
+
+[[Categoria:Sistema]]

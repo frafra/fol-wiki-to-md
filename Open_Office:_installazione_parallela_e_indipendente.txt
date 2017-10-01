@@ -1,0 +1,46 @@
+{{Obsoleto}}
+{{Warning| Questa installazione è stata utilizzata con successo su Fedora 8 con kernel 2.6.25.14-69.fc8 il 18 ottobre 2008.}}
+==Introduzione==
+
+Con l'uscita della nuova versione della suite Open Office, la 3.0.0., gli utenti Fedora ancora legati alla 8 "Werewolf" (come il sottoscritto...) o sulla 9 "Sulphur", che andranno in pensione relativamente presto, NON la riceveranno tra gli aggiornamenti standard.<br />
+Dunque c'è chi si interroga sulla possibilità di affiancarla/sostituirla a quella fornita "di serie" dalla propria distro di riferimento.
+
+Dopo aver letto su alcuni forum di esperienze infelici in tal senso, il mio consiglio spassionato è: NO.<br />
+Tenetevi quella che avete scaricato e installato tramite Yum (o Yumex, o Synaptic, o comunque dai repo 'ufficiali') e AGGIUNGETE A PARTE questa nuova. Avrete un sistema "pulito", in cui cioè potrete continuare a tenere distinte le due versioni, aggiornarle oppure anche eliminarne una delle due, senza pregiudicare il funzionamento dell'altra! Questo è possibile grazie alla flessibilità dei pacchetti RPM.<br />
+Il senso di questa guida è spiegarvi come fare, senza tante complicazioni, utilizzando pochi comandi giusti (in particolare si vedano i comandi 5 e 6).
+
+== La procedura==
+
+Avviare il terminale e diventare root (notare come cambia il prompt tra il secondo e il terzo comando):
+ $ su -
+ password di root
+navigare nel file system, mediante il comando ''cd'', sino a posizionarsi nella cartella dove è stato scaricato il file (> 150 MB da:http://it.openoffice.org/  ) e scrivere: 
+ # tar zxvf OOo_3.0.0_LinuxIntel_install_it.tar.gz
+se è stata scaricata la versione "liscia", senza estensioni Java, altrimenti il comando è:
+ # tar zxvf OOo_3.0.0_LinuxIntel_install_wJRE_it.tar.gz
+{{Nota|Nota|Con quest'ultima è possibile ricevere dei messaggi di errore se non è già stata installata la libreria Java di Sun, cosa che normalmente Fedora NON fa per problemi di licenza.}}
+Poi dare i comandi seguenti:
+
+ # cd OOO300_m9_native_packed-1_it.9358/RPMS/
+ # mkdir -p /opt/ooo3/.rpm
+ # rpm -ivh --dbpath /opt/ooo3/.rpm --nodeps --prefix /opt/ooo3 *.rpm
+ # exit
+
+con questo comando si torna utente normale; così si potrà verificare se funziona tutto regolarmente lanciando la suite da ufficio appena installata, digitando:
+
+ $ /opt/ooo3/openoffice.org3/program/soffice
+
+Come ciliegina sulla torta è possibile a questo punto fare varie cose per semplificarsi ulteriormente l'esistenza:
+# creare un alias in ~/.bash per avviare la suite con un comando più semplice da terminale (per esempio, oo3) -- NB: googlando si trova molta documentazione su come farlo;
+# creare una scorciatoia e associare al comando un'icona per lanciarlo dal desktop (per esempio);
+# idem, ma inserendola su un pannello a propria scelta;
+# idem, ma creando anche le voci parallele in Applicazioni > Ufficio, tramite la comoda utility Sistema > Preferenze > Aspetto e stile > Main menu -- NB: difatti questa installazione NON aggiunge nulla ai menu, proprio per lasciare la massima libertà di scelta e autonomia fra le due versioni;
+# decidere che la nuova versione non è soddisfacente: dopo tutta la fatica, per buttarla via basterà eliminare, da root, la directory /opt/ooo3;
+# eliminare la versione 'standard' invece dell'ultima -- '''Sconsigliato!'''
+
+== Riferimenti ==
+
+* [http://www.plio.it/ PLIO].
+* [http://it.openoffice.org/qa Pagina "Quality Assurance" del sito italiano di OOo].
+
+[[Categoria:Ufficio]]

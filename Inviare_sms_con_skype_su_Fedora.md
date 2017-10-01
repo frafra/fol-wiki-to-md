@@ -1,0 +1,107 @@
+Introduzione
+------------
+
+Probabilmente molti si saranno disperati per mesi, come me, del fatto che con la versione di Skype per linux non è possibile inviare sms. Molti avranno provato a usare wine per installare la versione windows, senza successo. Ma forse non tutti hanno alla fine trovato una soluzione, che c'è, ed è pure molto semplice.
+
+Cosa serve
+----------
+
+Bisogna per prima cosa avere skype installato sulla propria distribuzione fedora, all'ultima versione 2.0.0.xx.
+Serve anche python, almeno alla versione 2.5.
+
+Come fare
+---------
+
+Scaricare quindi l'ultima versione di skype4py da questo indirizzo (prendere il tar.gz): [<http://sourceforge.net/project/showfiles.php?group_id=202148>](http://sourceforge.net/project/showfiles.php?group_id=202148) e l'ultima versione di skysentials da quest'altro: [<http://www.kolmann.at/philipp/linux/skysentials/>](http://www.kolmann.at/philipp/linux/skysentials/)
+
+Scompattarle ognuna in una cartella a piacimento, diciamo la /home/nomeutente, per chiarezza (se ci si comporta diversamente bisogna essere coerenti nel resto della guida).
+A questo punto prendere la cartella "Skype4Py" che si trova nella cartella
+
+`/home/nomeutente/Skype4Py-1.0.29.0 (il numero della versione potrebbe essere diverso)`
+
+e copiarla nella cartella
+
+`/home/nomeutente/skysentials-1.0.1 (il numero potrebbe essere diverso)`
+
+Si può anche cancellare la cartella Skype4py-1.0.29.0 adesso.
+Il gioco è fatto.
+Per inviare gli sms bisogna avviare skype normalmente (lo si fa partire e si mette username e password), quindi aprire un terminale e dare:
+
+`$ python /home/nomeutente/skysentials-1.0.1/skysentials.py `
+
+(questo programmino funziona solo se skype è già aperto e loggato, altrimenti darà errore o si comporterà stranamente)
+
+Risparmiare tempo
+-----------------
+
+Qualcuno potrebbe storcere il naso, perché ogni volta si deve aprire skype, e poi un terminale e scrivere quella riga lunga. Per queste persone che vogliono solo il massimo dalla vita, la guida continua.
+Bisogna fare un piccolo eseguibile bash che si occupa di fare le seguenti cose:
+
+1.  aprire skype, se non è gia aperto
+2.  lanciare il programmino python.
+
+aprire il proprio editor di testo preferito (gedit, kedit, o altro) e copiarci dentro le seguenti righe
+
+`#!/bin/bash`
+`#`
+`` prova=`ps -e | grep skype | grep -v grep | grep -v defunct` ``
+`if test -z "$prova";   `
+`  then`
+`skype & # eseguita se skype è chiuso`
+`sleep 70`
+`fi`
+`python "$HOME/skysentials-1.0.1/skysentials-1.0.1/skysentials.py" &`
+
+dopodiché salvarlo come sms.sh (per esempio) nella propria /home/nomeutente (per esempio). Aprire un terminale e renderlo eseguibile col comando
+
+`$ chmod ugo+x /home/nomeutente/sms.sh`
+
+Vale la pena spendere una parola sulla riga
+
+`sleep 70`
+
+Questa riga serve perché l'eseguibile, una volta lanciato skype, si fermi 70 secondi per aspettare che l'utente metta il suo nome e la sua password di skype (visto che il python funziona solo se skype è già attivo e loggato) prima di eseguire l'ultima riga, che lancia il python.
+Se 70 secondi non bastano, aumentare questa cifra.
+Se invece, come me, si ha impostato skype in modo tale che si ricordi il nome utente e la password, ci metterà poco visto che farà il login automatico, quindi si può anche abbassare questa attesa a 20 secondi.
+
+Se si è proceduto correttamente, ora basterà aprire un terminale e dare
+
+`$ sh $HOME/sms.sh`
+
+perché il programma parta, lanciando skype, se non è gia aperto, e il python.
+
+Risparmiare ancora più tempo
+----------------------------
+
+I più esigenti, che dalla vita vogliono proprio tutto, potrebbero dirsi, "ok, ma non si può fare tutto premendo solo su un bottone????"
+Ebbene si, si può.
+Premere col destro sul desktop e scegliete:
+
+### per KDE3.5
+
+crea/collegamento a un'applicazione.
+Si aprirà una nuova finestra, scegliere un nome, e poi andate nel menu Applicazione.
+In descrizione e commento, mettete quello che vuole e in comando mettere
+
+`sh sms.sh`
+
+e in percorso di lavoro
+
+`/home/nomeutente (se è li che avete salvato sms.sh)`
+
+### per GNOME
+
+crea lanciatore.
+Tipo, lasciare applicazione, scegliete un nome
+comando sh '/home/nomeutente/sms.sh' dare ok. Premere col destro sull'icona che si è cosi creata, andare nel menu Permessi e dare la spunta per renderlo eseguibile.
+
+Dare ok, ed è fatta. Adesso premendo su questo bottone (che si può eventualmente trascinare sul pannello) si può fare partire skype e il python.
+Come si vedrà il piccolo python è molto semplice, ma fa il suo lavoro, vi da accesso a tutta la vostra rubrica skype. Scegliere un numero, premete su "check number" e poi scrivere il testo, e inviare.
+Se il python non dovesse rispondere, di solito vuol dire che il programma è partito quando skype non era ancora ben loggato, in questo caso si consiglia di aumentare lo sleep nel *sms.sh* e riprovare.
+
+Riferimenti
+-----------
+
+-   [<http://share.skype.com/sites/it/2007/11/sms_con_linux_e_skype.html>](http://share.skype.com/sites/it/2007/11/sms_con_linux_e_skype.html)
+
+<Categoria:Multimedia> <Categoria:Internet>

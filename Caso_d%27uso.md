@@ -1,0 +1,207 @@
+<big>**Questa pagina è ancora in fase di bozza**</big>
+
+Introduzione
+------------
+
+Il primo approccio al mondo della virtualizzazione per i sistemi operativi GNU/Linux richiede un'attenta valutazione di tutte le alternative disponibili. In questa pagina viene riportato un esempio di creazione di un server con ambiente di virtualizzazione QEMU/KVM + libvirt atto ad ospitare vari servizi. L'esempio è rivolto a chi abbia necessità di avere un sistema affidabile e pronto in relativamente poco tempo.
+
+Caratteristiche salienti del sistema
+------------------------------------
+
+-   2 schede di rete dove gli IP sono pubblici ed impostati manualmente:
+    -   enp2s0 per il management del sistema host;
+    -   enp4s0f0 per fornire connettività alle macchine virtuali;
+-   1 disco per il sistema operativo dell'host (/dev/sda);
+-   4 dischi fissi in RAID per il volume group che ospiterà le macchine virtuali (/dev/sdb, /dev/sdc, /dev/sdd, /dev/sde).
+
+Preparazione della macchina
+---------------------------
+
+`# dnf install libvirt qemu-kvm`
+
+dove:
+
+-   qemu-kvm è l'infrastruttura di virtualizzazione che permette di virtualizzare altri sistemi operativi sulla macchina host;
+-   libvirt è una libreria contenente alcuni strumenti per la gestione delle macchine virtuali
+
+`# systemctl enable libvirtd`
+`# systemctl start libvirtd`
+
+### Configurazione storage
+
+Installare Fedora Server sulla macchina (host), sul disco /dev/sda Una volta avviato il sistema, occorre creare il RAID che esporrà il dispositivo a blocchi dove verranno installate le macchine virtuali. In questo caso verrà creato un RAID 5 con un disco hotspare
+
+`# mdadm --create /dev/md0 --level=5 --raid-devices=3 --spare-devices=1 /dev/sdb /dev/sdc /dev/sdd /dev/sde`
+
+Ciò esporrà un dispositivo a blocchi in /dev/md0. Per crittografare i dati che si andranno a scrivere sul RAID
+
+`# cryptsetup luksFormat --cipher aes-xts-plain64 -s 512  /dev/md0`
+
+ed inserire la password che si preferisce.
+
+`# cryptsetup luksOpen /dev/md0 luks_raid_md0`
+
+Ora occorre ricavare la UUID del dispositivo a blocchi eseguire
+
+`# blkid`
+
+Se si vuole evitare di dover inserire la password di crittografia di /dev/md0 ad ogni avvio di sistema, per inserirla più comodamente quando il sistema operativo è stato avviato:
+
+`# nano /etc/crypttab`
+
+ed inserire
+
+`luks_raid_md0 UUID="123456" none noauto,nofail`
+
+dove:
+
+-   123456 è la UUID che è stata ricavata da blkid;
+-   nofail prosegue il boot del sistema se non trova il device;
+-   noauto non monta il volume automaticamente.
+
+Ora occorre creare il Volume Group del Logical Volume Management di Linux, che ospiterà i Logical Volume, ovvero i dispositivi a blocchi verranno passati alle macchine virtuali per l'installazione
+
+`# vgcreate vg_macchine /dev/mapper/luks_raid_md0`
+
+### Configurazione rete
+
+libvirt di solito crea il virtual bridge che permette alle macchine virtuali di utilizzare le schede di rete della macchina host. Nel nostro caso preferiamo impostare manualmente tale bridge, perciò virbr0 creato da libvirt va rimosso:
+
+`# virsh net-list`
+
+restituisce la lista
+
+`Name                 State      Autostart`
+`-----------------------------------------`
+`default              active     yes      `
+
+quindi
+
+`# virsh net-destroy default`
+`# virsh net-undefine default`
+`# systemctl restart libvirtd`
+
+Infine la gestione della rete verrà sottratta a NetworkManager ed affidata a systemd-networkd.
+
+`# systemctl stop NetworkManager`
+`# systemctl disable NetworkManager`
+
+Dato che non si sta più utilizzando NetworkManager, occorre configurare su systemd-networkd la connettività della macchina host che utilizza l'interfaccia di rete enp2s0
+
+`# nano /etc/systemd/network/enp2s0.network`
+
+ed inserire
+
+`[Match]`
+`Name=enp2s0`
+`[Network]`
+`DHCP=no`
+`DNS=8.8.8.8`
+`DNS=8.8.4.4`
+`[Address]`
+`Address=256.0.1.101/24`
+`[Route]`
+`Gateway=256.0.1.1`
+
+dove ovviamente gli indirizzi sono indirizzi fittizi.
+
+Ora occorre creare il bridge tra enp4s0f0 e le macchine virtuali
+
+`# nano /etc/systemd/network/br0.netdev `
+
+ed inserire
+
+`[NetDev]`
+`Name=br0`
+`Kind=bridge`
+
+`# nano /etc/systemd/network/br0.network`
+
+ed inserire
+
+`[Match]`
+`Name=br0`
+`[Network]`
+`IPForward=yes`
+`DHCP=no `
+
+Ora occorre configurare enp4s0f0 per le macchine virtuali
+
+`# nano /etc/systemd/network/enp4s0f0.network`
+
+ed inserire
+
+`# slave bridge interface`
+`[Match]`
+`Name=enp4s0f0`
+`[Network]`
+`Bridge=br0`
+
+`# systemctl enable systemd-networkd`
+`# systemctl start systemd-networkd`
+
+L'impostazione degli indirizzi IP delle macchine virtuali avviene durante la loro installazione.
+
+### Controllo Firewalld
+
+Dopo la migrazione da NetworkManager a systemd-networkd, potrebbe essere necessario mettere nuovamente sotto tutela del Firewall l'interfaccia di rete dell'host
+
+`# firewall-cmd --get-zone-of-interface=enp2s0`
+
+se l'interfaccia enp2s0 non fa parte di alcuna zona, occorre riassegnarla a quella corrente.
+
+`# firewall-cmd --get-default-zone`
+
+in questo caso l'output sarà
+
+`FedoraServer`
+
+quindi
+
+`# firewall-cmd --zone=FedoraServer --add-interface=enp2s0`
+
+e per applicare i cambiamenti
+
+`# firewall-cmd --reload`
+
+L'interfaccia enp4s0f0 per semplicità è bene che sia tutelata dai firewall operanti nelle macchine virtuali. Controlliamo quindi che non sia assegnata ad alcuna zona firewall sulla macchina host
+
+`# firewall-cmd --get-zone-of-interface=enp4s0f0`
+
+in caso non sia assegnata ad alcuna zona, allora tutto è andato bene. In caso contrario eseguire
+
+`# firewall-cmd --zone=FedoraServer --remove-interface=enp4s0f0`
+
+Installazione macchina virtuale QEMU/KVM
+----------------------------------------
+
+Creiamo il volume logico (partizione) dove verrà installata la macchina virtuale
+
+`# lvcreate --name macchina_virtuale.img -L 200G vg_macchine`
+
+dove .img è solo un artificio cosmetico per ricordar che la gestione della partizione è demandata alla macchina virtuale Scaricare la ISO di Fedora-Server che servirà per l'installazione della macchina virtuale, e mettiamola in /opt Ciò è molto importante in quanto /opt è una cartella leggibile da tutti gli utenti, e qemu opera con utente qemu, pertanto avviando l'installazione con la ISO in un'altra cartella, esso non sarebbe in grado di leggere il file. L'installazione della m.v. avviene con il programma virt-install. Esso viene avviato tramite una riga di comando contenente varie opzioni. Per comodità è più facile inserire tali opzioni dentro un file .sh ed eseguirlo:
+
+`# nano /opt/virt-install_script.sh`
+
+ed incollare
+
+`virt-install \`
+`--name macchina_virtuale \`
+`--ram 2000 \`
+`--disk path=/dev/vg_macchine/macchina_virtuale.img \`
+`--vcpus 2 \`
+`--os-type linux \`
+`--os-variant fedora25 \`
+`--network bridge=br0 \`
+`--graphics none \`
+`--console pty,target_type=serial \`
+`--location=/opt/Fedora-Server.iso \`
+`--extra-args 'console=ttyS0,115200n8 serial'`
+
+Infine
+
+`# sh /opt/virt-install_script.sh`
+
+e seguire le istruzioni a schermo per l'installazione del sistema operativo nella macchina virtuale
+
+[Categoria:Rete e Server](Categoria:Rete_e_Server "wikilink")

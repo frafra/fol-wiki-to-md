@@ -1,0 +1,83 @@
+==  Setta Sudo sul tuo PC ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+
+ gedit /etc/sudoers
+
+<li>Trova questa linea</li>
+
+ # User privilege specification
+ root	ALL=(ALL) ALL
+ tuo_nome_utente ALL=(ALL)NOPASSWD: ALL
+
+<li>Aggiungi il tuo nome utente sotto la linea dove dice root e copia il resto della riga così com'è:</li>
+La voce '''"NOPASSWD:"''' è opzionale. Se lavori in un ambiente in cui pensi che potrebbe essere un rischio usare questa opzione, '''NON USARLA'''. Rimuovi semplicemente quella sezione nella riga. Se non usi l'opzione '''"NOPASSWD:"''', quando avvii un comando con sudo, devi digitare la tua password, NON quella di root.
+</ol>
+
+==  Come configurare/cambiare/abilitare la password di root ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+
+ passwd root
+</ol>
+==  Come disabilitare l'account di root ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+
+ passwd -l root
+</ol>
+
+==  Come aggiungere/configurare/cancellare utenti ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+<li>Desktop -> Impostazioni di Sistema -> Utenti e Gruppi</li>
+<li>Utenti e Gruppi</li>
+
+ Usa il Tab Utenti -> Aggiungi utente.../Proprietà/Cancella
+</ol>
+
+==  Come aggiungere/configurare/cancellare gruppi di utenti ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+<li>Desktop -> Impostazioni di Sistema -> Utenti e Gruppi</li>
+<li>Utenti e Gruppi</li>
+
+ Usa il Tab Gruppi -> Aggiungi gruppo.../Proprietà/Cancella
+</ol>
+
+==  Come avere un accesso automatico a GNOME (non sicuro) ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+<li>Desktop -> Impostazioni di Sistema -> Finestra di Login</li>
+<li>Finestra di Login Setup</li>
+
+ Tab Generale -> Login Automatico  ->
+ Abilitare il login automatico al primo avvio (da spuntare)
+ Utente per il login automatico: Seleziona "nome_utente"
+</ol>
+
+==  Come cambiare i permessi a file/directory ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+
+ Fai click con il pulsante destro sul file/directory -> Proprietà
+ Usa il Tab Permessi -> Lettura/Scrittura/Esecuzione (definisci i permessi per l'utente/gruppo/altri)
+</ol>
+
+==  Come cambiare il possesso di file/directory per un utente ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+
+ chown nome_utente /percorso_al_file_o_cartella
+</ol>
+
+==  Come cambiare il possesso di file/directory per un gruppo ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+
+ chgrp nome_gruppo /percorso_al_file_o_cartella
+</ol>
+
+{{Link/prec|06 Applicazioni Commerciali|06 Applicazioni Commerciali}}{{Link/succ|08 Hardware|08 Hardware}}
+
+[[Categoria:Fedoraserver]]

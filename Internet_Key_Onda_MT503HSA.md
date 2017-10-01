@@ -1,0 +1,265 @@
+La documentazione sotto riportata è stata testata su una Fedora 12 i686, e non ha funzionato correttamente su Fedora 11, per problemi di riconoscimento del modem usb.
+\_\_TOC\_\_
+
+Internet key Onda MT503HSA con NetworkManager
+---------------------------------------------
+
+-   Per prima cosa verificare che la versione di OS sia una Fedora 12 e che il kernel usato sia un 2.6.xxx.
+
+`[root@cellopc ~]# cat /etc/fedora-release`
+`Fedora release 12 (Constantine)`
+`[root@cellopc ~]# uname -r`
+`2.6.31.6-145.fc12.i686`
+
+-   Si ricorda che con il kernel-PAE ci sono problemi di supporto dei driver del modem, quindi nel caso si utilizzi questa tipologia di kernel, converrà installare il kernel più aggiornato e modificare il proprio grub.conf per caricarlo.
+
+`[root@cellopc ~]# yum install -y kernel kernel-devel kernel-headers`
+`[root@cellopc ~]# vim /etc/grub.conf `
+`# grub.conf generated by anaconda`
+`#`
+`# Note that you do not have to rerun grub after making changes to this file`
+`# NOTICE:  You have a /boot partition.  This means that`
+`#          all kernel and initrd paths are relative to /boot/, eg.`
+`#          root (hd0,0)`
+`#          kernel /vmlinuz-version ro root=/dev/mapper/vg_root-lv_root`
+`#          initrd /initrd-version.img`
+`#boot=/dev/sda `
+`default=0`
+`timeout=0`
+`splashimage=(hd0,0)/grub/splash.xpm.gz`
+`hiddenmenu `
+`title Fedora (2.6.31.6-145.fc12.i686) `
+`   root (hd0,0) `
+`   kernel /vmlinuz-2.6.31.6-145.fc12.i686 ro root=/dev/mapper/vg_root-lv_root rhgb quiet`
+`SYSFONT=latarcyrheb-sun16 LANG=en_US.UTF-8 KEYTABLE=it2 `
+`   initrd /initramfs-2.6.31.6-145.fc12.i686.img `
+`[root@cellopc ~]# reboot`
+
+-   Ora bisognerà installare i pacchetti necessari alla compilazione dei driver forniti con la chiavetta, e ulteriori pacchetti presenti sul cd (ma sono per Fedora core 8).
+
+`[root@cellopc ~]# yum install -y make gcc wvdial automake glibc ppp qt3 ncurses-devel`
+
+-   Verificare se il pacchetto vodafone-mobile-connect sia installato, perchè tra i diversi file crea /etc/modprobe.d/blacklist-vmc dove viene eseguita la blacklist del modulo onda. Nel caso non servisse rimuoverlo manualmente.
+
+`[root@cellopc Alice_MOBILE]# rpm -qa | grep -i vodafone`
+`vodafone-mobile-connect-2.10.01-521.noarch`
+`[root@cellopc Alice_MOBILE]# rm -f /etc/modprobe.d/blacklist-vmc`
+
+-   Inserire la chiavetta sul sistema e verificare che venga riconosciuta con ID ID 19d2:0037. In alcuni casi la chiavetta USB non viene subita riconosciuta come modem e quindi bisogneranno lanciare i comandi qui sotto riportati, per forzare il riconoscimento della device.
+
+`[root@cellopc ~]# modprobe usbserial vendor=0x19d2 product=0x0002`
+`[root@cellopc ~]# usb_modeswitch -v 0x19d2 -p 0x2000 -V 0x19d2 -P 0x0002 -d 1`
+`Looking for target devices ...`
+` No devices in target mode or class found`
+`Looking for default devices ...`
+` No default device found. Is it connected? Bye.`
+`[root@cellopc ~]# eject /dev/sr1`
+
+-   La chiavetta ora viene vista come modem in modo corretto.
+
+`[root@cellopc ~]# lsusb  | grep -i onda`
+`Bus 001 Device 012: ID 19d2:0037 ONDA Communication S.p.A. `
+
+-   Dopo di che aggiornare i pacchetti ModemManager e NetworkManager all'ultima release disponibile, per risolvere eventuali problemi di gestione delle device US UMTS.
+
+`[root@cellopc ~]# yum install -y ModemManager NetworkManager`
+
+-   Cliccando poi con il tasto sinistro del mouse sull'icona di NM si vedrà una nuova voce selezionabile sotto "Mobile Broadband" denominata "New Mobile Broadband (GSM) connection...". Selezionare dunque questa voce del menù.
+-   Al menù successivo verrà mostrato un wizard per la creazione della nuova connessione con NM. Cliccare su "Forward" e poi dall'elenco delle nazioni selezionare "Italy" e poi cliccare su "Forward".
+-   Al menù successivo verrà richiesto l'operatore che fornisce la connessione. Nel nostro caso selezionare "Tim" poi su "Forward". Alla finestra successiva lasciare il default e cliccare su "Forward". Al termine cliccare su "Apply" e la connessione verrà aperta da NM in automatico.
+
+Internet key Onda MT503HSA con wvdial
+-------------------------------------
+
+-   Per prima cosa verificare che la versione di OS sia una Fedora 12 e che il kernel usato sia un 2.6.xxx.
+
+`[root@cellopc ~]# cat /etc/fedora-release `
+`Fedora release 12 (Constantine)`
+`[root@cellopc ~]# uname -r`
+`2.6.31.6-145.fc12.i686`
+
+-   Si ricorda che con il kernel-PAE ci sono problemi di supporto dei driver del modem, quindi nel caso si utilizzi questa tipologia di kernel, converrà installare il kernel più aggiornato e modificare il proprio grub.conf per caricare il nuovo kernel.
+
+`[root@cellopc ~]# yum install -y kernel kernel-devel kernel-headers`
+`[root@cellopc ~]# vim /etc/grub.conf `
+`# grub.conf generated by anaconda`
+`#`
+`# Note that you do not have to rerun grub after making changes to this file`
+`# NOTICE:  You have a /boot partition.  This means that`
+`#          all kernel and initrd paths are relative to /boot/, eg.`
+` #          root (hd0,0)`
+`#          kernel /vmlinuz-version ro root=/dev/mapper/vg_root-lv_root`
+`#          initrd /initrd-version.img`
+`#boot=/dev/sda`
+`default=0`
+`timeout=0`
+`splashimage=(hd0,0)/grub/splash.xpm.gz`
+`hiddenmenu`
+`title Fedora (2.6.31.6-145.fc12.i686)`
+`   root (hd0,0)`
+`   kernel /vmlinuz-2.6.31.6-145.fc12.i686 ro root=/dev/mapper/vg_root-lv_root rhgb quiet`
+`SYSFONT=latarcyrheb-sun16 LANG=en_US.UTF-8 KEYTABLE=it2`
+`   initrd /initramfs-2.6.31.6-145.fc12.i686.img`
+`[root@cellopc ~]# reboot`
+
+-   Ora bisognerà installare i pacchetti necessari alla compilazione dei driver forniti con la chiavetta, e ulteriori pacchetti presenti sul cd (ma sono per fedora core 8).
+
+`[root@cellopc ~]# yum install -y make gcc wvdial automake glibc ppp qt3 ncurses-devel`
+
+-   Verificare se il pacchetto vodafone-mobile-connect sia installato, perchè tra i diversi file crea /etc/modprobe.d/blacklist-vmc dove viene eseguita la blacklist del modulo onda. Nel caso non servisse rimuoverlo manualmente.
+
+`[root@cellopc Alice_MOBILE]# rpm -qa | grep -i vodafone`
+`vodafone-mobile-connect-2.10.01-521.noarch`
+`[root@cellopc Alice_MOBILE]# rm -f /etc/modprobe.d/blacklist-vmc`
+
+-   Inserire la chiavetta sul sistema e verificare che venga riconosciuta con ID ID 19d2:0037. In alcuni casi la chiavetta USB non viene subito riconosciuta come modem e quindi bisognerà lanciare i comandi qui sotto riportati, per forzare il riconoscimento della device.
+
+`[root@cellopc ~]# modprobe usbserial vendor=0x19d2 product=0x0002`
+`[root@cellopc ~]# usb_modeswitch -v 0x19d2 -p 0x2000 -V 0x19d2 -P 0x0002 -d 1`
+`Looking for target devices ...`
+` No devices in target mode or class found`
+`Looking for default devices ...`
+` No default device found. Is it connected? Bye.`
+`[root@cellopc ~]# eject /dev/sr1`
+
+-   La chiavetta ora viene vista come modem in modo corretto
+
+`[root@cellopc ~]# lsusb  | grep -i onda`
+`Bus 001 Device 012: ID 19d2:0037 ONDA Communication S.p.A. `
+
+-   Dopodichè impostare il file di configurazione /etc/wvdial.conf con i parametri qui sotto riportati per avere una configurazione di default alla connessione. In questa configurazione non viene utilizzato il PIN per la simcard.
+
+`[root@cellopc ~]# vim /etc/wvdial.conf`
+`[Dialer Defaults]`
+`Modem = /dev/ttyUSB2`
+`ISDN = off`
+`Modem Type = Analog Modem`
+`Baud = 460800`
+`Init = ATX3`
+`Init2 = AT&F Q0 V1 E1 S0=0 &C1 &D2 +FCLASS=0`
+`Init3 = at+cgdcont=1,"IP","ibox.tim.it"`
+`Phone = *99#`
+`Dial Attempts = 5`
+`Dial Command = ATM1L3DT`
+`Ask Password = off`
+`Username = ''`
+`Password = ''`
+`Stupid Mode = on`
+`Auto Reconnect = off`
+`Check Def Route = off`
+
+-   Dopo la configurazione lanciare il comando wvdial e verificare che venga creata l'intefaccia di rete ppp0 e che il demone non dia errori di connessione.
+
+`[root@cellopc ~]# wvdial`
+`--> WvDial: Internet dialer version 1.61`
+`--> Cannot get information for serial port.`
+`--> Initializing modem.`
+`--> Sending: AT+CPIN="0000"`
+`OK`
+`--> Sending: ATX3`
+`OK`
+`--> Sending: AT&F Q0 V1 E1 S0=0 &C1 &D2 +FCLASS=0`
+`OK`
+`--> Sending: at+cgdcont=1,"IP","ibox.tim.it"`
+`at+cgdcont=1,"IP","ibox.tim.it"`
+`OK`
+`--> Modem initialized.`
+`--> Sending: ATM1L3DT*99#`
+`--> Waiting for carrier.`
+`ATM1L3DT*99#`
+`CONNECT 7200000`
+`--> Carrier detected.  Starting PPP immediately.`
+`--> Starting pppd at Wed Feb  3 13:24:01 2010`
+`--> Pid of pppd: 31798`
+`--> pppd: P?l`
+`--> Using interface ppp0`
+`--> Authentication (PAP) started`
+`--> Authentication (PAP) successful`
+`--> local  IP address 95.74.108.197`
+`--> remote IP address 10.64.64.64`
+`--> Script /etc/ppp/ip-up run successful`
+`--> Default route Ok.`
+`--> Nameserver (DNS) Ok.`
+`--> Connected... Press Ctrl-C to disconnect`
+`[root@cellopc script]#  ifconfig ppp0`
+`ppp0      Link encap:Point-to-Point Protocol  `
+`          inet addr:95.74.108.197  P-t-P:10.64.64.64  Mask:255.255.255.255`
+`          UP POINTOPOINT RUNNING NOARP MULTICAST  MTU:1500  Metric:1`
+`          RX packets:15 errors:0 dropped:0 overruns:0 frame:0`
+`          TX packets:15 errors:0 dropped:0 overruns:0 carrier:0`
+`          collisions:0 txqueuelen:3 `
+`          RX bytes:324 (324.0 b)  TX bytes:384 (384.0 b)`
+
+-   Se si utilizza una chiavetta con PIN bisognerà attivare il parametro "Ask Password" in modo che venga richiesta la password durante la connessione tramite wvdial.
+
+`[root@cellopc ~]# vim /etc/wvdial.conf`
+`[Dialer Defaults]`
+`Modem = /dev/ttyUSB2`
+`ISDN = off`
+`Modem Type = Analog Modem`
+`Baud = 460800`
+`Init = ATX3`
+`Init2 = AT&F Q0 V1 E1 S0=0 &C1 &D2 +FCLASS=0`
+`Init3 = at+cgdcont=1,"IP","ibox.tim.it"`
+`Phone = *99#`
+`Dial Attempts = 5`
+`Dial Command = ATM1L3DT`
+`Ask Password = on`
+`Username = ''`
+`Password = ''`
+`Stupid Mode = on`
+`Auto Reconnect = off`
+`Check Def Route = of`
+
+-   Dopo aver modificato la configurazione bisognerà lanciare sempre il comando wvdial ed inserire il PIN quando verrà richiesto.
+
+`[root@cellopc ~]# wvdial`
+`--> WvDial: Internet dialer version 1.61`
+`--> Cannot get information for serial port.`
+`--> Initializing modem.`
+`--> Sending: ATX3`
+`ATX3`
+`OK`
+`--> Sending: AT&F Q0 V1 E1 S0=0 &C1 &D2 +FCLASS=0`
+`AT&F Q0 V1 E1 S0=0 &C1 &D2 +FCLASS=0`
+`OK`
+`--> Sending: at+cgdcont=1,"IP","ibox.tim.it"`
+`at+cgdcont=1,"IP","ibox.tim.it"`
+`OK`
+`--> Modem initialized.`
+`--> Please enter password (or empty password to stop): ****`
+`ATM1L3DT*99#`
+`CONNECT 7200000`
+`--> Carrier detected.  Starting PPP immediately.`
+`--> Starting pppd at Wed Feb  3 13:24:01 2010`
+`--> Pid of pppd: 31798`
+`--> pppd: P?l`
+`--> Using interface ppp0`
+`--> Authentication (PAP) started`
+`--> Authentication (PAP) successful`
+`--> local  IP address 95.74.108.197`
+`--> remote IP address 10.64.64.64`
+`--> Script /etc/ppp/ip-up run successful`
+`--> Default route Ok.`
+`--> Nameserver (DNS) Ok.`
+`--> Connected... Press Ctrl-C to disconnect`
+
+-   Se si vuole automatizzare l'inserimento de PIN, bisognerà aggiungere la voce di init AT+CPIN="tuopin" come prima voce nel file di configurazione /etc/wvdial.conf.
+
+`[root@cellopc ~]# vim /etc/wvdial.conf`
+`[Dialer Defaults]`
+`Modem = /dev/ttyUSB2`
+`ISDN = off`
+`Modem Type = Analog Modem`
+`Baud = 460800`
+`Init = AT+CPIN="7100"`
+`Init2 = ATX3`
+`Init3 = AT&F Q0 V1 E1 S0=0 &C1 &D2 +FCLASS=0`
+`Init4 = at+cgdcont=1,"IP","ibox.tim.it"`
+`Phone = *99#`
+`Dial Attempts = 3`
+`Dial Command = ATM1L3DT`
+`Ask Password = off`
+`Username = ''`
+`Password = ''`
+`Stupid Mode = on`

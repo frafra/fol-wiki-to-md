@@ -1,0 +1,342 @@
+==  Come installare Samba Server per condividere file/directory ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+<li>Leggi [[02_Repositories#Come aggiungere dei repositories extra|Come aggiungere dei repositories extra]]</li>
+<li>Usa Desktop -> Impostazioni di Sistema -> Aggiungere/Rimuovere le Applicazioni</li>
+''oppure''
+
+ yum -y install samba
+ yum -y install samba-client
+ yum -y install system-config-samba
+
+<li>Desktop -> Impostazioni di sistema -> Impostazioni del server -> Servizi -> Samba</li>
+</ol>
+
+==  Come aggiungere/configurare/cancellare utenti di rete ==
+<ol>
+<li>Aggiungi utenti di rete</li>
+
+ smbpasswd -a system_username
+ gedit /etc/samba/smbusers
+
+<li>Inserisci la seguente riga nel nuovo file</li>
+
+ system_username = "network username"
+
+<li>Salva il file modificato</li>
+<li>Aggiungere un utente di rete</li>
+
+ smbpasswd -a system_username
+
+<li>Rimuovere un utente di rete</li>
+
+ smbpasswd -x system_username
+</ol>
+
+==  Come condividere le directory home con permessi in lettura/scrittura (Authentication=Yes) ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+<li>Leggi [[#Come installare Samba Server per condividere file/directory|Come installare Samba Server per condividere file/directory]]</li>
+
+ cp /etc/samba/smb.conf /etc/samba/smb.conf_backup
+ gedit /etc/samba/smb.conf
+
+<li>Trova questa riga</li>
+
+ ...
+ ;  security = user
+ ...
+
+<li>Sostituiscila con le righe seguenti</li>
+
+   security = user
+   username map = /etc/samba/smbusers
+
+<li>Salva il file modificato</li>
+<li>Leggi [[#Come aggiungere/configurare/cancellare utenti di rete|Come aggiungere/configurare/cancellare utenti di rete]]</li>
+
+ testparm
+ /etc/init.d/smb restart
+</ol>
+
+==  Come condividere le directory home con permessi in sola lettura (Authentication=Yes) ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+<li>Leggi [[#Come installare Samba Server per condividere file/directory|Come installare Samba Server per condividere file/directory]] </li>
+
+ cp /etc/samba/smb.conf /etc/samba/smb.conf_backup
+ gedit /etc/samba/smb.conf
+
+<li>Trova questa riga</li>
+
+ ...
+ ;  security = user
+ ...
+
+<li>Sostituiscila con le righe seguenti</li>
+
+   security = user
+   username map = /etc/samba/smbusers
+
+<li>Trova queste righe</li>
+
+ [homes]
+ 	comment = Home directory
+ 	browseable = no
+ 	writeable = yes
+
+<li>Sostituiscile con le righe seguenti</li>
+
+ [homes]
+ 	comment = Home directory
+ 	browseable = yes
+ 	writeable = no
+
+<li>Salva il file modificato</li>
+
+ testparm
+ /etc/init.d/smb restart
+</ol>
+
+==  Come condividere gruppi di directory con permessi in sola lettura (Authentication=Yes) ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+<li>Leggi [[#Come installare Samba Server per condividere file/directory|Come installare Samba Server per condividere file/directory]]</li>
+
+ mkdir /home/group
+ chmod 777 /home/group/
+ cp /etc/samba/smb.conf /etc/samba/smb.conf_backup
+ gedit /etc/samba/smb.conf
+
+<li>Trova questa riga</li>
+
+ ...
+ ;  security = user
+ ...
+
+<li>Sostituiscila con le righe seguenti</li>
+
+ security = user
+ username map = /etc/samba/smbusers
+
+<li>Aggiungi le righe seguenti alla fine del file</li>
+
+ [Group]
+   comment = Group Folder
+   path = /home/group
+   public = yes
+   writable = no
+   valid users = system_username1 system_username2
+   create mask = 0700
+   directory mask = 0700
+   force user = nobody
+   force group = nogroup
+
+<li>Salva il file modificato</li>
+<li>Leggi [[#Come aggiungere/configurare/cancellare utenti di rete|Come aggiungere/configurare/cancellare utenti di rete]]</li>
+
+ testparm
+ /etc/init.d/smb restart
+</ol>
+
+==  Come condividere gruppi di directory con permessi in lettura/scrittura (Authentication=Yes) ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+<li>Leggi [[#Come installare Samba Server per condividere file/directory|Come installare Samba Server per condividere file/directory]]</li>
+
+ mkdir /home/group
+ chmod 777 /home/group/
+ cp /etc/samba/smb.conf /etc/samba/smb.conf_backup
+ gedit /etc/samba/smb.conf
+
+<li>Trova questa riga</li>
+
+ ...
+ ;  security = user
+ ...
+
+<li>Sostituiscila con le righe seguenti</li>
+
+ security = user
+ username map = /etc/samba/smbusers
+
+<li>Aggiungi le righe seguenti alla fine del file</li>
+
+ [Group]
+   comment = Group Folder
+   path = /home/group
+   public = yes
+   writable = yes
+   valid users = system_username1 system_username2
+   create mask = 0700
+   directory mask = 0700
+   force user = nobody
+   force group = nogroup
+
+<li>Salva il file modificato</li>
+<li>Leggi [[#Come aggiungere/configurare/cancellare utenti di rete|Come aggiungere/configurare/cancellare utenti di rete]]</li>
+
+ testparm
+ /etc/init.d/smb restart
+</ol>
+
+==  Come condividere directory pubbliche con permessi in sola lettura (Authentication=Yes) ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+<li>Leggi [[#Come installare samba server per condividere file/directory|Come installare samba server per condividere file/directory]]</li>
+
+ mkdir /home/public
+ chmod 777 /home/public/
+ cp /etc/samba/smb.conf /etc/samba/smb.conf_backup
+ gedit /etc/samba/smb.conf
+
+<li>Trova questa riga</li>
+
+ ...
+ ;  security = user
+ ...
+
+<li>Sostituiscila con le righe seguenti</li>
+
+   security = user 
+   username map = /etc/samba/smbusers
+
+<li>Aggiungi le righe seguenti alla fine del file</li>
+
+ [public]
+   comment = Public Folder
+   path = /home/public
+   public = yes
+   writable = no
+   create mask = 0777
+   directory mask = 0777
+   force user = nobody
+   force group = nogroup
+
+<li>Salva il file modificato</li>
+<li>Leggi [[#Come aggiungere/configurare/cancellare utenti di rete|Come aggiungere/configurare/cancellare utenti di rete]]</li>
+
+ testparm
+ /etc/init.d/smb restart
+</ol>
+
+==  Come condividere directory pubbliche con permessi in lettura/scrittura (Authentication=Yes) ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+<li>Leggi [[#Come installare samba server per condividere file/directory|Come installare samba server per condividere file/directory]]</li>
+
+ mkdir /home/public
+ chmod 777 /home/public/
+ cp /etc/samba/smb.conf /etc/samba/smb.conf_backup
+ gedit /etc/samba/smb.conf
+
+<li>Trova questa riga</li>
+
+ ...
+ ;  security = user
+ ...
+
+<li>Sostituiscila con le righe seguenti</li>
+
+   security = user
+   username map = /etc/samba/smbusers
+
+<li>Aggiungi le righe seguenti alla fine del file</li>
+
+ [public]
+   comment = Public Folder
+   path = /home/public
+   public = yes
+   writable = yes
+   create mask = 0777
+   directory mask = 0777
+   force user = nobody 
+   force group = nogroup
+
+<li>Salva il file modificato</li>
+<li>Leggi [[#Come aggiungere/configurare/cancellare utenti di rete|Come aggiungere/configurare/cancellare utenti di rete]]</li>
+
+ testparm
+ /etc/init.d/smb restart
+</ol>
+
+==  Come condividere directory pubbliche con permessi in sola lettura (Authentication=No) ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+<li>Leggi [[#Come installare samba server per condividere file/directory|Come installare samba server per condividere file/directory]]</li>
+
+ mkdir /home/public
+ chmod 777 /home/public/
+ cp /etc/samba/smb.conf /etc/samba/smb.conf_backup
+ gedit /etc/samba/smb.conf
+
+<li>Trova questa riga</li>
+
+ ...
+ ;  security = user
+ ...
+
+<li>Sostituiscila con le righe seguenti</li>
+
+   security = share
+
+<li>Aggiungi le righe seguenti alla fine del file</li>
+
+ [public]
+   comment = Public Folder
+   path = /home/public
+   public = yes
+   writable = no
+   create mask = 0777
+   directory mask = 0777
+   force user = nobody
+   force group = nogroup
+
+<li>Salva il file modificato</li>
+
+ testparm
+ /etc/init.d/smb restart
+</ol>
+
+==  Come condividere directory pubbliche con permessi in lettura/scrittura (Authentication=No) ==
+<ol>
+<li>Leggi [[01_Introduzione_a_Fedora#Premessa|Premessa]]</li>
+<li>Leggi [[#Come installare samba server per condividere file/directory|Come installare samba server per condividere file/directory]]</li>
+
+ mkdir /home/public
+ chmod 777 /home/public/
+ cp /etc/samba/smb.conf /etc/samba/smb.conf_backup
+ gedit /etc/samba/smb.conf
+
+<li>Trova questa riga</li>
+
+ ...
+ ;  security = user
+ ...
+
+<li>Sostituiscila con la riga seguente</li>
+
+   security = share
+
+<li>Aggiungi le righe seguenti alla fine del file</li>
+
+ [public]
+   comment = Public Folder
+   path = /home/public
+   public = yes
+   writable = yes
+   create mask = 0777
+   directory mask = 0777
+   force user = nobody
+   force group = nogroup
+
+<li>Salva il file modificato</li>
+
+ testparm
+ /etc/init.d/smb restart
+</ol>
+
+
+{{Link/prec|15 Trucchi vari|15 Trucchi vari}}{{Link/succ|17 SSH|17 SSH}}
+
+[[Categoria:Fedoraserver]]

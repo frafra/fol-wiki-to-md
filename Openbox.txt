@@ -1,0 +1,96 @@
+__TOC__
+== Introduzione ==
+
+Questa guida è scritta per tutti coloro che vorranno utilizzare Openbox sulla loro Fedora. Non si tratta di una installazione "pura", nel senso che Openbox viene installato successivamente all'installazione, ad esempio di Gnome.<br />
+Per tale motivo Openbox avrà già tutti gli applicativi pronti all'uso nel suo menù (attivabile con tasto destro del mouse).<br />
+Infine c'è da dire che Openbox non è un Desktop Manager, bensì un Windows Manager!
+
+== Installazione ==
+
+Assicurarsi di avere il sistema aggiornato:
+
+ # yum update
+
+dopodichè
+
+ # yum install openbox
+
+e
+
+ # yum install obconf
+
+obconf serve per le configurazioni personali: ad esempio per selezionare un tema (i temi si possono scaricare ed installare dal sito [http://www.box-look.org box-look.org])
+
+ # yum install obmenu
+
+è il menu di openbox, che già dovrebbe installarsi col primo comando. Se non ci fosse viene installato ora.
+Poi:
+
+ # yum install feh
+
+feh è un programma che permette di scegliere un wallpaper per il proprio Desktop, altrimenti si avrà un anonimo schermo grigio.
+
+ # yum install tint2
+
+tint2 è un ottimo pannello e vassoio di sistema.
+
+ # yum install conky
+
+[[Conky|Conky]], per chi non lo sapesse, è una sorta di pannello di controllo (o widgets ndr) del sistema, facilmente configurabile e flessibile.
+
+ # yum install xcompmgr
+
+E' importante sapere che non esiste compiz per openbox, ma questo programmino aiuta a gestire ombre, trasparenze ed effettini per ridurre le finestre ad icona.
+
+L'installazione è terminata, rimangono due o tre consigli per eventuali settaggi e/o configurazioni, si noterà anche che Openbox è un Windows Manager leggerissimo.<br />
+
+== Configurazione ==
+
+Per installare screenfetch, che è una sorta di conky da terminale, andare su questo sito:<br />
+http://git.silverirc.com/cgit.cgi/screenfetch-dev.git/ e scaricare il tar più aggiornato, estrarlo nella home (o dove si preferisce) e dare:
+
+ $ chmod +x screenfetch-dev
+
+Modificare il proprio ''.bashrc'' come segue (non da root!)
+
+ $ /percorso_del_file/screenfetch-dev
+
+(ES: nel caso descritto è /home/feddy/screenfetch-dev)
+Quando si apre il terminale ci sarà il tuo bel screenfetch:
+modificare ora il file ''.autostart.ch'' per inserire i processi desiderati all'avvio, quindi con il proprio editor preferito:
+
+ # nano /etc/xdg/openbox/autostart.sh
+
+Alla fine del file aggiungere:
+
+ conky &
+ tint2 &
+ xcompmgr &
+ 
+ # My wallpaper
+ eval `cat $HOME/.fehbg` &
+
+{{Nota|Nota|La '''&''' al termine del comando è importante altrimenti le applicazioni potrebbero non apparire dopo il login.}}
+Per impostare uno sfondo, dato che ora è installato ''feh'':
+
+ $ feh --bg-scale /pathtoyourbackgroundimage.jpg
+{{Suggerimento|Probabilmente usare il terminale di gnome darà dei problemi di grafica, per cui si consiglia l'utilizzo di xterm molto leggero e pulito.}}
+
+ # yum install xterm
+
+Alcune chicche di xterm:
+* Si possono impostare sfondo e colori, ad esempio lanciandolo in questo modo:
+
+ $ xterm -bg gray19 -fg cyan
+
+La tabella colori è al seguente indirizzo: http://www.critical.ch/xterm/<br />
+dove il comando ''-bg'' darà colore allo sfondo e ''-fg'' il colore al font.
+
+Per modificare e personalizzare il proprio menu principiale modificare il codice xml:
+
+ # nano /etc/xdg/openbox/menu.xml
+
+Qui un esempio come appare il mio desktop.
+[[Image:Openbox.jpg|500px|thumb|center|Un Desktop con Openbox come WM.]]
+
+[[Categoria:Ambiente Desktop]]
